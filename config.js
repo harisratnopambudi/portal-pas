@@ -30,6 +30,13 @@ window.CONFIG = {
   // Alasan pada soal PG & Benar/Salah wajib diisi, minimal sekian huruf
   ALASAN_MIN_KARAKTER: 10,
 
+  // Pengamanan ujian (halaman siswa)
+  ANTI_CURANG: {
+    blokirSalinTempel: true,   // blok copy, paste, cut, klik kanan, seleksi teks soal, shortcut keyboard
+    wajibLayarPenuh: true,     // ujian berjalan dalam mode layar penuh (fullscreen)
+    maksPelanggaran: 3         // keluar tab/jendela/layar penuh sebanyak ini -> ujian dikunci, dibuka pengawas dengan token. 0 = hanya dicatat
+  },
+
   // Acak urutan soal di dalam tiap bagian (true/false)
   ACAK_URUTAN_SOAL: false,
 

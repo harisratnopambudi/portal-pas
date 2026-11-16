@@ -423,7 +423,8 @@
       '<span class="badge info">' + proses.length + " sedang mengerjakan</span>" +
       '<span class="badge ' + (belum.length ? "warn" : "ok") + '">' + belum.length + " belum mulai</span></div></div>" +
       (proses.length ? '<div class="lbl-mini" style="margin-top:14px">Sedang mengerjakan (jawaban tersimpan di server)</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' +
-        proses.map(x => '<span class="badge info" style="font-weight:500">' + x.no + ". " + esc(x.n) + " · " + (x.d.terjawab || 0) + "/" + (x.d.total || "?") + " · " + lalu(x.d.diperbarui_at) + "</span>").join("") + "</div>" : "") +
+        proses.map(x => '<span class="badge ' + (x.d.terkunci ? "bad" : "info") + '" style="font-weight:500">' + x.no + ". " + esc(x.n) + " · " + (x.d.terjawab || 0) + "/" + (x.d.total || "?") + " · " + lalu(x.d.diperbarui_at) +
+          (x.d.pelanggaran ? " · " + x.d.pelanggaran + " pelanggaran" : "") + (x.d.terkunci ? " · TERKUNCI" : "") + "</span>").join("") + "</div>" : "") +
       (belum.length ? '<div class="lbl-mini" style="margin-top:14px">Belum mulai</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' +
         belum.map(x => '<span class="badge neutral" style="font-weight:500">' + x.no + ". " + esc(x.n) + "</span>").join("") + "</div>" : "") +
       (!proses.length && !belum.length ? '<p class="muted small" style="margin:8px 0 0">Semua siswa kelas ini sudah mengirim.</p>' : "");
@@ -453,7 +454,7 @@
       '<th class="num">Total</th><th class="num">Nilai</th><th>Status</th><th></th></tr></thead><tbody>';
     rows.forEach(r => {
       const x = r._h;
-      h += "<tr><td>" + esc(r.kelas) + '</td><td class="num">' + r.absen + "</td><td><b>" + esc(r.nama) + "</b></td><td class=\"muted\">" + waktu(r.dikirim_at) + "</td>" +
+      h += "<tr><td>" + esc(r.kelas) + '</td><td class="num">' + r.absen + "</td><td><b>" + esc(r.nama) + "</b>" + (r.pelanggaran ? ' <span class="badge bad" title="Keluar dari halaman ujian">' + r.pelanggaran + " pelanggaran</span>" : "") + "</td><td class=\"muted\">" + waktu(r.dikirim_at) + "</td>" +
         tipeAda.map(t => '<td class="num">' + fmt(x.perTipe[t].skor) + '<span class="muted small">/' + x.perTipe[t].maks + "</span></td>").join("") +
         '<td class="num">' + fmt(x.total) + '<span class="muted small">/' + x.maks + '</span></td><td class="num nilai">' + x.nilai + "</td><td>" + badgeStatus(x) + "</td>" +
         '<td><div class="row" style="gap:6px;justify-content:flex-end"><button class="btn sm" data-nilai="' + r.id + '">' + ico("edit") + ' Nilai</button>' +
@@ -712,13 +713,13 @@
     const rows = terfilter(), m = mapel();
     if (!rows.length) return toast("Tidak ada data untuk diexport");
     const tipeAda = URUTAN_TIPE.filter(t => m.soal.some(s => s.tipe === t));
-    const head = ["Kelas", "Absen", "Nama", "Dikirim"].concat(tipeAda.map(t => T[t].kode + " " + T[t].nama), ["Total", "Maks", "Nilai", "Status", "Belum dinilai"],
+    const head = ["Kelas", "Absen", "Nama", "Dikirim"].concat(tipeAda.map(t => T[t].kode + " " + T[t].nama), ["Total", "Maks", "Nilai", "Status", "Belum dinilai", "Pelanggaran"],
       m.soal.map((s, i) => "No" + (i + 1) + " (" + s.id + ")"));
     const lines = [head];
     rows.forEach(r => {
       const x = r._h;
       lines.push([r.kelas, r.absen, r.nama, waktu(r.dikirim_at)].concat(
-        tipeAda.map(t => fmt(x.perTipe[t].skor)), [fmt(x.total), x.maks, x.nilai, x.status, x.pending],
+        tipeAda.map(t => fmt(x.perTipe[t].skor)), [fmt(x.total), x.maks, x.nilai, x.status, x.pending, r.pelanggaran || 0],
         m.soal.map(s => { const it = x.rincian.find(z => z.id === s.id); return it.pending ? "" : fmt(it.auto + it.manual); })));
     });
     const csv = "﻿" + lines.map(l => l.map(v => { v = String(v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(";")).join("\r\n");

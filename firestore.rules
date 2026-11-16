@@ -11,7 +11,7 @@ service cloud.firestore {
 
       // Siswa mengirim jawaban SEKALI. Tidak boleh menyertakan nilai.
       allow create: if request.resource.data.keys().hasOnly(
-                         ['mapel','kelas','absen','nama','jawaban','nilai_manual','status','mulai_at','dikirim_at'])
+                         ['mapel','kelas','absen','nama','jawaban','nilai_manual','status','mulai_at','dikirim_at','pelanggaran'])
                     && docId == (request.resource.data.mapel + '_' + request.resource.data.kelas + '_' + string(request.resource.data.absen)).replace('[^A-Za-z0-9_-]', '-')
                     && request.resource.data.nilai_manual.size() == 0
                     && request.resource.data.status == 'belum'
@@ -34,7 +34,7 @@ service cloud.firestore {
            !exists(/databases/$(database)/documents/pas_jawaban/$(docId))
         && exists(/databases/$(database)/documents/pas_masuk/$(docId))
         && request.resource.data.keys().hasOnly(
-             ['mapel','kelas','absen','nama','mulai','jawaban','ragu','idx','urutan','terjawab','total','diperbarui_at'])
+             ['mapel','kelas','absen','nama','mulai','jawaban','ragu','idx','urutan','terjawab','total','diperbarui_at','pelanggaran','terkunci','kunciPada'])
         && docId == (request.resource.data.mapel + '_' + request.resource.data.kelas + '_' + string(request.resource.data.absen)).replace('[^A-Za-z0-9_-]', '-')
         && request.resource.data.absen is int
         && request.resource.data.jawaban is map

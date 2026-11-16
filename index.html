@@ -82,6 +82,96 @@
   .sum-list{display:grid;gap:8px;margin-top:12px}
   .sum-list div{display:flex;justify-content:space-between;padding:9px 12px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;font-size:14px}
 
+
+  /* ---------- Login & info: dua kolom ---------- */
+  .login-card{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:0;padding:0;overflow:hidden}
+  .login-left{display:flex;flex-direction:column;gap:16px;padding:28px;border-right:1px solid var(--line);background:var(--surface)}
+  .login-left h1{font-size:22px}
+  .login-right{padding:28px;background:var(--surface-2);display:flex;flex-direction:column}
+  .login-right .mapel-grid{margin-top:0;flex:1;align-content:start}
+  .login-left .err{margin-top:0}
+  .info-card{display:grid;grid-template-columns:1.1fr 1fr;padding:0;overflow:hidden}
+  .info-left{padding:26px;border-right:1px solid var(--line)}
+  .info-right{padding:26px;display:flex;flex-direction:column;background:var(--surface-2)}
+  .kv{grid-template-columns:repeat(2,1fr)!important}
+
+  /* ---------- Ujian ---------- */
+  .aside.card{padding:0;display:flex;flex-direction:column;gap:0}
+  .side-top{padding:14px 16px;border-bottom:1px solid var(--line);display:grid;gap:10px}
+  .side-top .timer{padding:0}
+  .peserta .nm{font-weight:700;font-size:14px;line-height:1.3}
+  .side-nav{padding:12px 16px;flex:1;min-height:0;overflow:auto}
+  #btnSelesai{margin:0 16px 16px;width:calc(100% - 32px)}
+  .nav-row{display:grid;grid-template-columns:58px 1fr;gap:8px;align-items:start;margin-top:8px}
+  .nav-row .nav-sec{margin:0;font-size:12px;line-height:1.2;padding-top:8px;color:var(--muted)}
+  .nav-row .nav-sec b{color:var(--text);margin-right:4px}
+  .nav-grid{grid-template-columns:repeat(5,1fr)!important;gap:5px!important}
+  .nb{aspect-ratio:auto!important;height:32px}
+  .legend{margin-top:10px!important;gap:8px!important}
+  .opts.two{grid-template-columns:1fr 1fr}
+  .q-split{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(260px,1fr);gap:22px;align-items:stretch}
+  .q-right .alasan-box{margin-top:0;height:100%;display:flex;flex-direction:column}
+  .q-right textarea{flex:1;min-height:110px;resize:none}
+  .q-essay{display:flex;flex-direction:column;min-height:100%}
+  .essay-box{margin-top:14px;flex:1;display:flex;flex-direction:column}
+  .essay-box textarea{flex:1;min-height:150px;resize:none}
+
+  /* ---------- Anti curang ---------- */
+  body.ujian-aktif #layarUjian .q-text, body.ujian-aktif #layarUjian .opt, body.ujian-aktif #layarUjian .bs-btn,
+  body.ujian-aktif #layarUjian .q-hint, body.ujian-aktif #layarUjian .q-head{-webkit-user-select:none;user-select:none}
+  .guard{position:fixed;inset:0;z-index:120;background:rgba(15,27,45,.92);display:flex;align-items:center;justify-content:center;padding:20px}
+  .guard-box{background:#fff;border-radius:16px;max-width:460px;width:100%;padding:28px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+  .guard-ic{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px}
+  .guard-ic .icon{width:28px;height:28px}
+  .guard-ic.warn{background:var(--warn-50);color:var(--warn)}
+  .guard-ic.bad{background:var(--bad-50);color:var(--bad)}
+  .guard-box h3{font-size:19px;margin-bottom:8px}
+  .guard-box p{margin:0;color:var(--muted);font-size:14.5px}
+  .guard-count{display:inline-block;margin-top:12px;font-weight:700;font-size:13px;padding:4px 12px;border-radius:99px;background:var(--bad-50);color:var(--bad)}
+
+  /* ---------- Layar 16:9 desktop: satu layar penuh, tanpa scroll halaman ---------- */
+  @media (min-width:901px) and (min-height:540px){
+    html,body{height:100%;overflow:hidden}
+    body{display:flex;flex-direction:column}
+    .topbar{flex:none;height:56px}
+    #layarMasuk,#layarInfo,#layarUjian,#layarSelesai{flex:1;min-height:0}
+    .login-wrap{max-width:1120px;width:100%;margin:0 auto;padding:2.5vh 24px;display:flex;flex-direction:column;justify-content:center}
+    .login-card,.info-card{max-height:100%;min-height:min(560px,100%)}
+    .login-right,.info-left,.info-right{overflow:auto}
+    #layarUjian.wrap{max-width:none;margin:0;padding:12px 18px;display:flex}
+    .exam{flex:1;height:100%;min-height:0;grid-template-columns:minmax(0,1fr) 320px;gap:14px;max-width:1600px;margin:0 auto;width:100%}
+    .q-card{display:flex;flex-direction:column;height:100%;min-height:0}
+    .q-head{padding:10px 18px}
+    .q-body{flex:1;min-height:0;overflow:auto;padding:16px 22px}
+    .q-foot{padding:12px 18px;border-top:1px solid var(--line)}
+    .q-split{height:100%}
+    .q-left{min-height:0}
+    .opt{padding:10px 12px}
+    .opts{gap:8px;margin-top:12px}
+    .bs-opts{margin-top:12px}
+    .bs-btn{padding:14px}
+    .aside{position:static!important;height:100%;min-height:0;transform:none!important;width:auto!important}
+    #layarSelesai.wrap{display:flex;align-items:center;justify-content:center}
+    .done-card{margin:0}
+  }
+  @media (min-width:901px) and (min-height:540px) and (max-height:720px){
+    .q-text{font-size:15px;line-height:1.55}
+    .q-hint{margin-bottom:8px}
+    .opt{padding:8px 12px}
+    .opt .key{width:26px;height:26px}
+    .login-left{gap:12px;padding:22px}
+    .login-right,.info-left,.info-right{padding:22px}
+    .mapel-card{padding:12px}
+    .info-list li{margin-bottom:4px}
+  }
+  @media (max-width:900px){
+    .login-card,.info-card{grid-template-columns:1fr}
+    .login-left,.info-left{border-right:0;border-bottom:1px solid var(--line)}
+    .q-split{grid-template-columns:1fr}
+    .q-right .alasan-box{margin-top:16px}
+    .q-right textarea{min-height:100px}
+    .q-foot{border-top:1px solid var(--line)}
+  }
   @media (max-width:900px){
     .exam{grid-template-columns:1fr}
     .aside{position:fixed;inset:60px 0 0 auto;width:310px;max-width:88vw;background:var(--bg);padding:14px;overflow:auto;z-index:30;transform:translateX(105%);transition:transform .2s;border-left:1px solid var(--line)}
@@ -118,14 +208,12 @@
 
 <!-- ============ LAYAR MASUK ============ -->
 <section id="layarMasuk" class="login-wrap">
-  <div class="hero">
-    <div>
-      <h1>Selamat datang di Ujian PAS</h1>
-      <p>Isi data dirimu dengan benar, lalu pilih mata pelajaran yang akan dikerjakan.</p>
-    </div>
-  </div>
-  <form class="card card-pad" id="formMasuk" autocomplete="off">
-    <div class="form-grid">
+  <form class="card login-card" id="formMasuk" autocomplete="off">
+    <div class="login-left">
+      <div>
+        <h1>Selamat datang di Ujian PAS</h1>
+        <p class="muted" style="margin:6px 0 0">Pilih kelas dan namamu, lalu pilih mata pelajaran.</p>
+      </div>
       <div>
         <label class="f" for="inKelas">Kelas</label>
         <select class="input" id="inKelas" required><option value="">Memuat daftar kelas...</option></select>
@@ -134,47 +222,48 @@
         <label class="f" for="inNama">Nama</label>
         <select class="input" id="inNama" required disabled><option value="">Pilih kelas dulu</option></select>
       </div>
+      <div id="tokenWrap" class="hidden">
+        <label class="f" for="inToken">Token ujian</label>
+        <input class="input" id="inToken" placeholder="Tanyakan pengawas" maxlength="10" autocomplete="off" autocapitalize="characters" spellcheck="false"
+          style="text-transform:uppercase;letter-spacing:.2em;font-weight:700;font-size:18px">
+        <div class="small muted" id="tokenHint" style="margin-top:6px">Token dibacakan pengawas saat ujian dimulai.</div>
+      </div>
+      <div id="errMasuk" class="err hidden"></div>
+      <button class="btn primary block" type="submit" id="btnMasuk" style="margin-top:auto;padding:12px"></button>
     </div>
-
-    <div class="section-label">Mata pelajaran</div>
-    <div class="mapel-grid" id="mapelGrid"></div>
-
-    <div id="tokenWrap" class="hidden" style="margin-top:16px;max-width:300px">
-      <label class="f" for="inToken">Token ujian</label>
-      <input class="input" id="inToken" placeholder="Tanyakan kepada pengawas" maxlength="10" autocomplete="off" autocapitalize="characters" spellcheck="false"
-        style="text-transform:uppercase;letter-spacing:.2em;font-weight:700;font-size:18px">
-      <div class="small muted" id="tokenHint" style="margin-top:6px">Token dibacakan pengawas saat ujian dimulai.</div>
-    </div>
-
-    <div id="errMasuk" class="err hidden"></div>
-
-    <div style="margin-top:20px;display:flex;justify-content:flex-end">
-      <button class="btn primary" type="submit" id="btnMasuk"></button>
+    <div class="login-right">
+      <div class="section-label" style="margin-top:0">Mata pelajaran</div>
+      <div class="mapel-grid" id="mapelGrid"></div>
     </div>
   </form>
 </section>
 
 <!-- ============ LAYAR INFO ============ -->
 <section id="layarInfo" class="login-wrap hidden">
-  <div class="card card-pad">
-    <h2 id="infoJudul"></h2>
-    <p class="muted small" style="margin:4px 0 0" id="infoSub"></p>
-    <div class="kv" id="infoKv"></div>
-    <table class="info-table">
-      <thead><tr><th>Bagian</th><th>Bentuk soal</th><th style="text-align:right">Jumlah</th></tr></thead>
-      <tbody id="infoTabel"></tbody>
-    </table>
-    <ul class="info-list">
-      <li>Bacalah setiap soal dengan teliti sebelum menjawab.</li>
-      <li>Pada soal <b>beralasan</b> (bagian A dan B), <b>wajib</b> menuliskan alasan jawabanmu dengan kalimatmu sendiri. Jawaban tidak bisa dikirim jika ada alasan yang kosong.</li>
-      <li>Pada soal <b>pilihan ganda kompleks</b> (bagian C), jawaban benar bisa lebih dari satu.</li>
-      <li>Jawaban tersimpan otomatis. Jika halaman tertutup, masuk lagi dengan memilih kelas dan nama yang sama.</li>
-      <li>Tandai <b>Ragu-ragu</b> jika ingin memeriksa ulang soal tersebut.</li>
-      <li>Waktu berjalan sejak tombol <b>Mulai</b> ditekan. Jawaban terkirim otomatis saat waktu habis.</li>
-    </ul>
-    <div style="display:flex;justify-content:space-between;gap:10px;margin-top:22px">
-      <button class="btn" id="btnBatal"></button>
-      <button class="btn primary" id="btnMulai"></button>
+  <div class="card info-card">
+    <div class="info-left">
+      <h2 id="infoJudul"></h2>
+      <p class="muted small" style="margin:4px 0 0" id="infoSub"></p>
+      <div class="kv" id="infoKv"></div>
+      <table class="info-table">
+        <thead><tr><th>Bagian</th><th>Bentuk soal</th><th style="text-align:right">Jumlah</th></tr></thead>
+        <tbody id="infoTabel"></tbody>
+      </table>
+    </div>
+    <div class="info-right">
+      <h3>Petunjuk</h3>
+      <ul class="info-list">
+        <li>Bacalah setiap soal dengan teliti sebelum menjawab.</li>
+        <li>Pada soal <b>beralasan</b> (bagian A dan B), <b>wajib</b> menuliskan alasan dengan kalimatmu sendiri. Jawaban tidak bisa dikirim jika ada alasan yang kosong.</li>
+        <li>Pada soal <b>pilihan ganda kompleks</b> (bagian C), jawaban benar bisa lebih dari satu.</li>
+        <li>Jawaban tersimpan otomatis. Jika halaman tertutup, masuk lagi dengan kelas dan nama yang sama.</li>
+        <li>Tandai <b>Ragu-ragu</b> jika ingin memeriksa ulang soal tersebut.</li>
+        <li>Waktu berjalan sejak tombol <b>Mulai</b> ditekan. Jawaban terkirim otomatis saat waktu habis.</li>
+      </ul>
+      <div style="display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:16px">
+        <button class="btn" id="btnBatal"></button>
+        <button class="btn primary" id="btnMulai"></button>
+      </div>
     </div>
   </div>
 </section>
@@ -196,34 +285,32 @@
       </div>
     </div>
 
-    <aside class="aside" id="aside">
-      <div class="card timer" id="timerCard">
-        <span id="timerIc"></span>
-        <div style="flex:1">
-          <div class="small muted">Sisa waktu</div>
-          <b id="timerTxt">--:--</b>
+    <aside class="aside card" id="aside">
+      <div class="side-top">
+        <div class="timer" id="timerCard">
+          <span id="timerIc"></span>
+          <div><div class="small muted">Sisa waktu</div><b id="timerTxt">--:--</b></div>
+        </div>
+        <div class="peserta">
+          <div class="nm" id="pesertaNama"></div>
+          <div class="small muted" id="pesertaInfo"></div>
         </div>
       </div>
-      <div class="card nav-card">
+      <div class="side-nav">
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <h3>Navigasi soal</h3>
+          <b class="small">Navigasi soal</b>
           <span class="small muted" id="progTxt"></span>
         </div>
         <div class="progress"><i id="progBar" style="width:0"></i></div>
         <div id="navWrap"></div>
         <div class="legend">
           <span><i style="background:var(--primary);border-color:var(--primary)"></i>Dijawab</span>
-          <span><i style="background:var(--warn);border-color:var(--warn)"></i>Ragu-ragu</span>
+          <span><i style="background:var(--warn);border-color:var(--warn)"></i>Ragu</span>
           <span><i></i>Belum</span>
-          <span><i style="border-radius:50%;background:var(--warn);border-color:var(--warn);width:9px;height:9px"></i>Alasan belum diisi</span>
+          <span><i style="border-radius:50%;background:var(--warn);border-color:var(--warn);width:9px;height:9px"></i>Alasan kosong</span>
         </div>
-        <button class="btn ok block" style="margin-top:16px" id="btnSelesai"></button>
       </div>
-      <div class="card card-pad small" style="padding:14px 16px">
-        <div class="muted">Peserta</div>
-        <div style="font-weight:700" id="pesertaNama"></div>
-        <div class="muted" id="pesertaInfo"></div>
-      </div>
+      <button class="btn ok block" id="btnSelesai"></button>
     </aside>
   </div>
 </section>
@@ -240,6 +327,7 @@
 </section>
 
 <div id="modalHost"></div>
+<div id="guardHost"></div>
 <div class="toast" id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -423,7 +511,8 @@
       const pakaiLokal = lokal && (!srv || (lokal.diperbarui || 0) > (srv.diperbarui_at || 0));
       sesi = pakaiLokal ? lokal : {
         key, nama, kelas, absen, mapel: mapelPilih, mulai: srv.mulai,
-        jawaban: srv.jawaban || {}, ragu: srv.ragu || {}, idx: srv.idx || 0, urutan: srv.urutan || null
+        jawaban: srv.jawaban || {}, ragu: srv.ragu || {}, idx: srv.idx || 0, urutan: srv.urutan || null,
+        pelanggaran: srv.pelanggaran || 0, terkunci: !!srv.terkunci, kunciPada: srv.kunciPada || 0
       };
       sesi.key = key; sesi.nama = nama;
       simpan(true);
@@ -499,6 +588,7 @@
     clearInterval(timerId);
     timerId = setInterval(tick, 1000); tick();
     window.onbeforeunload = () => "Ujian sedang berlangsung.";
+    aktifkanPengaman();
   }
 
   function sisaMs() { return sesi.mulai + mapelAktif().durasi * 60000 - Date.now(); }
@@ -530,7 +620,8 @@
     (x.urutan || []).forEach(id => { if (soalMap[id] && statusSoal(id).jawab) terjawab++; });
     return { mapel: x.mapel, kelas: x.kelas, absen: x.absen, nama: x.nama, mulai: x.mulai,
       jawaban: x.jawaban || {}, ragu: x.ragu || {}, idx: x.idx || 0, urutan: x.urutan || [],
-      terjawab, total: (x.urutan || []).length };
+      terjawab, total: (x.urutan || []).length,
+      pelanggaran: x.pelanggaran || 0, terkunci: !!x.terkunci, kunciPada: x.kunciPada || 0 };
   }
   function kirimDraft() {
     if (!sesi || !sesi.mulai || mengirim) return;
@@ -570,12 +661,13 @@
 
   function buatNav() {
     let html = "", no = 0;
+    const singkat = { pg: "PG", bs: "B/S", pgk: "PGK", isian: "Isian", essay: "Uraian" };
     URUTAN_TIPE.forEach(t => {
       const ids = sesi.urutan.filter(id => soalMap[id].tipe === t);
       if (!ids.length) return;
-      html += '<div class="nav-sec">' + T[t].kode + ". " + T[t].nama + '</div><div class="nav-grid">';
+      html += '<div class="nav-row"><div class="nav-sec" title="' + T[t].nama + '"><b>' + T[t].kode + "</b>" + singkat[t] + '</div><div class="nav-grid">';
       ids.forEach(id => { no++; html += '<button class="nb" data-id="' + id + '">' + no + "</button>"; });
-      html += "</div>";
+      html += "</div></div>";
     });
     $("navWrap").innerHTML = html;
     $("navWrap").querySelectorAll(".nb").forEach(b => b.onclick = () => {
@@ -606,34 +698,35 @@
     $("qNum").textContent = "Soal " + (sesi.idx + 1) + " dari " + tot;
     $("qSec").textContent = "Bagian " + T[s.tipe].kode + " · " + T[s.tipe].nama;
 
-    let h = '<div class="q-hint">' + ico("info") + "<span>" + T[s.tipe].petunjuk + "</span></div>";
-    h += '<div class="q-text">' + (s.teks.trim().startsWith("<") ? s.teks : "<p>" + s.teks + "</p>") + "</div>";
+    let kiri = '<div class="q-hint">' + ico("info") + "<span>" + T[s.tipe].petunjuk + "</span></div>";
+    kiri += '<div class="q-text">' + (s.teks.trim().startsWith("<") ? s.teks : "<p>" + s.teks + "</p>") + "</div>";
 
     if (s.tipe === "pg" || s.tipe === "pgk") {
       const multi = s.tipe === "pgk";
-      h += '<div class="opts">' + s.opsi.map((o, i) => {
+      const pendek = s.opsi.every(o => String(o).replace(/<[^>]+>/g, "").length <= 42);
+      kiri += '<div class="opts' + (pendek ? " two" : "") + '">' + s.opsi.map((o, i) => {
         const sel = multi ? (j.p || []).includes(i) : j.p === i;
         return '<button type="button" class="opt' + (multi ? " multi" : "") + (sel ? " sel" : "") + '" data-i="' + i + '"><span class="key">' +
           (multi ? (sel ? ico("check") : "") : HURUF[i]) + '</span><span class="txt">' + (multi ? "<b>" + HURUF[i] + ".</b> " : "") + o + "</span></button>";
       }).join("") + "</div>";
     }
     if (s.tipe === "bs") {
-      h += '<div class="bs-opts">' +
+      kiri += '<div class="bs-opts">' +
         '<button type="button" class="bs-btn' + (j.p === 0 ? " sel" : "") + '" data-i="0">' + ico("check") + " Benar</button>" +
         '<button type="button" class="bs-btn' + (j.p === 1 ? " sel" : "") + '" data-i="1">' + ico("x") + " Salah</button></div>";
     }
+    let h;
     if (s.tipe === "pg" || s.tipe === "bs") {
-      h += '<div class="alasan-box"><label class="f" for="inAlasan">' + ico("edit") + ' Alasan jawabanmu <span style="color:var(--bad)">*wajib</span></label>' +
-        '<textarea class="input" id="inAlasan" rows="3" placeholder="Tuliskan alasan mengapa kamu memilih jawaban tersebut..."></textarea></div>';
-    }
-    if (s.tipe === "isian") {
-      h += '<div style="margin-top:16px;max-width:460px"><label class="f" for="inIsian">Jawaban</label>' +
-        '<input class="input" id="inIsian" placeholder="Ketik jawaban singkat"></div>';
-    }
-    if (s.tipe === "essay") {
-      h += '<div style="margin-top:16px"><label class="f" for="inEssay">Jawaban</label>' +
-        '<textarea class="input" id="inEssay" rows="8" placeholder="Tuliskan jawabanmu di sini..."></textarea></div>';
-    }
+      h = '<div class="q-split"><div class="q-left">' + kiri + '</div><div class="q-right"><div class="alasan-box">' +
+        '<label class="f" for="inAlasan">' + ico("edit") + ' Alasan jawabanmu <span style="color:var(--bad)">*wajib</span></label>' +
+        '<textarea class="input" id="inAlasan" rows="4" placeholder="Tuliskan alasan mengapa kamu memilih jawaban tersebut..."></textarea></div></div></div>';
+    } else if (s.tipe === "isian") {
+      h = kiri + '<div style="margin-top:16px;max-width:520px"><label class="f" for="inIsian">Jawaban</label>' +
+        '<input class="input" id="inIsian" placeholder="Ketik jawaban singkat" style="font-size:16px;padding:12px 14px"></div>';
+    } else if (s.tipe === "essay") {
+      h = '<div class="q-essay">' + kiri + '<div class="essay-box"><label class="f" for="inEssay">Jawaban</label>' +
+        '<textarea class="input" id="inEssay" rows="7" placeholder="Tuliskan jawabanmu di sini..."></textarea></div></div>';
+    } else h = kiri;
     $("qBody").innerHTML = h;
 
     // isi nilai teks lewat properti agar aman
@@ -685,6 +778,90 @@
   $("btnSelesai").onclick = () => konfirmasiKirim();
   $("btnNav").onclick = () => $("aside").classList.toggle("open");
 
+  /* ---------- Pengamanan ujian ---------- */
+  const AC = Object.assign({ blokirSalinTempel: true, wajibLayarPenuh: true, maksPelanggaran: 3 }, C.ANTI_CURANG || {});
+  const bisaFS = !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+  let ujianAktif = false, sedangKeluar = false;
+  function layarPenuh() {
+    if (!AC.wajibLayarPenuh || !bisaFS) return;
+    if (document.fullscreenElement || document.webkitFullscreenElement) return;
+    const el = document.documentElement;
+    try { const p = (el.requestFullscreen || el.webkitRequestFullscreen).call(el); if (p && p.catch) p.catch(() => {}); } catch (e) {}
+  }
+  function aktifkanPengaman() {
+    ujianAktif = true; sedangKeluar = false;
+    document.body.classList.add("ujian-aktif");
+    if (sesi.terkunci) tampilKunci(); else layarPenuh();
+  }
+  function matikanPengaman() {
+    ujianAktif = false;
+    document.body.classList.remove("ujian-aktif");
+    $("guardHost").innerHTML = "";
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  }
+  function catatPelanggaran(sebab) {
+    if (!ujianAktif || mengirim || sedangKeluar || sesi.terkunci) return;
+    sedangKeluar = true;
+    sesi.pelanggaran = (sesi.pelanggaran || 0) + 1;
+    const batas = (sesi.kunciPada || AC.maksPelanggaran);
+    if (AC.maksPelanggaran > 0 && sesi.pelanggaran >= batas) sesi.terkunci = true;
+    simpan(true);
+    if (sesi.terkunci) tampilKunci(); else tampilPeringatan(sebab);
+  }
+  function tampilPeringatan(sebab) {
+    const sisa = AC.maksPelanggaran > 0 ? (sesi.kunciPada || AC.maksPelanggaran) - sesi.pelanggaran : null;
+    $("guardHost").innerHTML = '<div class="guard"><div class="guard-box"><div class="guard-ic warn">' + ico("alert") + "</div>" +
+      "<h3>Kamu meninggalkan halaman ujian</h3><p>" + esc(sebab) + ". Selama ujian, jangan membuka tab, aplikasi, atau jendela lain.</p>" +
+      '<div class="guard-count">Pelanggaran ke-' + sesi.pelanggaran + "</div>" +
+      (sisa != null ? '<p class="small" style="margin-top:10px">' + (sisa > 0 ? "Jika terjadi " + sisa + " kali lagi, ujian akan dikunci dan harus dibuka oleh pengawas." : "") + "</p>" : "") +
+      '<button class="btn primary block" id="gKembali" style="margin-top:18px;padding:12px">' + ico("left") + " Kembali ke ujian</button></div></div>";
+    $("gKembali").onclick = () => { $("guardHost").innerHTML = ""; sedangKeluar = false; layarPenuh(); };
+  }
+  function tampilKunci() {
+    $("guardHost").innerHTML = '<div class="guard"><div class="guard-box"><div class="guard-ic bad">' + ico("lock") + "</div>" +
+      "<h3>Ujian dikunci</h3><p>Kamu sudah " + (sesi.pelanggaran || 0) + " kali meninggalkan halaman ujian. Panggil pengawas untuk membuka kunci. Waktu ujian tetap berjalan.</p>" +
+      '<div style="margin-top:16px;text-align:left"><label class="f" for="gToken">Token pengawas</label>' +
+      '<input class="input" id="gToken" autocomplete="off" style="text-transform:uppercase;letter-spacing:.2em;font-weight:700;font-size:18px" maxlength="10">' +
+      '<div class="small" id="gErr" style="color:var(--bad);min-height:18px;margin-top:6px"></div></div>' +
+      '<button class="btn primary block" id="gBuka" style="margin-top:6px;padding:12px">' + ico("key") + " Buka kunci</button></div></div>";
+    $("gBuka").onclick = async () => {
+      const tk = $("gToken").value.trim().toUpperCase();
+      if (!tk) { $("gErr").textContent = "Masukkan token dari pengawas."; return; }
+      $("gBuka").disabled = true;
+      try {
+        await DB.masuk(sesi.mapel, sesi.kelas, sesi.absen, sesi.nama, tk);   // diverifikasi server
+        sesi.terkunci = false;
+        sesi.kunciPada = (sesi.pelanggaran || 0) + AC.maksPelanggaran;
+        sedangKeluar = false; simpan(true);
+        $("guardHost").innerHTML = ""; layarPenuh();
+        toast(ico("check") + " Kunci dibuka pengawas");
+      } catch (e) {
+        $("gBuka").disabled = false;
+        $("gErr").textContent = e && e.message === "TOKEN_SALAH" ? "Token salah atau tidak aktif." : "Tidak dapat terhubung ke server.";
+      }
+    };
+  }
+  document.addEventListener("visibilitychange", () => { if (document.hidden) catatPelanggaran("Kamu berpindah ke tab atau aplikasi lain"); });
+  window.addEventListener("blur", () => setTimeout(() => { if (!document.hasFocus()) catatPelanggaran("Kamu membuka jendela atau aplikasi lain"); }, 300));
+  const fsBerubah = () => { if (AC.wajibLayarPenuh && bisaFS && ujianAktif && !document.fullscreenElement && !document.webkitFullscreenElement) catatPelanggaran("Kamu keluar dari mode layar penuh"); };
+  document.addEventListener("fullscreenchange", fsBerubah);
+  document.addEventListener("webkitfullscreenchange", fsBerubah);
+  if (AC.blokirSalinTempel) {
+    const tolak = e => { if (!ujianAktif) return; e.preventDefault(); toast(ico("lock") + " Salin, tempel, dan klik kanan tidak diizinkan selama ujian"); };
+    ["copy", "cut", "paste", "contextmenu", "dragstart", "drop"].forEach(ev => document.addEventListener(ev, tolak, true));
+    document.addEventListener("selectstart", e => { if (ujianAktif && !/^(TEXTAREA|INPUT)$/.test(e.target.tagName)) e.preventDefault(); }, true);
+    document.addEventListener("keydown", e => {
+      if (!ujianAktif) return;
+      const k = (e.key || "").toLowerCase();
+      const ctrl = e.ctrlKey || e.metaKey;
+      if ((ctrl && ["c", "v", "x", "a", "p", "s", "u", "f", "g"].includes(k)) || k === "f12" ||
+          (ctrl && e.shiftKey && ["i", "j", "c", "k"].includes(k)) || (e.key === "PrintScreen")) {
+        e.preventDefault(); e.stopPropagation();
+        if (k !== "printscreen") toast(ico("lock") + " Pintasan keyboard ini tidak diizinkan selama ujian");
+      }
+    }, true);
+  }
+
   /* ---------- Kirim ---------- */
   function ringkasan() {
     let belum = 0, alasan = 0, ragu = 0; const wajib = [];
@@ -726,6 +903,7 @@
     const rec = {
       mapel: sesi.mapel, kelas: sesi.kelas, absen: sesi.absen, nama: sesi.nama,
       jawaban: bersihkan(sesi.jawaban),
+      pelanggaran: sesi.pelanggaran || 0,
       mulai_at: new Date(sesi.mulai).toISOString(),
       dikirim_at: new Date().toISOString()
     };
@@ -759,6 +937,7 @@
     return out;
   }
   function selesai() {
+    matikanPengaman();
     clearInterval(timerId);
     window.onbeforeunload = null;
     localStorage.removeItem(sesi.key);
