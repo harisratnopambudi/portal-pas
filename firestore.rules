@@ -24,6 +24,23 @@ service cloud.firestore {
       allow update, delete: if request.auth != null;
     }
 
+    // Draft jawaban (tersimpan per soal) selama siswa mengerjakan.
+    // Tidak bisa diubah lagi setelah jawaban final dikirim, kecuali oleh guru.
+    match /pas_draft/{docId} {
+      allow get: if true;
+      allow list: if request.auth != null;
+      allow create, update: if request.auth != null || (
+           !exists(/databases/$(database)/documents/pas_jawaban/$(docId))
+        && request.resource.data.keys().hasOnly(
+             ['mapel','kelas','absen','nama','mulai','jawaban','ragu','idx','urutan','terjawab','total','diperbarui_at'])
+        && docId == (request.resource.data.mapel + '_' + request.resource.data.kelas + '_' + string(request.resource.data.absen)).replace('[^A-Za-z0-9_-]', '-')
+        && request.resource.data.absen is int
+        && request.resource.data.jawaban is map
+        && (resource == null || resource.data.mulai == request.resource.data.mulai));
+      allow delete: if request.auth != null
+        || exists(/databases/$(database)/documents/pas_jawaban/$(docId));
+    }
+
     // Daftar siswa per rombel: dibaca halaman siswa, diubah hanya oleh guru.
     match /pas_siswa/{kelas} {
       allow read: if true;

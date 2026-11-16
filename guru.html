@@ -235,6 +235,7 @@
   const fmt = x => (Math.round(x * 100) / 100).toString().replace(".", ",");
 
   let data = [];           // rekaman mapel aktif
+  let drafts = [];         // siswa yang sedang mengerjakan (belum kirim)
   let tab = "rekap";
   let pilihSiswa = null;   // id rekaman
   let hanyaPending = false;
@@ -298,6 +299,10 @@
     isiSelSoal(); muatRombel().then(muat);
   }
   DB.sudahMasuk().then(ok => { if (ok) masuk(); });
+  // Segarkan otomatis tiap 30 detik saat di tab Rekap (untuk pantauan pengawas)
+  setInterval(() => {
+    if (tab === "rekap" && !$("layarUtama").classList.contains("hidden") && !$("modalHost").innerHTML) muat();
+  }, 30000);
 
   /* ---------- Data ---------- */
   function mapel() { return P.mapelById($("selMapel").value); }
@@ -307,6 +312,7 @@
     $("btnMuat").disabled = true;
     try {
       data = await DB.daftar($("selMapel").value);
+      try { drafts = await DB.daftarDraft($("selMapel").value); } catch (e) { drafts = []; }
       data.forEach(r => r._h = P.nilaiRekaman(r));
     } catch (e) {
       toast(ico("alert") + " Gagal memuat data: " + esc(e.message || e));
@@ -381,12 +387,24 @@
     const m = mapel();
     if (m.tingkat && !m.tingkat.map(String).includes(String(rb.tingkat))) { el.classList.add("hidden"); return; }
     const sudah = new Set(data.filter(r => r.kelas === k).map(r => r.absen));
-    const belum = rb.nama.map((n, i) => ({ n, no: i + 1 })).filter(x => !sudah.has(x.no));
+    const dr = {}; drafts.filter(d => d.kelas === k).forEach(d => dr[d.absen] = d);
+    const proses = [], belum = [];
+    rb.nama.forEach((n, i) => {
+      const no = i + 1;
+      if (sudah.has(no)) return;
+      if (dr[no]) proses.push({ n, no, d: dr[no] }); else belum.push({ n, no });
+    });
+    const lalu = t => { if (!t) return ""; const mnt = Math.round((Date.now() - t) / 60000); return mnt < 1 ? "baru saja" : mnt + " mnt lalu"; };
     el.classList.remove("hidden");
-    el.innerHTML = '<div class="row" style="justify-content:space-between"><h3>Belum mengirim · ' + esc(k) + '</h3><span class="badge ' + (belum.length ? "warn" : "ok") + '">' +
-      belum.length + " dari " + rb.nama.length + " siswa</span></div>" +
-      (belum.length ? '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">' + belum.map(x => '<span class="badge neutral" style="font-weight:500">' + x.no + ". " + esc(x.n) + "</span>").join("") + "</div>"
-        : '<p class="muted small" style="margin:8px 0 0">Semua siswa kelas ini sudah mengirim.</p>');
+    el.innerHTML = '<div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><h3>Pantauan kelas ' + esc(k) + "</h3>" +
+      '<div class="row" style="gap:6px;flex-wrap:wrap"><span class="badge ok">' + sudah.size + " terkirim</span>" +
+      '<span class="badge info">' + proses.length + " sedang mengerjakan</span>" +
+      '<span class="badge ' + (belum.length ? "warn" : "ok") + '">' + belum.length + " belum mulai</span></div></div>" +
+      (proses.length ? '<div class="lbl-mini" style="margin-top:14px">Sedang mengerjakan (jawaban tersimpan di server)</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' +
+        proses.map(x => '<span class="badge info" style="font-weight:500">' + x.no + ". " + esc(x.n) + " · " + (x.d.terjawab || 0) + "/" + (x.d.total || "?") + " · " + lalu(x.d.diperbarui_at) + "</span>").join("") + "</div>" : "") +
+      (belum.length ? '<div class="lbl-mini" style="margin-top:14px">Belum mulai</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' +
+        belum.map(x => '<span class="badge neutral" style="font-weight:500">' + x.no + ". " + esc(x.n) + "</span>").join("") + "</div>" : "") +
+      (!proses.length && !belum.length ? '<p class="muted small" style="margin:8px 0 0">Semua siswa kelas ini sudah mengirim.</p>' : "");
   }
 
   function renderRekap() {
@@ -417,7 +435,7 @@
         tipeAda.map(t => '<td class="num">' + fmt(x.perTipe[t].skor) + '<span class="muted small">/' + x.perTipe[t].maks + "</span></td>").join("") +
         '<td class="num">' + fmt(x.total) + '<span class="muted small">/' + x.maks + '</span></td><td class="num nilai">' + x.nilai + "</td><td>" + badgeStatus(x) + "</td>" +
         '<td><div class="row" style="gap:6px;justify-content:flex-end"><button class="btn sm" data-nilai="' + r.id + '">' + ico("edit") + ' Nilai</button>' +
-        '<button class="btn sm danger" data-reset="' + r.id + '" title="Hapus jawaban agar siswa bisa mengulang">' + ico("trash") + "</button></div></td></tr>";
+        '<button class="btn sm" data-reset="' + r.id + '" title="Izinkan siswa mengerjakan lagi">' + ico("refresh") + " Buka</button></div></td></tr>";
     });
     h += "</tbody></table>";
     $("rekapTabel").innerHTML = h;
@@ -428,13 +446,32 @@
 
   function konfirmReset(id) {
     const r = data.find(x => x.id === id);
-    modal("<h3>Hapus jawaban siswa?</h3><p class=\"muted small\" style=\"margin:0\">Jawaban <b>" + esc(r.nama) + "</b> (" + esc(r.kelas) + "/" + r.absen +
-      ") untuk mapel ini beserta nilainya akan dihapus permanen. Siswa dapat mengerjakan ulang.</p>" +
-      '<div class="actions"><button class="btn" id="mB">Batal</button><button class="btn danger" id="mY">' + ico("trash") + " Hapus</button></div>");
+    const m = mapel();
+    const pakai = r.mulai_at && r.dikirim_at ? Math.max(0, new Date(r.dikirim_at) - new Date(r.mulai_at)) : 0;
+    const sisaMnt = Math.max(0, Math.round((m.durasi * 60000 - pakai) / 60000));
+    modal("<h3>Izinkan mengerjakan lagi?</h3>" +
+      '<p class="muted small" style="margin:0"><b>' + esc(r.nama) + "</b> · " + esc(r.kelas) + " · " + esc(m.nama) + ". Pilih cara membukanya:</p>" +
+      '<div class="grid" style="margin-top:14px;gap:10px">' +
+      '<button class="btn" id="mLanjut" style="justify-content:flex-start;text-align:left;white-space:normal;padding:12px 14px">' + ico("refresh") +
+      '<span><b>Lanjutkan jawaban lama</b><br><span class="muted small" style="font-weight:400">Jawaban sebelumnya tetap ada, siswa bisa memperbaiki lalu mengirim lagi. Sisa waktu ±' + sisaMnt + " menit. Nilai manual yang sudah diberikan akan terhapus.</span></span></button>" +
+      '<button class="btn danger" id="mUlang" style="justify-content:flex-start;text-align:left;white-space:normal;padding:12px 14px">' + ico("trash") +
+      '<span><b>Ulang dari awal</b><br><span class="muted small" style="font-weight:400">Semua jawaban dan nilai dihapus permanen. Siswa mulai dari nomor 1 dengan waktu penuh.</span></span></button>' +
+      '</div><div class="actions"><button class="btn" id="mB">Batal</button></div>');
     $("mB").onclick = tutupModal;
-    $("mY").onclick = async () => {
-      try { await DB.hapus(id); tutupModal(); toast(ico("check") + " Jawaban dihapus"); muat(); }
-      catch (e) { toast(ico("alert") + " Gagal menghapus"); }
+    $("mUlang").onclick = async () => {
+      try { await DB.hapus(id); tutupModal(); toast(ico("check") + " Dibuka: siswa mengulang dari awal"); muat(); }
+      catch (e) { toast(ico("alert") + " Gagal: " + esc(e.message || e)); }
+    };
+    $("mLanjut").onclick = async () => {
+      const urutan = [];
+      URUTAN_TIPE.forEach(t => m.soal.filter(s => s.tipe === t).forEach(s => urutan.push(s.id)));
+      const draft = {
+        mapel: r.mapel, kelas: r.kelas, absen: r.absen, nama: r.nama,
+        mulai: Date.now() - pakai, jawaban: r.jawaban || {}, ragu: {}, idx: 0, urutan,
+        terjawab: Object.keys(r.jawaban || {}).length, total: urutan.length, diperbarui_at: Date.now()
+      };
+      try { await DB.bukaKembali(r, draft); tutupModal(); toast(ico("check") + " Dibuka: siswa dapat melanjutkan"); muat(); }
+      catch (e) { toast(ico("alert") + " Gagal: " + esc(e.message || e)); }
     };
   }
 

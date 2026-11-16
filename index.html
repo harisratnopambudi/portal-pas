@@ -19,6 +19,11 @@
   .mapel-ic{width:42px;height:42px;border-radius:10px;background:var(--primary-50);color:var(--primary);display:grid;place-items:center;flex:none}
   .mapel-card.sel .mapel-ic{background:var(--primary);color:#fff}
   .mapel-ic .icon{width:22px;height:22px}
+  .mapel-card.done{cursor:not-allowed;background:var(--surface-2);opacity:.75}
+  .mapel-card.done:hover{border-color:var(--line-2)}
+  .mapel-card.done .mapel-ic{background:var(--ok-50);color:var(--ok)}
+  .mapel-st{margin-top:6px}
+  .mapel-st:empty{display:none}
   .mapel-name{font-weight:700;font-size:14.5px;line-height:1.35}
   .mapel-meta{font-size:12.5px;color:var(--muted);margin-top:2px}
   .err{display:flex;gap:8px;align-items:flex-start;background:var(--bad-50);border:1px solid #f2c6c6;color:var(--bad);padding:10px 12px;border-radius:8px;font-size:14px;margin-top:14px}
@@ -105,6 +110,7 @@
     </div>
   </div>
   <div class="spacer"></div>
+  <span id="syncChip" class="chip hidden"></span>
   <span id="topTimer" class="chip hidden"></span>
   <button class="btn sm nav-toggle hidden" id="btnNav"></button>
   <span id="modeChip" class="chip"></span>
@@ -283,6 +289,30 @@
     errMasuk("Tidak dapat memuat daftar kelas. Periksa koneksi internet lalu muat ulang halaman.");
   });
   function rombelAktif() { return ROMBEL.find(r => r.kelas === $("inKelas").value); }
+  let statusMapel = {};
+  async function muatStatusMapel() {
+    const kelas = $("inKelas").value, absen = parseInt($("inNama").value, 10);
+    statusMapel = {};
+    document.querySelectorAll(".mapel-card").forEach(b => { b.classList.remove("done"); b.querySelector(".mapel-st").innerHTML = ""; });
+    if (!kelas || !absen) return;
+    const kartu = [...document.querySelectorAll(".mapel-card:not(.hidden)")];
+    kartu.forEach(b => b.querySelector(".mapel-st").innerHTML = '<span class="badge neutral">Memeriksa...</span>');
+    await Promise.all(kartu.map(async b => {
+      const id = b.dataset.id, st = b.querySelector(".mapel-st");
+      try {
+        const r = await DB.status(id, kelas, absen);
+        if ($("inKelas").value !== kelas || parseInt($("inNama").value, 10) !== absen) return;
+        statusMapel[id] = r;
+        if (r.kirim) {
+          b.classList.add("done"); b.classList.remove("sel"); if (mapelPilih === id) mapelPilih = null;
+          st.innerHTML = '<span class="badge ok">' + ico("check") + " Sudah dikirim</span>";
+        } else if (r.draft) {
+          st.innerHTML = '<span class="badge warn">' + ico("refresh") + " Lanjutkan · " + (r.draft.terjawab || 0) + "/" + (r.draft.total || "") + " terjawab</span>";
+        } else st.innerHTML = "";
+      } catch (e) { st.innerHTML = ""; }
+    }));
+  }
+  $("inNama").onchange = () => { errMasuk(""); muatStatusMapel(); };
   $("inKelas").onchange = () => {
     const r = rombelAktif();
     $("inNama").disabled = !r;
@@ -297,6 +327,7 @@
       b.classList.toggle("hidden", !boleh);
       if (!boleh && mapelPilih === m.id) { mapelPilih = null; b.classList.remove("sel"); }
     });
+    muatStatusMapel();
   };
 
   function toast(msg) {
@@ -307,6 +338,7 @@
     ["layarMasuk", "layarInfo", "layarUjian", "layarSelesai"].forEach(x => $(x).classList.toggle("hidden", x !== id));
     const ujian = id === "layarUjian";
     $("topTimer").classList.toggle("hidden", !ujian);
+    $("syncChip").classList.toggle("hidden", !ujian);
     $("btnNav").classList.toggle("hidden", !ujian);
     window.scrollTo(0, 0);
   }
@@ -320,8 +352,10 @@
     const b = document.createElement("button");
     b.type = "button"; b.className = "mapel-card"; b.dataset.id = m.id;
     b.innerHTML = '<div class="mapel-ic">' + ico(m.ikon) + '</div><div><div class="mapel-name">' + m.nama +
-      '</div><div class="mapel-meta">' + m.soal.length + " soal · " + m.durasi + " menit</div></div>";
+      '</div><div class="mapel-meta">' + m.soal.length + " soal · " + m.durasi + ' menit</div><div class="mapel-st"></div></div>';
     b.onclick = () => {
+      if (b.classList.contains("done")) { errMasuk("Mapel ini sudah kamu kirim. Jika perlu mengerjakan ulang, minta guru membukanya kembali."); return; }
+      errMasuk("");
       mapelPilih = m.id;
       document.querySelectorAll(".mapel-card").forEach(x => x.classList.toggle("sel", x === b));
       $("tokenWrap").classList.toggle("hidden", !(C.TOKEN || {})[m.id]);
@@ -350,27 +384,44 @@
     if (token && $("inToken").value.trim().toUpperCase() !== String(token).toUpperCase())
       return errMasuk("Token ujian tidak sesuai. Tanyakan kepada pengawas.");
 
+    const key = kunciSesi(mapelPilih, kelas, absen);
+    let lokal = null;
+    try { lokal = JSON.parse(localStorage.getItem(key) || "null"); } catch (e) {}
+    if (lokal && !lokal.mulai) lokal = null;
+
     const btn = $("btnMasuk"); btn.disabled = true; btn.textContent = "Memeriksa...";
-    try {
-      const ada = await DB.cari(mapelPilih, kelas, absen);
-      if (ada) {
-        errMasuk(esc(nama) + " (" + esc(kelas) + ") sudah mengirim jawaban untuk mapel ini. Hubungi guru jika ada kesalahan.");
-        return;
+    let st = null;
+    try { st = await DB.status(mapelPilih, kelas, absen); }
+    catch (e) {
+      btn.disabled = false; btn.innerHTML = "Lanjut " + ico("right");
+      if (lokal) {   // internet putus tapi ada simpanan di perangkat ini: tetap bisa lanjut
+        sesi = lokal; sesi.nama = nama; simpan();
+        toast(ico("refresh") + " Offline: melanjutkan dari simpanan perangkat");
+        mulaiUjian(); return;
       }
-    } catch (e) {
       errMasuk("Tidak dapat terhubung ke server. Periksa koneksi internet lalu coba lagi.");
       return;
-    } finally {
-      btn.disabled = false; btn.innerHTML = "Lanjut " + ico("right");
     }
+    btn.disabled = false; btn.innerHTML = "Lanjut " + ico("right");
 
-    const key = kunciSesi(mapelPilih, kelas, absen);
-    let lama = null;
-    try { lama = JSON.parse(localStorage.getItem(key) || "null"); } catch (e) {}
-    if (lama && lama.mulai) {
-      sesi = lama; sesi.nama = nama;
-      simpan();
-      toast(ico("refresh") + " Melanjutkan ujian sebelumnya");
+    if (st.kirim) {
+      if (lokal) localStorage.removeItem(key);
+      errMasuk(esc(nama) + " sudah mengirim jawaban " + esc(B.mapel.find(x => x.id === mapelPilih).nama) +
+        ". Pilih mapel lain. Jika memang perlu mengerjakan ulang, minta guru membukanya kembali.");
+      muatStatusMapel();
+      return;
+    }
+    // Pilih simpanan terbaru: server (perangkat lain / sebelum gangguan) atau perangkat ini
+    const srv = st.draft;
+    if (srv || lokal) {
+      const pakaiLokal = lokal && (!srv || (lokal.diperbarui || 0) > (srv.diperbarui_at || 0));
+      sesi = pakaiLokal ? lokal : {
+        key, nama, kelas, absen, mapel: mapelPilih, mulai: srv.mulai,
+        jawaban: srv.jawaban || {}, ragu: srv.ragu || {}, idx: srv.idx || 0, urutan: srv.urutan || null
+      };
+      sesi.key = key; sesi.nama = nama;
+      simpan(true);
+      toast(ico("refresh") + " Melanjutkan dari soal nomor " + ((sesi.idx || 0) + 1));
       mulaiUjian();
       return;
     }
@@ -393,17 +444,20 @@
     tampil("layarInfo");
   }
   $("btnBatal").onclick = () => { sesi = null; tampil("layarMasuk"); };
-  $("btnMulai").onclick = () => {
-    const m = B.mapel.find(x => x.id === sesi.mapel);
+  function buatUrutan(m) {
     let urut = [];
     URUTAN_TIPE.forEach(t => {
       let ids = m.soal.filter(s => s.tipe === t).map(s => s.id);
       if (C.ACAK_URUTAN_SOAL) ids = acak(ids);
       urut = urut.concat(ids);
     });
-    sesi.urutan = urut;
+    return urut;
+  }
+  $("btnMulai").onclick = () => {
+    const m = B.mapel.find(x => x.id === sesi.mapel);
+    sesi.urutan = buatUrutan(m);
     sesi.mulai = Date.now();
-    simpan();
+    simpan(true);
     mulaiUjian();
   };
 
@@ -415,6 +469,9 @@
     const m = mapelAktif();
     soalMap = {}; m.soal.forEach(s => soalMap[s.id] = s);
     sesi.urutan = (sesi.urutan || []).filter(id => soalMap[id]);
+    if (sesi.urutan.length !== m.soal.length) sesi.urutan = buatUrutan(m);
+    sesi.idx = Math.min(Math.max(0, sesi.idx || 0), sesi.urutan.length - 1);
+    setSync(navigator.onLine === false ? "offline" : "ok");
     $("pesertaNama").textContent = sesi.nama;
     $("pesertaInfo").textContent = "Kelas " + sesi.kelas + " · " + m.nama;
     tampil("layarUjian");
@@ -438,7 +495,46 @@
     if (s <= 0 && !mengirim) { clearInterval(timerId); toast(ico("clock") + " Waktu habis, jawaban dikirim"); kirim(true); }
   }
 
-  function simpan() { if (sesi && sesi.key) localStorage.setItem(sesi.key, JSON.stringify(sesi)); }
+  /* Simpan ke perangkat seketika, lalu ke server (draft) beberapa saat kemudian. */
+  function simpan(segera) {
+    if (!sesi || !sesi.key) return;
+    sesi.diperbarui = Date.now();
+    localStorage.setItem(sesi.key, JSON.stringify(sesi));
+    if (!sesi.mulai || mengirim) return;
+    clearTimeout(syncT);
+    syncT = setTimeout(kirimDraft, segera ? 0 : 1200);
+    if (navigator.onLine === false) setSync("offline");
+  }
+  let syncT = null, syncSeq = 0, syncState = "";
+  function draftDari(x) {
+    let terjawab = 0;
+    (x.urutan || []).forEach(id => { if (soalMap[id] && statusSoal(id).jawab) terjawab++; });
+    return { mapel: x.mapel, kelas: x.kelas, absen: x.absen, nama: x.nama, mulai: x.mulai,
+      jawaban: x.jawaban || {}, ragu: x.ragu || {}, idx: x.idx || 0, urutan: x.urutan || [],
+      terjawab, total: (x.urutan || []).length };
+  }
+  function kirimDraft() {
+    if (!sesi || !sesi.mulai || mengirim) return;
+    const id = ++syncSeq;
+    setSync(navigator.onLine === false ? "offline" : "saving");
+    DB.simpanDraft(draftDari(sesi)).then(() => { if (id === syncSeq) setSync("ok"); })
+      .catch(e => { if (id === syncSeq) setSync(e && e.code === "permission-denied" ? "locked" : "error"); });
+  }
+  function setSync(st) {
+    syncState = st;
+    const c = $("syncChip");
+    const map = {
+      ok: ["live", ico("checkCircle") + " Tersimpan"],
+      saving: ["", ico("refresh") + " Menyimpan..."],
+      offline: ["demo", ico("alert") + " Offline · tersimpan di perangkat"],
+      error: ["demo", ico("alert") + " Gagal sinkron · tersimpan di perangkat"],
+      locked: ["demo", ico("lock") + " Sudah dikirim"]
+    };
+    const v = map[st] || map.saving;
+    c.className = "chip " + v[0]; c.innerHTML = v[1];
+  }
+  window.addEventListener("offline", () => { if (sesi && sesi.mulai && !mengirim) setSync("offline"); });
+  window.addEventListener("online", () => { if (sesi && sesi.mulai && !mengirim) kirimDraft(); });
 
   function statusSoal(id) {
     const s = soalMap[id], j = sesi.jawaban[id] || {};
