@@ -80,6 +80,15 @@
   .sb.reset{font-weight:600;font-size:12.5px;color:var(--muted)}
   .sb-hint{font-size:12.5px;color:var(--muted);margin-left:4px}
 
+  /* token */
+  .token-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .tk-card{padding:20px}
+  .tk-code{font-size:40px;font-weight:800;letter-spacing:.18em;font-variant-numeric:tabular-nums;margin:12px 0 4px;font-family:ui-monospace,"SF Mono",Consolas,monospace}
+  .tk-code.off{color:var(--faint);text-decoration:line-through}
+  .tk-big{position:fixed;inset:0;background:#0f1b2d;color:#fff;z-index:95;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px}
+  .tk-big .code{font-size:min(22vw,200px);font-weight:800;letter-spacing:.15em;font-family:ui-monospace,"SF Mono",Consolas,monospace}
+  @media (max-width:760px){.token-grid{grid-template-columns:1fr}}
+
   /* per soal */
   .ps-head{padding:18px 20px;border-bottom:1px solid var(--line)}
   .ps-row{display:grid;grid-template-columns:200px 1fr;gap:16px;padding:14px 20px;border-bottom:1px solid var(--line)}
@@ -152,6 +161,7 @@
     <button class="tab on" data-tab="rekap"></button>
     <button class="tab" data-tab="siswa"></button>
     <button class="tab" data-tab="soal"></button>
+    <button class="tab" data-tab="token"></button>
     <button class="tab" data-tab="data"></button>
   </div>
 
@@ -174,6 +184,16 @@
       </div>
       <div class="card" id="detail"></div>
     </div>
+  </div>
+
+  <!-- TOKEN -->
+  <div id="tabToken" class="hidden">
+    <div class="card card-pad" style="margin-bottom:16px">
+      <h3>Token ujian per mapel</h3>
+      <p class="muted small" style="margin:4px 0 0">Siswa wajib memasukkan token untuk <b>mulai</b> mengerjakan. Aktifkan saat ujian mapel itu dimulai, lalu bacakan atau tampilkan tokennya.
+      Nonaktifkan setelah semua siswa masuk agar yang terlambat atau di luar ruangan tidak bisa mulai. Siswa yang sedang mengerjakan tidak terpengaruh.</p>
+    </div>
+    <div class="token-grid" id="tokenGrid"></div>
   </div>
 
   <!-- DATA SISWA -->
@@ -252,7 +272,7 @@
   $("btnContoh").innerHTML = ico("users") + " Isi data contoh";
   $("btnSoalPrev").innerHTML = ico("left");
   $("btnSoalNext").innerHTML = ico("right");
-  const tabLbl = { rekap: ico("chart") + "Rekap nilai", siswa: ico("user") + "Nilai per siswa", soal: ico("list") + "Nilai per soal", data: ico("users") + "Data siswa" };
+  const tabLbl = { rekap: ico("chart") + "Rekap nilai", siswa: ico("user") + "Nilai per siswa", soal: ico("list") + "Nilai per soal", data: ico("users") + "Data siswa", token: ico("key") + "Token ujian" };
   document.querySelectorAll(".tab").forEach(b => b.innerHTML = tabLbl[b.dataset.tab]);
   if (DB.mode === "demo") $("btnContoh").classList.remove("hidden");
 
@@ -337,6 +357,8 @@
     $("tabSiswa").classList.toggle("hidden", tab !== "siswa");
     $("tabSoal").classList.toggle("hidden", tab !== "soal");
     $("tabData").classList.toggle("hidden", tab !== "data");
+    $("tabToken").classList.toggle("hidden", tab !== "token");
+    if (tab === "token") renderToken();
     if (tab === "data") renderData();
     if (tab === "rekap") renderRekap();
     if (tab === "siswa") renderSiswa();
@@ -706,6 +728,53 @@
     a.click();
     toast(ico("download") + " File CSV diunduh");
   };
+
+  /* ---------- TOKEN UJIAN ---------- */
+  const HURUF_TOKEN = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";   // tanpa 0/O, 1/I agar tidak tertukar
+  function tokenAcak() {
+    const a = new Uint32Array(6); crypto.getRandomValues(a);
+    return [...a].map(x => HURUF_TOKEN[x % HURUF_TOKEN.length]).join("");
+  }
+  let TOKENS = {};
+  async function renderToken() {
+    $("tokenGrid").innerHTML = '<div class="card empty">Memuat...</div>';
+    try { TOKENS = await DB.daftarToken(); } catch (e) { TOKENS = {}; toast(ico("alert") + " Gagal memuat token"); }
+    $("tokenGrid").innerHTML = B.mapel.map(m => {
+      const t = TOKENS[m.id] || {};
+      const aktif = !!(t.token && t.aktif);
+      return '<div class="card tk-card"><div class="row" style="justify-content:space-between;gap:10px"><div class="row" style="gap:10px"><div class="mapel-ic" style="width:36px;height:36px;border-radius:9px;background:var(--primary-50);color:var(--primary);display:grid;place-items:center">' + ico(m.ikon) +
+        "</div><b>" + esc(m.nama) + "</b></div>" +
+        (aktif ? '<span class="badge ok">' + ico("check") + " Aktif</span>" : '<span class="badge neutral">' + ico("lock") + " Nonaktif</span>") + "</div>" +
+        (t.token ? '<div class="tk-code' + (aktif ? "" : " off") + '">' + esc(t.token) + "</div>"
+                 : '<div class="tk-code" style="font-size:18px;letter-spacing:0;color:var(--faint);font-weight:600;padding:12px 0 6px">Belum dibuat</div>') +
+        '<div class="small muted">' + (t.diubah_at ? "Diubah " + waktu(new Date(t.diubah_at).toISOString()) : "Klik Buat & aktifkan saat ujian dimulai") + "</div>" +
+        '<div class="row" style="gap:8px;margin-top:14px;flex-wrap:wrap">' +
+        (aktif ? '<button class="btn danger" data-off="' + m.id + '">' + ico("lock") + " Nonaktifkan</button>"
+               : '<button class="btn primary" data-on="' + m.id + '">' + ico("key") + (t.token ? " Aktifkan" : " Buat & aktifkan") + "</button>") +
+        '<button class="btn" data-baru="' + m.id + '">' + ico("refresh") + " Token baru</button>" +
+        (aktif ? '<button class="btn" data-layar="' + m.id + '">' + ico("grid") + " Tampilkan besar</button>" : "") +
+        "</div></div>";
+    }).join("");
+    const simpanTk = async (id, data, pesan) => {
+      try { await DB.setToken(id, data); toast(ico("check") + " " + pesan); renderToken(); }
+      catch (e) { toast(ico("alert") + " Gagal menyimpan token: " + esc(e.message || e)); }
+    };
+    $("tokenGrid").querySelectorAll("[data-on]").forEach(b => b.onclick = () => {
+      const t = TOKENS[b.dataset.on] || {};
+      simpanTk(b.dataset.on, { token: t.token || tokenAcak(), aktif: true }, "Token aktif");
+    });
+    $("tokenGrid").querySelectorAll("[data-off]").forEach(b => b.onclick = () => simpanTk(b.dataset.off, { aktif: false }, "Token dinonaktifkan"));
+    $("tokenGrid").querySelectorAll("[data-baru]").forEach(b => b.onclick = () => {
+      const t = TOKENS[b.dataset.baru] || {};
+      simpanTk(b.dataset.baru, { token: tokenAcak(), aktif: !!t.aktif }, "Token baru dibuat");
+    });
+    $("tokenGrid").querySelectorAll("[data-layar]").forEach(b => b.onclick = () => {
+      const m = B.mapel.find(x => x.id === b.dataset.layar), t = TOKENS[m.id];
+      $("modalHost").innerHTML = '<div class="tk-big"><div style="font-size:22px;opacity:.8">Token ujian · ' + esc(m.nama) + '</div><div class="code">' + esc(t.token) +
+        '</div><button class="btn" id="tkTutup" style="margin-top:20px">' + ico("x") + " Tutup</button></div>";
+      $("tkTutup").onclick = tutupModal;
+    });
+  }
 
   /* ---------- DATA SISWA (import Dapodik) ---------- */
   function judulNama(n) {

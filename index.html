@@ -139,9 +139,11 @@
     <div class="section-label">Mata pelajaran</div>
     <div class="mapel-grid" id="mapelGrid"></div>
 
-    <div id="tokenWrap" class="hidden" style="margin-top:16px;max-width:280px">
+    <div id="tokenWrap" class="hidden" style="margin-top:16px;max-width:300px">
       <label class="f" for="inToken">Token ujian</label>
-      <input class="input" id="inToken" placeholder="Tanyakan kepada pengawas" style="text-transform:uppercase">
+      <input class="input" id="inToken" placeholder="Tanyakan kepada pengawas" maxlength="10" autocomplete="off" autocapitalize="characters" spellcheck="false"
+        style="text-transform:uppercase;letter-spacing:.2em;font-weight:700;font-size:18px">
+      <div class="small muted" id="tokenHint" style="margin-top:6px">Token dibacakan pengawas saat ujian dimulai.</div>
     </div>
 
     <div id="errMasuk" class="err hidden"></div>
@@ -312,7 +314,14 @@
       } catch (e) { st.innerHTML = ""; }
     }));
   }
-  $("inNama").onchange = () => { errMasuk(""); muatStatusMapel(); };
+  $("inNama").onchange = () => { errMasuk(""); muatStatusMapel().then(aturToken); };
+  // Token hanya diminta untuk mulai baru; melanjutkan (sudah ada simpanan) tidak perlu token lagi.
+  function aturToken() {
+    const st = mapelPilih ? statusMapel[mapelPilih] : null;
+    const lanjut = !!(st && st.draft);
+    $("tokenWrap").classList.toggle("hidden", !mapelPilih || lanjut);
+    if (!mapelPilih || lanjut) $("inToken").value = "";
+  }
   $("inKelas").onchange = () => {
     const r = rombelAktif();
     $("inNama").disabled = !r;
@@ -327,7 +336,7 @@
       b.classList.toggle("hidden", !boleh);
       if (!boleh && mapelPilih === m.id) { mapelPilih = null; b.classList.remove("sel"); }
     });
-    muatStatusMapel();
+    muatStatusMapel().then(aturToken);
   };
 
   function toast(msg) {
@@ -358,7 +367,7 @@
       errMasuk("");
       mapelPilih = m.id;
       document.querySelectorAll(".mapel-card").forEach(x => x.classList.toggle("sel", x === b));
-      $("tokenWrap").classList.toggle("hidden", !(C.TOKEN || {})[m.id]);
+      aturToken();
     };
     $("mapelGrid").appendChild(b);
   });
@@ -380,9 +389,6 @@
     if (!absen) return errMasuk("Pilih namamu dari daftar.");
     const nama = r.nama[absen - 1];
     if (!mapelPilih) return errMasuk("Pilih mata pelajaran terlebih dahulu.");
-    const token = (C.TOKEN || {})[mapelPilih];
-    if (token && $("inToken").value.trim().toUpperCase() !== String(token).toUpperCase())
-      return errMasuk("Token ujian tidak sesuai. Tanyakan kepada pengawas.");
 
     const key = kunciSesi(mapelPilih, kelas, absen);
     let lokal = null;
@@ -425,6 +431,19 @@
       mulaiUjian();
       return;
     }
+    // Mulai baru: wajib token yang benar (diperiksa server)
+    const token = $("inToken").value.trim().toUpperCase();
+    aturToken();
+    if (!token) { $("inToken").focus(); return errMasuk("Masukkan token ujian dari pengawas."); }
+    btn.disabled = true; btn.textContent = "Memeriksa token...";
+    try { await DB.masuk(mapelPilih, kelas, absen, nama, token); }
+    catch (e) {
+      btn.disabled = false; btn.innerHTML = "Lanjut " + ico("right");
+      if (e && e.message === "TOKEN_SALAH") { $("inToken").select(); return errMasuk("Token salah, atau ujian mapel ini belum dibuka oleh pengawas."); }
+      return errMasuk("Tidak dapat terhubung ke server. Periksa koneksi internet lalu coba lagi.");
+    }
+    btn.disabled = false; btn.innerHTML = "Lanjut " + ico("right");
+    $("inToken").value = "";
     sesi = { key, nama, kelas, absen, mapel: mapelPilih, mulai: null, jawaban: {}, ragu: {}, idx: 0, urutan: null };
     tampilInfo();
   };

@@ -25,13 +25,7 @@ window.CONFIG = {
   // email & password yang dibuat di Firebase Console > Authentication.
   PIN_GURU: "123456",
 
-  // Token per mapel (kosongkan "" bila tidak memakai token). Guru membacakan token saat ujian dimulai.
-  TOKEN: {
-    bipp: "",
-    ipas: "",
-    paibp: "",
-    mtk: ""
-  },
+  // Token ujian diatur guru di guru.html > tab "Token ujian" (tidak disimpan di file ini).
 
   // Alasan pada soal PG & Benar/Salah wajib diisi, minimal sekian huruf
   ALASAN_MIN_KARAKTER: 10,

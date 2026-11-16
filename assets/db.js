@@ -17,6 +17,10 @@
   const LKEY_SISWA = "pas_siswa_demo";
   const KOL_DRAFT = C.KOLEKSI_DRAFT || "pas_draft";
   const LKEY_DRAFT = "pas_draft_demo";
+  const KOL_TOKEN = "pas_token", KOL_MASUK = "pas_masuk";
+  const LKEY_TOKEN = "pas_token_demo", LKEY_MASUK = "pas_masuk_demo";
+  function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch (e) { return {}; } }
+  function lsSet(k, o) { localStorage.setItem(k, JSON.stringify(o)); }
   function draftLokal() { try { return JSON.parse(localStorage.getItem(LKEY_DRAFT) || "{}"); } catch (e) { return {}; } }
   function draftLokalSet(o) { localStorage.setItem(LKEY_DRAFT, JSON.stringify(o)); }
   function batasWaktu(p, ms) { return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("TIMEOUT")), ms))]); }
@@ -77,15 +81,49 @@
     async hapus(id) {
       if (fs) {
         const b = fs.batch();
-        b.delete(fs.collection(KOL).doc(id)); b.delete(fs.collection(KOL_DRAFT).doc(id));
+        b.delete(fs.collection(KOL).doc(id)); b.delete(fs.collection(KOL_DRAFT).doc(id)); b.delete(fs.collection(KOL_MASUK).doc(id));
         await b.commit(); return true;
       }
       lokalSimpan(lokalAmbil().filter(r => r.id !== id));
       const o = draftLokal(); delete o[id]; draftLokalSet(o);
+      const mm = lsGet(LKEY_MASUK); delete mm[id]; lsSet(LKEY_MASUK, mm);
       return true;
     },
 
     docId,
+
+    /* ---------- token ujian ---------- */
+    // Siswa "masuk" dengan token. Token diperiksa oleh Firestore Rules (siswa tidak bisa membaca token).
+    async masuk(mapel, kelas, absen, nama, token) {
+      const id = docId(mapel, kelas, absen);
+      token = String(token || "").trim().toUpperCase();
+      if (fs) {
+        try {
+          await batasWaktu(fs.collection(KOL_MASUK).doc(id).set({ mapel, kelas, absen, nama, token, waktu: Date.now() }), 15000);
+        } catch (e) {
+          if (e && e.code === "permission-denied") throw new Error("TOKEN_SALAH");
+          throw e;
+        }
+        return true;
+      }
+      const t = lsGet(LKEY_TOKEN)[mapel];
+      if (!t || !t.aktif || t.token !== token) throw new Error("TOKEN_SALAH");
+      const o = lsGet(LKEY_MASUK); o[id] = { mapel, kelas, absen, nama, token, waktu: Date.now() }; lsSet(LKEY_MASUK, o);
+      return true;
+    },
+    async daftarToken() {                       // guru
+      if (fs) {
+        const snap = await fs.collection(KOL_TOKEN).get();
+        const o = {}; snap.docs.forEach(d => o[d.id] = d.data()); return o;
+      }
+      return lsGet(LKEY_TOKEN);
+    },
+    async setToken(mapel, data) {               // guru: { token, aktif }
+      data = Object.assign({ diubah_at: Date.now() }, data);
+      if (fs) { await fs.collection(KOL_TOKEN).doc(mapel).set(data, { merge: true }); return true; }
+      const o = lsGet(LKEY_TOKEN); o[mapel] = Object.assign(o[mapel] || {}, data); lsSet(LKEY_TOKEN, o);
+      return true;
+    },
 
     /* ---------- status & draft (simpan per soal) ---------- */
     async status(mapel, kelas, absen) {          // { kirim: bool, draft: obj|null }
@@ -104,6 +142,7 @@
       const id = docId(d.mapel, d.kelas, d.absen);
       d = Object.assign({}, d, { diperbarui_at: Date.now() });
       if (fs) return fs.collection(KOL_DRAFT).doc(id).set(d);
+      if (!lsGet(LKEY_MASUK)[id]) return Promise.reject({ code: "permission-denied" });
       const o = draftLokal(); o[id] = d; draftLokalSet(o);
       return Promise.resolve();
     },
@@ -125,11 +164,13 @@
         const b = fs.batch();
         b.delete(fs.collection(KOL).doc(rec.id));
         b.set(fs.collection(KOL_DRAFT).doc(rec.id), draft);
+        b.set(fs.collection(KOL_MASUK).doc(rec.id), { mapel: rec.mapel, kelas: rec.kelas, absen: rec.absen, nama: rec.nama, token: "(dibuka guru)", waktu: Date.now() });
         await b.commit();
         return true;
       }
       lokalSimpan(lokalAmbil().filter(r => r.id !== rec.id));
       const o = draftLokal(); o[rec.id] = draft; draftLokalSet(o);
+      const mm = lsGet(LKEY_MASUK); mm[rec.id] = { mapel: rec.mapel, kelas: rec.kelas, absen: rec.absen, nama: rec.nama, token: "(dibuka guru)" }; lsSet(LKEY_MASUK, mm);
       return true;
     },
 
