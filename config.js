@@ -33,6 +33,9 @@ window.CONFIG = {
     mtk: ""
   },
 
+  // Alasan pada soal PG & Benar/Salah wajib diisi, minimal sekian huruf
+  ALASAN_MIN_KARAKTER: 10,
+
   // Acak urutan soal di dalam tiap bagian (true/false)
   ACAK_URUTAN_SOAL: false,
 

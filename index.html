@@ -158,7 +158,7 @@
     </table>
     <ul class="info-list">
       <li>Bacalah setiap soal dengan teliti sebelum menjawab.</li>
-      <li>Pada soal <b>beralasan</b> (bagian A dan B), tuliskan alasan jawabanmu dengan kalimatmu sendiri. Alasan ikut dinilai.</li>
+      <li>Pada soal <b>beralasan</b> (bagian A dan B), <b>wajib</b> menuliskan alasan jawabanmu dengan kalimatmu sendiri. Jawaban tidak bisa dikirim jika ada alasan yang kosong.</li>
       <li>Pada soal <b>pilihan ganda kompleks</b> (bagian C), jawaban benar bisa lebih dari satu.</li>
       <li>Jawaban tersimpan otomatis. Jika halaman tertutup, masuk lagi dengan memilih kelas dan nama yang sama.</li>
       <li>Tandai <b>Ragu-ragu</b> jika ingin memeriksa ulang soal tersebut.</li>
@@ -207,7 +207,7 @@
           <span><i style="background:var(--primary);border-color:var(--primary)"></i>Dijawab</span>
           <span><i style="background:var(--warn);border-color:var(--warn)"></i>Ragu-ragu</span>
           <span><i></i>Belum</span>
-          <span><i style="border-radius:50%;background:var(--warn);border-color:var(--warn);width:9px;height:9px"></i>Alasan kosong</span>
+          <span><i style="border-radius:50%;background:var(--warn);border-color:var(--warn);width:9px;height:9px"></i>Alasan belum diisi</span>
         </div>
         <button class="btn ok block" style="margin-top:16px" id="btnSelesai"></button>
       </div>
@@ -249,6 +249,7 @@
   let sesi = null;      // sesi aktif
   let timerId = null;
   let mengirim = false;
+  const MIN_ALASAN = C.ALASAN_MIN_KARAKTER || 10;
 
   /* ---------- Header & teks tombol ---------- */
   $("brandMark").innerHTML = ico("school");
@@ -442,11 +443,14 @@
   function statusSoal(id) {
     const s = soalMap[id], j = sesi.jawaban[id] || {};
     let jawab = false;
-    if (s.tipe === "pg" || s.tipe === "bs") jawab = j.p != null;
+    const beralasan = s.tipe === "pg" || s.tipe === "bs";
+    const alasanOk = beralasan && (j.a || "").trim().length >= MIN_ALASAN;
+    if (beralasan) jawab = j.p != null && alasanOk;
     else if (s.tipe === "pgk") jawab = Array.isArray(j.p) && j.p.length > 0;
     else jawab = !!(j.t || "").trim();
-    const alasanKosong = (s.tipe === "pg" || s.tipe === "bs") && jawab && !(j.a || "").trim();
-    return { jawab, alasanKosong, ragu: !!sesi.ragu[id] };
+    const alasanKosong = beralasan && j.p != null && !alasanOk;
+    const wajibKurang = beralasan && !jawab;     // PG/BS wajib pilihan + alasan
+    return { jawab, alasanKosong, wajibKurang, ragu: !!sesi.ragu[id] };
   }
 
   function buatNav() {
@@ -504,7 +508,7 @@
         '<button type="button" class="bs-btn' + (j.p === 1 ? " sel" : "") + '" data-i="1">' + ico("x") + " Salah</button></div>";
     }
     if (s.tipe === "pg" || s.tipe === "bs") {
-      h += '<div class="alasan-box"><label class="f" for="inAlasan">' + ico("edit") + ' Alasan jawabanmu</label>' +
+      h += '<div class="alasan-box"><label class="f" for="inAlasan">' + ico("edit") + ' Alasan jawabanmu <span style="color:var(--bad)">*wajib</span></label>' +
         '<textarea class="input" id="inAlasan" rows="3" placeholder="Tuliskan alasan mengapa kamu memilih jawaban tersebut..."></textarea></div>';
     }
     if (s.tipe === "isian") {
@@ -533,7 +537,16 @@
     });
     $("qBody").querySelectorAll(".bs-btn").forEach(b => b.onclick = () => { j.p = +b.dataset.i; simpan(); render(); });
     const ketik = (el, field) => { if (!el) return; el.oninput = () => { j[field] = el.value; simpanTunda(); }; };
-    ketik($("inAlasan"), "a"); ketik($("inIsian"), "t"); ketik($("inEssay"), "t");
+    ketik($("inAlasan"), "a");
+    if ($("inAlasan")) {
+      $("inAlasan").insertAdjacentHTML("afterend", '<div class="small" id="alasanInfo" style="margin-top:6px"></div>');
+      const info = () => {
+        const n = ($("inAlasan").value || "").trim().length;
+        $("alasanInfo").style.color = n >= MIN_ALASAN ? "var(--ok)" : (j.p != null ? "var(--bad)" : "var(--muted)");
+        $("alasanInfo").textContent = n >= MIN_ALASAN ? "Alasan sudah terisi." : "Alasan wajib diisi, minimal " + MIN_ALASAN + " huruf (" + n + "/" + MIN_ALASAN + ").";
+      };
+      $("inAlasan").addEventListener("input", info); info();
+    } ketik($("inIsian"), "t"); ketik($("inEssay"), "t");
 
     // tombol
     $("btnPrev").disabled = sesi.idx === 0;
@@ -559,9 +572,9 @@
 
   /* ---------- Kirim ---------- */
   function ringkasan() {
-    let belum = 0, alasan = 0, ragu = 0;
-    sesi.urutan.forEach(id => { const st = statusSoal(id); if (!st.jawab) belum++; if (st.alasanKosong) alasan++; if (st.ragu) ragu++; });
-    return { belum, alasan, ragu };
+    let belum = 0, alasan = 0, ragu = 0; const wajib = [];
+    sesi.urutan.forEach((id, i) => { const st = statusSoal(id); if (!st.jawab) belum++; if (st.alasanKosong) alasan++; if (st.ragu) ragu++; if (st.wajibKurang) wajib.push(i); });
+    return { belum, alasan, ragu, wajib };
   }
   function modal(html) { $("modalHost").innerHTML = '<div class="modal-bg"><div class="modal">' + html + "</div></div>"; }
   function tutupModal() { $("modalHost").innerHTML = ""; }
@@ -569,12 +582,21 @@
   function konfirmasiKirim() {
     clearTimeout(tundaT); simpan();
     const r = ringkasan();
-    const warn = r.belum || r.alasan || r.ragu;
+    if (r.wajib.length) {
+      modal("<h3>Belum bisa dikirim</h3>" +
+        '<p class="muted small" style="margin:0">Soal pilihan ganda dan benar/salah wajib dijawab <b>beserta alasannya</b>. Lengkapi soal nomor berikut:</p>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">' + r.wajib.map(i => '<button class="nb" style="width:40px" data-i="' + i + '">' + (i + 1) + "</button>").join("") + "</div>" +
+        '<div class="actions"><button class="btn primary" id="mKe">Ke soal nomor ' + (r.wajib[0] + 1) + "</button></div>");
+      const ke = i => { tutupModal(); sesi.idx = i; simpan(); render(); window.scrollTo(0, 0); };
+      $("mKe").onclick = () => ke(r.wajib[0]);
+      $("modalHost").querySelectorAll(".nb").forEach(b => b.onclick = () => ke(+b.dataset.i));
+      return;
+    }
+    const warn = r.belum || r.ragu;
     modal("<h3>Kirim jawaban sekarang?</h3>" +
       '<p class="muted small" style="margin:0">Setelah dikirim, jawaban tidak dapat diubah lagi.</p>' +
       '<div class="sum-list">' +
       "<div><span>Belum dijawab</span><b style=\"color:" + (r.belum ? "var(--bad)" : "var(--ok)") + "\">" + r.belum + "</b></div>" +
-      "<div><span>Alasan masih kosong</span><b style=\"color:" + (r.alasan ? "var(--warn)" : "var(--ok)") + "\">" + r.alasan + "</b></div>" +
       "<div><span>Ditandai ragu-ragu</span><b>" + r.ragu + "</b></div></div>" +
       (warn ? '<p class="small" style="color:var(--warn);margin:12px 0 0">Masih ada soal yang perlu diperiksa. Yakin ingin mengirim?</p>' : "") +
       '<div class="actions"><button class="btn" id="mBatal">Periksa lagi</button><button class="btn ok" id="mKirim">' + ico("send") + " Kirim</button></div>");
