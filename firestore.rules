@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /pas_jawaban/{docId} {
+      // Siswa boleh memeriksa apakah dirinya sudah mengirim (baca satu dokumen saja).
+      allow get: if true;
+
+      // Daftar semua jawaban hanya untuk guru yang sudah login.
+      allow list: if request.auth != null;
+
+      // Siswa mengirim jawaban SEKALI. Tidak boleh menyertakan nilai.
+      allow create: if request.resource.data.keys().hasOnly(
+                         ['mapel','kelas','absen','nama','jawaban','nilai_manual','status','mulai_at','dikirim_at'])
+                    && docId == request.resource.data.mapel + '_' + request.resource.data.kelas + '_' + string(request.resource.data.absen)
+                    && request.resource.data.nilai_manual.size() == 0
+                    && request.resource.data.status == 'belum'
+                    && request.resource.data.nama is string
+                    && request.resource.data.nama.size() <= 80
+                    && request.resource.data.absen is int
+                    && request.resource.data.jawaban is map;
+
+      // Menilai dan menghapus hanya guru yang sudah login.
+      allow update, delete: if request.auth != null;
+    }
+  }
+}

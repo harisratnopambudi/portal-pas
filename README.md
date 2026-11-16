@@ -10,24 +10,25 @@ Setiap mapel berisi 30 soal: 5 PG beralasan, 5 Benar/Salah beralasan, 5 PG kompl
 |---|---|
 | `index.html` | Halaman siswa (login, mengerjakan, kirim) |
 | `guru.html` | Halaman guru (rekap, nilai per siswa, nilai per soal, export CSV) |
-| `config.js` | Pengaturan: nama sekolah, kelas, PIN guru, token, Supabase, bobot skor, rubrik |
+| `config.js` | Pengaturan: nama sekolah, kelas, token, Firebase, bobot skor, rubrik |
 | `soal.js` | Bank soal (tanpa kunci) — dimuat halaman siswa |
 | `kunci.js` | Kunci jawaban, acuan alasan, rubrik uraian — hanya dimuat halaman guru |
-| `supabase.sql` | Skrip pembuatan tabel di Supabase |
+| `firestore.rules` | Aturan keamanan Firestore (tempel di Firebase Console) |
 | `assets/` | CSS, ikon, lapisan database, mesin penskoran |
 
 ## Cara mencoba (mode demo)
 1. Buka `index.html`, kerjakan satu mapel, lalu kirim.
-2. Buka `guru.html` di **browser yang sama**, PIN default `123456`.
+2. Buka `guru.html` di **browser yang sama**, PIN demo `123456`.
 3. Klik **Isi data contoh** untuk menambah 8 siswa fiktif agar bisa mencoba fitur penilaian.
 
 Mode demo menyimpan data di browser tersebut saja (localStorage), jadi hanya untuk uji coba.
 
-## Memakai untuk ujian sungguhan (Supabase)
-1. Buat project di supabase.com, buka **SQL Editor**, jalankan isi `supabase.sql`.
-2. Salin **Project URL** dan **anon public key** ke `config.js` (`SUPABASE_URL`, `SUPABASE_ANON_KEY`).
-3. Ganti `PIN_GURU`, isi `KELAS`, dan bila perlu `TOKEN` per mapel.
-4. Unggah folder ke hosting (GitHub Pages, Netlify, atau hosting harisdevlab). Label di pojok kanan atas berubah menjadi **Online**.
+## Memakai untuk ujian sungguhan (Firebase)
+1. Firebase Console → **Firestore Database** → Create database (lokasi `asia-southeast2`, Production mode).
+2. Tab **Rules** → tempel isi `firestore.rules` → **Publish**.
+3. **Authentication** → aktifkan Email/Password → **Users → Add user** untuk tiap guru penilai.
+4. **Project settings → Your apps → Web** → salin `firebaseConfig` ke `config.js` bagian `FIREBASE`.
+5. Isi `KELAS` dan bila perlu `TOKEN` per mapel, lalu deploy (GitHub Pages). Label pojok kanan atas berubah menjadi **Online**.
 
 ## Penskoran (bisa diubah di `config.js` → `SKOR`)
 
@@ -53,6 +54,7 @@ Edit `soal.js` (teks & opsi) dan `kunci.js` (kunci dengan ID yang sama). Format 
 Untuk PG, gunakan huruf `"A"`–`"E"`; untuk B/S gunakan `"B"` atau `"S"`; untuk PG kompleks gabungan huruf, mis. `"ACD"`.
 
 ## Catatan keamanan
-- `kunci.js` tidak dimuat oleh halaman siswa, tetapi tetap bisa dibuka jika seseorang mengetik alamat filenya. Untuk ujian sungguhan, unggah `kunci.js` dan `guru.html` hanya saat penilaian, atau taruh di folder terpisah.
-- PIN guru dan anon key ada di `config.js` sehingga terbaca oleh siapa pun yang membuka sumber halaman. Cukup untuk lingkungan sekolah, bukan untuk data yang sangat rahasia.
-- Satu kombinasi mapel + kelas + absen hanya bisa mengirim sekali. Guru bisa menghapus jawaban (ikon tempat sampah di rekap) agar siswa dapat mengulang.
+- Aturan Firestore: siswa hanya bisa mengirim sekali dan tidak bisa menyertakan nilai; daftar jawaban, penilaian, dan penghapusan hanya untuk guru yang login.
+- `apiKey` Firebase memang terbuka di kode web; keamanannya dijaga oleh rules.
+- `kunci.js` tidak dimuat halaman siswa, tetapi tetap bisa dibuka bila alamatnya diketik. Untuk soal asli, unggah `kunci.js` setelah ujian selesai.
+- Satu kombinasi mapel + kelas + absen hanya bisa mengirim sekali. Guru dapat menghapus jawaban agar siswa bisa mengulang.

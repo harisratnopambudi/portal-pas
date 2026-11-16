@@ -119,9 +119,13 @@
   <form class="card" id="formPin">
     <div class="pin-ic" id="pinIc"></div>
     <h2>Masuk sebagai guru</h2>
-    <p class="muted small" style="margin:4px 0 18px">Masukkan PIN untuk membuka rekap dan penilaian jawaban siswa.</p>
-    <label class="f" for="inPin">PIN</label>
-    <input class="input" id="inPin" type="password" inputmode="numeric" autocomplete="off" placeholder="••••••">
+    <p class="muted small" style="margin:4px 0 18px" id="pinDesc">Masukkan PIN untuk membuka rekap dan penilaian jawaban siswa.</p>
+    <div id="emailWrap" class="hidden" style="margin-bottom:12px">
+      <label class="f" for="inEmail">Email guru</label>
+      <input class="input" id="inEmail" type="email" autocomplete="username" placeholder="guru@sekolah.sch.id">
+    </div>
+    <label class="f" for="inPin" id="pinLbl">PIN</label>
+    <input class="input" id="inPin" type="password" autocomplete="current-password" placeholder="••••••">
     <div class="small" id="pinErr" style="color:var(--bad);margin-top:8px;min-height:18px"></div>
     <button class="btn primary block" type="submit" style="margin-top:6px">Masuk</button>
   </form>
@@ -188,7 +192,9 @@
 <div id="modalHost"></div>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="config.js"></script>
 <script src="soal.js"></script>
 <script src="kunci.js"></script>
@@ -210,8 +216,8 @@
   /* ---------- UI awal ---------- */
   $("brandMark").innerHTML = ico("school");
   $("brandSub").textContent = C.NAMA_SEKOLAH + " · " + C.JUDUL_UJIAN + " " + C.TAHUN_AJARAN;
-  $("modeChip").className = "chip " + (DB.mode === "supabase" ? "live" : "demo");
-  $("modeChip").textContent = DB.mode === "supabase" ? "Online" : "Mode demo";
+  $("modeChip").className = "chip " + (DB.mode === "firebase" ? "live" : "demo");
+  $("modeChip").textContent = DB.mode === "firebase" ? "Online" : "Mode demo";
   $("pinIc").innerHTML = ico("lock");
   $("btnKeluar").innerHTML = ico("logout") + " Keluar";
   $("btnMuat").innerHTML = ico("refresh") + " Muat ulang";
@@ -234,18 +240,31 @@
   function tutupModal() { $("modalHost").innerHTML = ""; }
 
   /* ---------- PIN ---------- */
-  $("formPin").onsubmit = e => {
+  if (DB.mode === "firebase") {
+    $("emailWrap").classList.remove("hidden");
+    $("pinLbl").textContent = "Password";
+    $("pinDesc").textContent = "Masuk dengan akun guru yang terdaftar di Firebase Authentication.";
+  }
+  $("formPin").onsubmit = async e => {
     e.preventDefault();
-    if ($("inPin").value === String(C.PIN_GURU)) {
-      sessionStorage.setItem("pas_guru", "1"); masuk();
-    } else { $("pinErr").textContent = "PIN salah."; $("inPin").select(); }
+    const btn = $("formPin").querySelector("button[type=submit]");
+    btn.disabled = true; $("pinErr").textContent = "";
+    try { await DB.masukGuru($("inEmail").value.trim(), $("inPin").value); masuk(); }
+    catch (err) {
+      const kode = (err && err.code) || "";
+      $("pinErr").textContent = DB.mode === "firebase"
+        ? (kode.includes("network") ? "Tidak ada koneksi internet." : "Email atau password salah.")
+        : "PIN salah.";
+      $("inPin").select();
+    }
+    btn.disabled = false;
   };
-  $("btnKeluar").onclick = () => { sessionStorage.removeItem("pas_guru"); location.reload(); };
+  $("btnKeluar").onclick = async () => { await DB.keluarGuru(); location.reload(); };
   function masuk() {
     $("layarPin").classList.add("hidden"); $("layarUtama").classList.remove("hidden"); $("btnKeluar").classList.remove("hidden");
     isiSelSoal(); muat();
   }
-  if (sessionStorage.getItem("pas_guru") === "1") masuk();
+  DB.sudahMasuk().then(ok => { if (ok) masuk(); });
 
   /* ---------- Data ---------- */
   function mapel() { return P.mapelById($("selMapel").value); }

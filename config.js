@@ -9,12 +9,20 @@ window.CONFIG = {
   TAHUN_AJARAN: "2026/2027",
   KELAS: ["5A", "5B", "5C"],
 
-  // Supabase — kosongkan keduanya untuk MODE DEMO (data tersimpan di browser ini saja)
-  SUPABASE_URL: "",
-  SUPABASE_ANON_KEY: "",
-  TABEL: "pas_jawaban",
+  // Firebase — salin dari Firebase Console > Project settings > Your apps (Web app).
+  // Biarkan apiKey kosong untuk MODE DEMO (data tersimpan di browser ini saja).
+  FIREBASE: {
+    apiKey: "",
+    authDomain: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: ""
+  },
+  KOLEKSI: "pas_jawaban",
 
-  // PIN masuk portal guru
+  // PIN guru — HANYA dipakai di mode demo. Di mode Firebase, guru masuk dengan
+  // email & password yang dibuat di Firebase Console > Authentication.
   PIN_GURU: "123456",
 
   // Token per mapel (kosongkan "" bila tidak memakai token). Guru membacakan token saat ujian dimulai.

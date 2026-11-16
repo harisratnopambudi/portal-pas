@@ -238,7 +238,8 @@
 <div id="modalHost"></div>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="config.js"></script>
 <script src="soal.js"></script>
 <script src="assets/icons.js"></script>
@@ -257,8 +258,8 @@
   $("brandMark").innerHTML = ico("school");
   $("brandTitle").textContent = C.JUDUL_UJIAN + " · " + C.TAHUN_AJARAN;
   $("brandSub").textContent = C.NAMA_SEKOLAH;
-  $("modeChip").className = "chip " + (DB.mode === "supabase" ? "live" : "demo");
-  $("modeChip").textContent = DB.mode === "supabase" ? "Online" : "Mode demo";
+  $("modeChip").className = "chip " + (DB.mode === "firebase" ? "live" : "demo");
+  $("modeChip").textContent = DB.mode === "firebase" ? "Online" : "Mode demo";
   $("btnMasuk").innerHTML = "Lanjut " + ico("right");
   $("btnBatal").innerHTML = ico("left") + " Kembali";
   $("btnMulai").innerHTML = "Mulai mengerjakan " + ico("right");
