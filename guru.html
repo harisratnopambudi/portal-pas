@@ -698,7 +698,7 @@
         kanan += '<div class="lbl-mini">' + (it.info.override ? "Dinilai manual" : it.info.cocok ? '<span style="color:var(--ok)">Cocok otomatis</span>' : '<span style="color:var(--bad)">Tidak cocok otomatis</span>') + "</div>";
         kanan += tombolSkor(r, it.info.manualKey, it.info.manualMaks, ov != null ? Number(ov) : null, { 0: "Salah", 1: "Benar" }, ov != null);
       }
-      isi += '<div class="ps-row' + (it.pending ? " pending" : "") + '"><div class="ps-who"><div class="nm">' + esc(r.nama) + '</div><div class="mt">' + esc(r.kelas) + " · absen " + r.absen + "</div></div><div>" + kanan + "</div></div>";
+      isi += '<div class="ps-row' + (it.pending ? " pending" : "") + '"><div class="ps-who"><div class="nm">' + esc(r.nama) + '</div><div class="mt">' + esc(r.kelas) + " · no. " + r.absen + "</div></div><div>" + kanan + "</div></div>";
     });
     h += '<div style="padding:10px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between" class="small"><span class="muted">' + rows.length +
       ' jawaban</span><span style="color:' + (sisa ? "var(--warn)" : "var(--ok)") + ';font-weight:700">' + (sisa ? sisa + " belum dinilai" : "Semua sudah dinilai") + "</span></div>";
