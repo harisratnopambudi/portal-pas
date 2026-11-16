@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal Ujian PAS — Siswa</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  /* ---------- Masuk ---------- */
+  .login-wrap{max-width:880px;margin:0 auto;padding:36px 20px 60px}
+  .hero{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+  .hero h1{font-size:26px;letter-spacing:-.01em}
+  .hero p{margin:4px 0 0;color:var(--muted)}
+  .form-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px}
+  .mapel-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px}
+  .mapel-card{display:flex;gap:14px;align-items:center;padding:16px;border:1px solid var(--line-2);border-radius:12px;background:#fff;cursor:pointer;text-align:left;transition:all .12s}
+  .mapel-card:hover{border-color:var(--primary)}
+  .mapel-card.sel{border-color:var(--primary);background:var(--primary-50);box-shadow:inset 0 0 0 1px var(--primary)}
+  .mapel-ic{width:42px;height:42px;border-radius:10px;background:var(--primary-50);color:var(--primary);display:grid;place-items:center;flex:none}
+  .mapel-card.sel .mapel-ic{background:var(--primary);color:#fff}
+  .mapel-ic .icon{width:22px;height:22px}
+  .mapel-name{font-weight:700;font-size:14.5px;line-height:1.35}
+  .mapel-meta{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .err{display:flex;gap:8px;align-items:flex-start;background:var(--bad-50);border:1px solid #f2c6c6;color:var(--bad);padding:10px 12px;border-radius:8px;font-size:14px;margin-top:14px}
+  .section-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin:22px 0 10px}
+
+  /* ---------- Info ---------- */
+  .info-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:14px}
+  .info-table th,.info-table td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
+  .info-table th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;background:var(--surface-2)}
+  .info-list{margin:14px 0 0;padding-left:20px;color:#26354d}
+  .info-list li{margin-bottom:6px}
+  .kv{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+  .kv div{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px}
+  .kv span{display:block;font-size:12px;color:var(--muted)}
+  .kv b{font-size:15px}
+
+  /* ---------- Ujian ---------- */
+  .exam{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+  .q-card{padding:0;overflow:hidden}
+  .q-head{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--surface-2);flex-wrap:wrap}
+  .q-num{font-weight:800;font-size:15px}
+  .q-body{padding:22px 22px 8px}
+  .q-hint{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;margin-bottom:12px}
+  .q-hint .icon{width:15px;height:15px}
+  .alasan-box{margin-top:18px;padding:14px;border:1px dashed var(--line-2);border-radius:10px;background:var(--surface-2)}
+  .alasan-box label{display:flex;align-items:center;gap:6px}
+  .bs-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+  .bs-btn{padding:16px;border:1px solid var(--line-2);border-radius:10px;background:#fff;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .bs-btn:hover{border-color:var(--primary)}
+  .bs-btn.sel{border-color:var(--primary);background:var(--primary);color:#fff}
+  .q-foot{display:flex;justify-content:space-between;gap:10px;padding:16px 22px 20px}
+  .aside{position:sticky;top:76px;display:grid;gap:14px}
+  .timer{display:flex;align-items:center;gap:12px;padding:16px}
+  .timer .icon{width:22px;height:22px;color:var(--primary)}
+  .timer b{font-size:24px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+  .timer.low .icon,.timer.low b{color:var(--bad)}
+  .progress{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:8px}
+  .progress i{display:block;height:100%;background:var(--primary);border-radius:99px;transition:width .2s}
+  .nav-card{padding:16px}
+  .nav-sec{font-size:12px;font-weight:700;color:var(--muted);margin:12px 0 6px}
+  .nav-sec:first-of-type{margin-top:4px}
+  .nav-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+  .nb{position:relative;aspect-ratio:1;border:1px solid var(--line-2);border-radius:7px;background:#fff;font-size:13px;font-weight:700;cursor:pointer;display:grid;place-items:center;color:#26354d}
+  .nb:hover{border-color:var(--primary)}
+  .nb.done{background:var(--primary);border-color:var(--primary);color:#fff}
+  .nb.ragu{background:var(--warn);border-color:var(--warn);color:#fff}
+  .nb.cur{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--primary)}
+  .nb .dot{position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--warn);border:2px solid #fff}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;font-size:12px;color:var(--muted)}
+  .legend span{display:flex;align-items:center;gap:5px}
+  .legend i{width:12px;height:12px;border-radius:3px;border:1px solid var(--line-2);display:inline-block}
+  .nav-toggle{display:none}
+  .done-card{max-width:560px;margin:40px auto;text-align:center;padding:36px 28px}
+  .done-ic{width:64px;height:64px;border-radius:50%;background:var(--ok-50);color:var(--ok);display:grid;place-items:center;margin:0 auto 16px}
+  .done-ic .icon{width:32px;height:32px}
+  .sum-list{display:grid;gap:8px;margin-top:12px}
+  .sum-list div{display:flex;justify-content:space-between;padding:9px 12px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;font-size:14px}
+
+  @media (max-width:900px){
+    .exam{grid-template-columns:1fr}
+    .aside{position:fixed;inset:60px 0 0 auto;width:310px;max-width:88vw;background:var(--bg);padding:14px;overflow:auto;z-index:30;transform:translateX(105%);transition:transform .2s;border-left:1px solid var(--line)}
+    .aside.open{transform:none}
+    .nav-toggle{display:inline-flex}
+  }
+  @media (max-width:640px){
+    .form-grid{grid-template-columns:1fr 1fr}
+    .form-grid .full{grid-column:1/-1}
+    .mapel-grid{grid-template-columns:1fr}
+    .kv{grid-template-columns:1fr 1fr}
+    .q-body{padding:18px 16px 6px}
+    .q-foot{padding:14px 16px 18px}
+    .q-foot .btn .lbl{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark" id="brandMark"></div>
+    <div class="brand-text">
+      <div class="brand-title" id="brandTitle"></div>
+      <div class="brand-sub" id="brandSub"></div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <span id="topTimer" class="chip hidden"></span>
+  <button class="btn sm nav-toggle hidden" id="btnNav"></button>
+  <span id="modeChip" class="chip"></span>
+</header>
+
+<!-- ============ LAYAR MASUK ============ -->
+<section id="layarMasuk" class="login-wrap">
+  <div class="hero">
+    <div>
+      <h1>Selamat datang di Ujian PAS</h1>
+      <p>Isi data dirimu dengan benar, lalu pilih mata pelajaran yang akan dikerjakan.</p>
+    </div>
+  </div>
+  <form class="card card-pad" id="formMasuk" autocomplete="off">
+    <div class="form-grid">
+      <div class="full">
+        <label class="f" for="inNama">Nama lengkap</label>
+        <input class="input" id="inNama" placeholder="Contoh: Ahmad Fauzan" required>
+      </div>
+      <div>
+        <label class="f" for="inKelas">Kelas</label>
+        <select class="input" id="inKelas" required></select>
+      </div>
+      <div>
+        <label class="f" for="inAbsen">No. absen</label>
+        <input class="input" id="inAbsen" type="number" min="1" max="60" placeholder="1" required>
+      </div>
+    </div>
+
+    <div class="section-label">Mata pelajaran</div>
+    <div class="mapel-grid" id="mapelGrid"></div>
+
+    <div id="tokenWrap" class="hidden" style="margin-top:16px;max-width:280px">
+      <label class="f" for="inToken">Token ujian</label>
+      <input class="input" id="inToken" placeholder="Tanyakan kepada pengawas" style="text-transform:uppercase">
+    </div>
+
+    <div id="errMasuk" class="err hidden"></div>
+
+    <div style="margin-top:20px;display:flex;justify-content:flex-end">
+      <button class="btn primary" type="submit" id="btnMasuk"></button>
+    </div>
+  </form>
+</section>
+
+<!-- ============ LAYAR INFO ============ -->
+<section id="layarInfo" class="login-wrap hidden">
+  <div class="card card-pad">
+    <h2 id="infoJudul"></h2>
+    <p class="muted small" style="margin:4px 0 0" id="infoSub"></p>
+    <div class="kv" id="infoKv"></div>
+    <table class="info-table">
+      <thead><tr><th>Bagian</th><th>Bentuk soal</th><th style="text-align:right">Jumlah</th></tr></thead>
+      <tbody id="infoTabel"></tbody>
+    </table>
+    <ul class="info-list">
+      <li>Bacalah setiap soal dengan teliti sebelum menjawab.</li>
+      <li>Pada soal <b>beralasan</b> (bagian A dan B), tuliskan alasan jawabanmu dengan kalimatmu sendiri. Alasan ikut dinilai.</li>
+      <li>Pada soal <b>pilihan ganda kompleks</b> (bagian C), jawaban benar bisa lebih dari satu.</li>
+      <li>Jawaban tersimpan otomatis. Jika halaman tertutup, masuk lagi dengan nama, kelas, dan absen yang sama.</li>
+      <li>Tandai <b>Ragu-ragu</b> jika ingin memeriksa ulang soal tersebut.</li>
+      <li>Waktu berjalan sejak tombol <b>Mulai</b> ditekan. Jawaban terkirim otomatis saat waktu habis.</li>
+    </ul>
+    <div style="display:flex;justify-content:space-between;gap:10px;margin-top:22px">
+      <button class="btn" id="btnBatal"></button>
+      <button class="btn primary" id="btnMulai"></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LAYAR UJIAN ============ -->
+<section id="layarUjian" class="wrap hidden">
+  <div class="exam">
+    <div class="card q-card">
+      <div class="q-head">
+        <span class="q-num" id="qNum"></span>
+        <span class="badge info" id="qSec"></span>
+        <div style="flex:1"></div>
+        <button class="btn sm warn" id="btnRagu"></button>
+      </div>
+      <div class="q-body" id="qBody"></div>
+      <div class="q-foot">
+        <button class="btn" id="btnPrev"></button>
+        <button class="btn primary" id="btnNext"></button>
+      </div>
+    </div>
+
+    <aside class="aside" id="aside">
+      <div class="card timer" id="timerCard">
+        <span id="timerIc"></span>
+        <div style="flex:1">
+          <div class="small muted">Sisa waktu</div>
+          <b id="timerTxt">--:--</b>
+        </div>
+      </div>
+      <div class="card nav-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3>Navigasi soal</h3>
+          <span class="small muted" id="progTxt"></span>
+        </div>
+        <div class="progress"><i id="progBar" style="width:0"></i></div>
+        <div id="navWrap"></div>
+        <div class="legend">
+          <span><i style="background:var(--primary);border-color:var(--primary)"></i>Dijawab</span>
+          <span><i style="background:var(--warn);border-color:var(--warn)"></i>Ragu-ragu</span>
+          <span><i></i>Belum</span>
+          <span><i style="border-radius:50%;background:var(--warn);border-color:var(--warn);width:9px;height:9px"></i>Alasan kosong</span>
+        </div>
+        <button class="btn ok block" style="margin-top:16px" id="btnSelesai"></button>
+      </div>
+      <div class="card card-pad small" style="padding:14px 16px">
+        <div class="muted">Peserta</div>
+        <div style="font-weight:700" id="pesertaNama"></div>
+        <div class="muted" id="pesertaInfo"></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ LAYAR SELESAI ============ -->
+<section id="layarSelesai" class="wrap hidden">
+  <div class="card done-card">
+    <div class="done-ic" id="doneIc"></div>
+    <h2>Jawaban berhasil dikirim</h2>
+    <p class="muted" id="doneTxt" style="margin:8px 0 0"></p>
+    <p class="muted small" style="margin:14px 0 0">Nilai akan diumumkan oleh guru setelah proses penilaian selesai.</p>
+    <button class="btn" style="margin-top:22px" onclick="location.reload()" id="btnUlang"></button>
+  </div>
+</section>
+
+<div id="modalHost"></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="soal.js"></script>
+<script src="assets/icons.js"></script>
+<script src="assets/db.js"></script>
+<script>
+(function () {
+  const C = CONFIG, B = BANK_SOAL, T = TIPE_INFO;
+  const $ = id => document.getElementById(id);
+  const HURUF = "ABCDE";
+  let mapelPilih = null;
+  let sesi = null;      // sesi aktif
+  let timerId = null;
+  let mengirim = false;
+
+  /* ---------- Header & teks tombol ---------- */
+  $("brandMark").innerHTML = ico("school");
+  $("brandTitle").textContent = C.JUDUL_UJIAN + " · " + C.TAHUN_AJARAN;
+  $("brandSub").textContent = C.NAMA_SEKOLAH;
+  $("modeChip").className = "chip " + (DB.mode === "supabase" ? "live" : "demo");
+  $("modeChip").textContent = DB.mode === "supabase" ? "Online" : "Mode demo";
+  $("btnMasuk").innerHTML = "Lanjut " + ico("right");
+  $("btnBatal").innerHTML = ico("left") + " Kembali";
+  $("btnMulai").innerHTML = "Mulai mengerjakan " + ico("right");
+  $("btnPrev").innerHTML = ico("left") + '<span class="lbl">Sebelumnya</span>';
+  $("btnSelesai").innerHTML = ico("send") + " Selesai & kirim";
+  $("timerIc").innerHTML = ico("clock");
+  $("btnNav").innerHTML = ico("grid") + " Soal";
+  $("doneIc").innerHTML = ico("check");
+  $("btnUlang").innerHTML = ico("left") + " Kembali ke halaman awal";
+
+  C.KELAS.forEach(k => { const o = document.createElement("option"); o.value = k; o.textContent = k; $("inKelas").appendChild(o); });
+
+  function toast(msg) {
+    const t = $("toast"); t.innerHTML = msg; t.classList.add("show");
+    clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2400);
+  }
+  function tampil(id) {
+    ["layarMasuk", "layarInfo", "layarUjian", "layarSelesai"].forEach(x => $(x).classList.toggle("hidden", x !== id));
+    const ujian = id === "layarUjian";
+    $("topTimer").classList.toggle("hidden", !ujian);
+    $("btnNav").classList.toggle("hidden", !ujian);
+    window.scrollTo(0, 0);
+  }
+  function hitungTipe(m) {
+    const n = {}; m.soal.forEach(s => n[s.tipe] = (n[s.tipe] || 0) + 1); return n;
+  }
+  function kunciSesi(mapel, kelas, absen) { return "pas_sesi_" + mapel + "_" + kelas + "_" + absen; }
+
+  /* ---------- Kartu mapel ---------- */
+  B.mapel.forEach(m => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "mapel-card"; b.dataset.id = m.id;
+    b.innerHTML = '<div class="mapel-ic">' + ico(m.ikon) + '</div><div><div class="mapel-name">' + m.nama +
+      '</div><div class="mapel-meta">' + m.soal.length + " soal · " + m.durasi + " menit</div></div>";
+    b.onclick = () => {
+      mapelPilih = m.id;
+      document.querySelectorAll(".mapel-card").forEach(x => x.classList.toggle("sel", x === b));
+      $("tokenWrap").classList.toggle("hidden", !(C.TOKEN || {})[m.id]);
+    };
+    $("mapelGrid").appendChild(b);
+  });
+
+  function errMasuk(msg) {
+    const e = $("errMasuk");
+    if (!msg) { e.classList.add("hidden"); return; }
+    e.innerHTML = ico("alert") + "<span>" + msg + "</span>"; e.classList.remove("hidden");
+  }
+
+  /* ---------- Masuk ---------- */
+  $("formMasuk").onsubmit = async (ev) => {
+    ev.preventDefault();
+    errMasuk("");
+    const nama = $("inNama").value.trim().replace(/\s+/g, " ");
+    const kelas = $("inKelas").value;
+    const absen = parseInt($("inAbsen").value, 10);
+    if (nama.length < 3) return errMasuk("Nama lengkap minimal 3 huruf.");
+    if (!absen || absen < 1) return errMasuk("Nomor absen belum diisi dengan benar.");
+    if (!mapelPilih) return errMasuk("Pilih mata pelajaran terlebih dahulu.");
+    const token = (C.TOKEN || {})[mapelPilih];
+    if (token && $("inToken").value.trim().toUpperCase() !== String(token).toUpperCase())
+      return errMasuk("Token ujian tidak sesuai. Tanyakan kepada pengawas.");
+
+    const btn = $("btnMasuk"); btn.disabled = true; btn.textContent = "Memeriksa...";
+    try {
+      const ada = await DB.cari(mapelPilih, kelas, absen);
+      if (ada) {
+        errMasuk("Kelas " + kelas + " absen " + absen + " sudah mengirim jawaban untuk mapel ini" +
+          (ada.nama ? " (atas nama " + ada.nama + ")" : "") + ". Hubungi guru jika ada kesalahan.");
+        return;
+      }
+    } catch (e) {
+      errMasuk("Tidak dapat terhubung ke server. Periksa koneksi internet lalu coba lagi.");
+      return;
+    } finally {
+      btn.disabled = false; btn.innerHTML = "Lanjut " + ico("right");
+    }
+
+    const key = kunciSesi(mapelPilih, kelas, absen);
+    let lama = null;
+    try { lama = JSON.parse(localStorage.getItem(key) || "null"); } catch (e) {}
+    if (lama && lama.mulai) {
+      sesi = lama; sesi.nama = nama;
+      simpan();
+      toast(ico("refresh") + " Melanjutkan ujian sebelumnya");
+      mulaiUjian();
+      return;
+    }
+    sesi = { key, nama, kelas, absen, mapel: mapelPilih, mulai: null, jawaban: {}, ragu: {}, idx: 0, urutan: null };
+    tampilInfo();
+  };
+
+  function tampilInfo() {
+    const m = B.mapel.find(x => x.id === sesi.mapel);
+    $("infoJudul").textContent = m.nama;
+    $("infoSub").textContent = C.JUDUL_UJIAN + " · Tahun Ajaran " + C.TAHUN_AJARAN;
+    $("infoKv").innerHTML =
+      "<div><span>Nama</span><b>" + esc(sesi.nama) + "</b></div>" +
+      "<div><span>Kelas / Absen</span><b>" + sesi.kelas + " / " + sesi.absen + "</b></div>" +
+      "<div><span>Jumlah soal</span><b>" + m.soal.length + "</b></div>" +
+      "<div><span>Durasi</span><b>" + m.durasi + " menit</b></div>";
+    const n = hitungTipe(m);
+    $("infoTabel").innerHTML = URUTAN_TIPE.filter(t => n[t]).map(t =>
+      "<tr><td><b>" + T[t].kode + "</b></td><td>" + T[t].nama + '</td><td style="text-align:right">' + n[t] + "</td></tr>").join("");
+    tampil("layarInfo");
+  }
+  $("btnBatal").onclick = () => { sesi = null; tampil("layarMasuk"); };
+  $("btnMulai").onclick = () => {
+    const m = B.mapel.find(x => x.id === sesi.mapel);
+    let urut = [];
+    URUTAN_TIPE.forEach(t => {
+      let ids = m.soal.filter(s => s.tipe === t).map(s => s.id);
+      if (C.ACAK_URUTAN_SOAL) ids = acak(ids);
+      urut = urut.concat(ids);
+    });
+    sesi.urutan = urut;
+    sesi.mulai = Date.now();
+    simpan();
+    mulaiUjian();
+  };
+
+  /* ---------- Ujian ---------- */
+  let soalMap = {};
+  function mapelAktif() { return B.mapel.find(x => x.id === sesi.mapel); }
+
+  function mulaiUjian() {
+    const m = mapelAktif();
+    soalMap = {}; m.soal.forEach(s => soalMap[s.id] = s);
+    sesi.urutan = (sesi.urutan || []).filter(id => soalMap[id]);
+    $("pesertaNama").textContent = sesi.nama;
+    $("pesertaInfo").textContent = "Kelas " + sesi.kelas + " · Absen " + sesi.absen + " · " + m.nama;
+    tampil("layarUjian");
+    buatNav();
+    render();
+    clearInterval(timerId);
+    timerId = setInterval(tick, 1000); tick();
+    window.onbeforeunload = () => "Ujian sedang berlangsung.";
+  }
+
+  function sisaMs() { return sesi.mulai + mapelAktif().durasi * 60000 - Date.now(); }
+  function tick() {
+    const s = Math.max(0, Math.floor(sisaMs() / 1000));
+    const hh = Math.floor(s / 3600), mm = Math.floor(s % 3600 / 60), ss = s % 60;
+    const txt = (hh ? hh + ":" : "") + String(mm).padStart(2, "0") + ":" + String(ss).padStart(2, "0");
+    $("timerTxt").textContent = txt;
+    $("topTimer").innerHTML = ico("clock") + " " + txt;
+    const low = s <= 300;
+    $("timerCard").classList.toggle("low", low);
+    $("topTimer").className = "chip" + (low ? " demo" : "");
+    if (s <= 0 && !mengirim) { clearInterval(timerId); toast(ico("clock") + " Waktu habis, jawaban dikirim"); kirim(true); }
+  }
+
+  function simpan() { if (sesi && sesi.key) localStorage.setItem(sesi.key, JSON.stringify(sesi)); }
+
+  function statusSoal(id) {
+    const s = soalMap[id], j = sesi.jawaban[id] || {};
+    let jawab = false;
+    if (s.tipe === "pg" || s.tipe === "bs") jawab = j.p != null;
+    else if (s.tipe === "pgk") jawab = Array.isArray(j.p) && j.p.length > 0;
+    else jawab = !!(j.t || "").trim();
+    const alasanKosong = (s.tipe === "pg" || s.tipe === "bs") && jawab && !(j.a || "").trim();
+    return { jawab, alasanKosong, ragu: !!sesi.ragu[id] };
+  }
+
+  function buatNav() {
+    let html = "", no = 0;
+    URUTAN_TIPE.forEach(t => {
+      const ids = sesi.urutan.filter(id => soalMap[id].tipe === t);
+      if (!ids.length) return;
+      html += '<div class="nav-sec">' + T[t].kode + ". " + T[t].nama + '</div><div class="nav-grid">';
+      ids.forEach(id => { no++; html += '<button class="nb" data-id="' + id + '">' + no + "</button>"; });
+      html += "</div>";
+    });
+    $("navWrap").innerHTML = html;
+    $("navWrap").querySelectorAll(".nb").forEach(b => b.onclick = () => {
+      sesi.idx = sesi.urutan.indexOf(b.dataset.id); simpan(); render();
+      $("aside").classList.remove("open");
+    });
+  }
+
+  function perbaruiNav() {
+    let dijawab = 0;
+    $("navWrap").querySelectorAll(".nb").forEach(b => {
+      const st = statusSoal(b.dataset.id);
+      if (st.jawab) dijawab++;
+      b.className = "nb" + (st.ragu ? " ragu" : st.jawab ? " done" : "") + (sesi.urutan[sesi.idx] === b.dataset.id ? " cur" : "");
+      const dot = b.querySelector(".dot");
+      if (st.alasanKosong && !dot) b.insertAdjacentHTML("beforeend", '<span class="dot"></span>');
+      if (!st.alasanKosong && dot) dot.remove();
+    });
+    const tot = sesi.urutan.length;
+    $("progTxt").textContent = dijawab + " / " + tot + " dijawab";
+    $("progBar").style.width = (dijawab / tot * 100) + "%";
+  }
+
+  function render() {
+    const id = sesi.urutan[sesi.idx], s = soalMap[id];
+    const j = sesi.jawaban[id] || (sesi.jawaban[id] = {});
+    const tot = sesi.urutan.length;
+    $("qNum").textContent = "Soal " + (sesi.idx + 1) + " dari " + tot;
+    $("qSec").textContent = "Bagian " + T[s.tipe].kode + " · " + T[s.tipe].nama;
+
+    let h = '<div class="q-hint">' + ico("info") + "<span>" + T[s.tipe].petunjuk + "</span></div>";
+    h += '<div class="q-text">' + (s.teks.trim().startsWith("<") ? s.teks : "<p>" + s.teks + "</p>") + "</div>";
+
+    if (s.tipe === "pg" || s.tipe === "pgk") {
+      const multi = s.tipe === "pgk";
+      h += '<div class="opts">' + s.opsi.map((o, i) => {
+        const sel = multi ? (j.p || []).includes(i) : j.p === i;
+        return '<button type="button" class="opt' + (multi ? " multi" : "") + (sel ? " sel" : "") + '" data-i="' + i + '"><span class="key">' +
+          (multi ? (sel ? ico("check") : "") : HURUF[i]) + '</span><span class="txt">' + (multi ? "<b>" + HURUF[i] + ".</b> " : "") + o + "</span></button>";
+      }).join("") + "</div>";
+    }
+    if (s.tipe === "bs") {
+      h += '<div class="bs-opts">' +
+        '<button type="button" class="bs-btn' + (j.p === 0 ? " sel" : "") + '" data-i="0">' + ico("check") + " Benar</button>" +
+        '<button type="button" class="bs-btn' + (j.p === 1 ? " sel" : "") + '" data-i="1">' + ico("x") + " Salah</button></div>";
+    }
+    if (s.tipe === "pg" || s.tipe === "bs") {
+      h += '<div class="alasan-box"><label class="f" for="inAlasan">' + ico("edit") + ' Alasan jawabanmu</label>' +
+        '<textarea class="input" id="inAlasan" rows="3" placeholder="Tuliskan alasan mengapa kamu memilih jawaban tersebut..."></textarea></div>';
+    }
+    if (s.tipe === "isian") {
+      h += '<div style="margin-top:16px;max-width:460px"><label class="f" for="inIsian">Jawaban</label>' +
+        '<input class="input" id="inIsian" placeholder="Ketik jawaban singkat"></div>';
+    }
+    if (s.tipe === "essay") {
+      h += '<div style="margin-top:16px"><label class="f" for="inEssay">Jawaban</label>' +
+        '<textarea class="input" id="inEssay" rows="8" placeholder="Tuliskan jawabanmu di sini..."></textarea></div>';
+    }
+    $("qBody").innerHTML = h;
+
+    // isi nilai teks lewat properti agar aman
+    if ($("inAlasan")) $("inAlasan").value = j.a || "";
+    if ($("inIsian")) $("inIsian").value = j.t || "";
+    if ($("inEssay")) $("inEssay").value = j.t || "";
+
+    // event
+    $("qBody").querySelectorAll(".opt").forEach(b => b.onclick = () => {
+      const i = +b.dataset.i;
+      if (s.tipe === "pgk") {
+        const arr = j.p || [];
+        j.p = arr.includes(i) ? arr.filter(x => x !== i) : arr.concat(i).sort();
+      } else j.p = i;
+      simpan(); render();
+    });
+    $("qBody").querySelectorAll(".bs-btn").forEach(b => b.onclick = () => { j.p = +b.dataset.i; simpan(); render(); });
+    const ketik = (el, field) => { if (!el) return; el.oninput = () => { j[field] = el.value; simpanTunda(); }; };
+    ketik($("inAlasan"), "a"); ketik($("inIsian"), "t"); ketik($("inEssay"), "t");
+
+    // tombol
+    $("btnPrev").disabled = sesi.idx === 0;
+    const akhir = sesi.idx === tot - 1;
+    $("btnNext").className = "btn " + (akhir ? "ok" : "primary");
+    $("btnNext").innerHTML = akhir ? ico("send") + '<span class="lbl">Selesai</span>' : '<span class="lbl">Berikutnya</span>' + ico("right");
+    const r = !!sesi.ragu[id];
+    $("btnRagu").className = "btn sm warn" + (r ? " on" : "");
+    $("btnRagu").innerHTML = ico("flag") + (r ? " Ragu-ragu" : " Tandai ragu");
+    perbaruiNav();
+  }
+  let tundaT = null;
+  function simpanTunda() { clearTimeout(tundaT); tundaT = setTimeout(() => { simpan(); perbaruiNav(); }, 300); }
+
+  $("btnPrev").onclick = () => { if (sesi.idx > 0) { sesi.idx--; simpan(); render(); window.scrollTo(0, 0); } };
+  $("btnNext").onclick = () => {
+    if (sesi.idx < sesi.urutan.length - 1) { sesi.idx++; simpan(); render(); window.scrollTo(0, 0); }
+    else konfirmasiKirim();
+  };
+  $("btnRagu").onclick = () => { const id = sesi.urutan[sesi.idx]; sesi.ragu[id] = !sesi.ragu[id]; simpan(); render(); };
+  $("btnSelesai").onclick = () => konfirmasiKirim();
+  $("btnNav").onclick = () => $("aside").classList.toggle("open");
+
+  /* ---------- Kirim ---------- */
+  function ringkasan() {
+    let belum = 0, alasan = 0, ragu = 0;
+    sesi.urutan.forEach(id => { const st = statusSoal(id); if (!st.jawab) belum++; if (st.alasanKosong) alasan++; if (st.ragu) ragu++; });
+    return { belum, alasan, ragu };
+  }
+  function modal(html) { $("modalHost").innerHTML = '<div class="modal-bg"><div class="modal">' + html + "</div></div>"; }
+  function tutupModal() { $("modalHost").innerHTML = ""; }
+
+  function konfirmasiKirim() {
+    clearTimeout(tundaT); simpan();
+    const r = ringkasan();
+    const warn = r.belum || r.alasan || r.ragu;
+    modal("<h3>Kirim jawaban sekarang?</h3>" +
+      '<p class="muted small" style="margin:0">Setelah dikirim, jawaban tidak dapat diubah lagi.</p>' +
+      '<div class="sum-list">' +
+      "<div><span>Belum dijawab</span><b style=\"color:" + (r.belum ? "var(--bad)" : "var(--ok)") + "\">" + r.belum + "</b></div>" +
+      "<div><span>Alasan masih kosong</span><b style=\"color:" + (r.alasan ? "var(--warn)" : "var(--ok)") + "\">" + r.alasan + "</b></div>" +
+      "<div><span>Ditandai ragu-ragu</span><b>" + r.ragu + "</b></div></div>" +
+      (warn ? '<p class="small" style="color:var(--warn);margin:12px 0 0">Masih ada soal yang perlu diperiksa. Yakin ingin mengirim?</p>' : "") +
+      '<div class="actions"><button class="btn" id="mBatal">Periksa lagi</button><button class="btn ok" id="mKirim">' + ico("send") + " Kirim</button></div>");
+    $("mBatal").onclick = tutupModal;
+    $("mKirim").onclick = () => kirim(false);
+  }
+
+  async function kirim(otomatis) {
+    if (mengirim) return;
+    mengirim = true;
+    modal('<h3>Mengirim jawaban...</h3><p class="muted small" style="margin:0">Jangan tutup halaman ini.</p>');
+    const rec = {
+      mapel: sesi.mapel, kelas: sesi.kelas, absen: sesi.absen, nama: sesi.nama,
+      jawaban: bersihkan(sesi.jawaban),
+      mulai_at: new Date(sesi.mulai).toISOString(),
+      dikirim_at: new Date().toISOString()
+    };
+    try {
+      await DB.kirim(rec);
+      selesai();
+    } catch (e) {
+      mengirim = false;
+      if (e && e.message === "SUDAH_ADA") {
+        localStorage.removeItem(sesi.key);
+        modal("<h3>Jawaban sudah tercatat</h3><p class=\"muted small\">Data untuk kelas dan absen ini sudah ada di server. Hubungi guru bila ada kesalahan.</p>" +
+          '<div class="actions"><button class="btn primary" onclick="location.reload()">Tutup</button></div>');
+        window.onbeforeunload = null;
+        return;
+      }
+      modal("<h3>Gagal mengirim</h3><p class=\"muted small\" style=\"margin:0\">Koneksi bermasalah. Jawabanmu masih aman tersimpan di perangkat ini. Coba kirim ulang.</p>" +
+        '<div class="actions"><button class="btn" id="mTutup">Tutup</button><button class="btn primary" id="mUlang">' + ico("refresh") + " Kirim ulang</button></div>");
+      $("mTutup").onclick = tutupModal;
+      $("mUlang").onclick = () => kirim(otomatis);
+    }
+  }
+  function bersihkan(jw) {
+    const out = {};
+    Object.keys(jw).forEach(id => {
+      const j = jw[id] || {}, o = {};
+      if (j.p != null && !(Array.isArray(j.p) && !j.p.length)) o.p = j.p;
+      if ((j.a || "").trim()) o.a = j.a.trim();
+      if ((j.t || "").trim()) o.t = j.t.trim();
+      if (Object.keys(o).length) out[id] = o;
+    });
+    return out;
+  }
+  function selesai() {
+    clearInterval(timerId);
+    window.onbeforeunload = null;
+    localStorage.removeItem(sesi.key);
+    tutupModal();
+    $("doneTxt").textContent = "Terima kasih, " + sesi.nama + ". Jawaban " + mapelAktif().nama + " (kelas " + sesi.kelas + ", absen " + sesi.absen + ") sudah diterima.";
+    tampil("layarSelesai");
+  }
+
+  function acak(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+})();
+</script>
+</body>
+</html>
