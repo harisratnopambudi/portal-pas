@@ -26,13 +26,12 @@ service cloud.firestore {
     }
 
     // Draft jawaban (tersimpan per soal) selama siswa mengerjakan.
-    // Tidak bisa diubah lagi setelah jawaban final dikirim, kecuali oleh guru.
+    // Hanya bisa ditulis siswa yang sudah masuk dengan token.
     match /pas_draft/{docId} {
       allow get: if true;
       allow list: if request.auth != null;
       allow create, update: if request.auth != null || (
-           !exists(/databases/$(database)/documents/pas_jawaban/$(docId))
-        && exists(/databases/$(database)/documents/pas_masuk/$(docId))
+           exists(/databases/$(database)/documents/pas_masuk/$(docId))
         && request.resource.data.keys().hasOnly(
              ['mapel','kelas','absen','nama','mulai','jawaban','ragu','idx','urutan','terjawab','total','diperbarui_at','pelanggaran','terkunci','kunciPada'])
         && docId == (request.resource.data.mapel + '_' + request.resource.data.kelas + '_' + string(request.resource.data.absen)).replace('[^A-Za-z0-9_-]', '-')

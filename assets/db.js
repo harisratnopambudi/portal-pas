@@ -182,8 +182,10 @@
     async daftarSiswa() {
       let rows;
       if (fs) {
-        const snap = await fs.collection(KOL_SISWA).get();
-        rows = snap.docs.map(d => d.data());
+        // Semua rombel disimpan dalam satu dokumen "_semua" (1 baca per buka halaman)
+        const satu = await fs.collection(KOL_SISWA).doc("_semua").get();
+        if (satu.exists) rows = satu.data().rombel || [];
+        else { const snap = await fs.collection(KOL_SISWA).get(); rows = snap.docs.map(d => d.data()).filter(r => r.kelas); }
       } else {
         try { rows = JSON.parse(localStorage.getItem(LKEY_SISWA) || "[]"); } catch (e) { rows = []; }
       }
@@ -193,8 +195,8 @@
       if (fs) {
         const lama = await fs.collection(KOL_SISWA).get();
         const batch = fs.batch();
-        lama.docs.forEach(d => batch.delete(d.ref));
-        rombel.forEach(r => batch.set(fs.collection(KOL_SISWA).doc(r.kelas.replace(/[^\w-]/g, "-")), r));
+        lama.docs.forEach(d => { if (d.id !== "_semua") batch.delete(d.ref); });
+        batch.set(fs.collection(KOL_SISWA).doc("_semua"), { rombel, diubah_at: Date.now() });
         await batch.commit();
         return true;
       }

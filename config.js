@@ -30,6 +30,10 @@ window.CONFIG = {
   // Alasan pada soal PG & Benar/Salah wajib diisi, minimal sekian huruf
   ALASAN_MIN_KARAKTER: 10,
 
+  // Jawaban selalu tersimpan seketika di perangkat siswa. Cadangan ke server dikirim tiap sekian detik
+  // (dan saat siswa keluar halaman / mulai / kirim). Makin besar makin hemat kuota Firebase gratis.
+  SIMPAN_SERVER_DETIK: 120,
+
   // Pengamanan ujian (halaman siswa)
   ANTI_CURANG: {
     blokirSalinTempel: true,   // blok copy, paste, cut, klik kanan, seleksi teks soal, shortcut keyboard

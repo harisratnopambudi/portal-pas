@@ -615,9 +615,10 @@
     else if (syncState === "ok") setSync("pending");
     if (navigator.onLine === false) setSync("offline");
   }
-  // Ke server: saat pindah soal, tiap 20 detik bila ada perubahan, dan saat halaman disembunyikan.
+  // Ke server (cadangan): tiap SIMPAN_SERVER_DETIK bila ada perubahan, dan saat halaman disembunyikan/ditutup.
   let perluSync = false;
-  setInterval(() => { if (perluSync && sesi && sesi.mulai && !mengirim) kirimDraft(); }, 20000);
+  setInterval(() => { if (perluSync && sesi && sesi.mulai && !mengirim) kirimDraft(); }, Math.max(30, C.SIMPAN_SERVER_DETIK || 120) * 1000);
+  window.addEventListener("pagehide", () => { if (perluSync && sesi && sesi.mulai && !mengirim) kirimDraft(); });
   document.addEventListener("visibilitychange", () => { if (document.hidden && perluSync && sesi && sesi.mulai && !mengirim) kirimDraft(); });
   let syncT = null, syncSeq = 0, syncState = "";
   function draftDari(x) {
@@ -682,7 +683,7 @@
     });
     $("navWrap").innerHTML = html;
     $("navWrap").querySelectorAll(".nb").forEach(b => b.onclick = () => {
-      sesi.idx = sesi.urutan.indexOf(b.dataset.id); simpan(true); render();
+      sesi.idx = sesi.urutan.indexOf(b.dataset.id); simpan(); render();
       $("aside").classList.remove("open");
     });
   }
@@ -780,9 +781,9 @@
   let tundaT = null;
   function simpanTunda() { clearTimeout(tundaT); tundaT = setTimeout(() => { simpan(); perbaruiNav(); }, 300); }
 
-  $("btnPrev").onclick = () => { if (sesi.idx > 0) { sesi.idx--; simpan(true); render(); window.scrollTo(0, 0); } };
+  $("btnPrev").onclick = () => { if (sesi.idx > 0) { sesi.idx--; simpan(); render(); window.scrollTo(0, 0); } };
   $("btnNext").onclick = () => {
-    if (sesi.idx < sesi.urutan.length - 1) { sesi.idx++; simpan(true); render(); window.scrollTo(0, 0); }
+    if (sesi.idx < sesi.urutan.length - 1) { sesi.idx++; simpan(); render(); window.scrollTo(0, 0); }
     else konfirmasiKirim();
   };
   $("btnRagu").onclick = () => { const id = sesi.urutan[sesi.idx]; sesi.ragu[id] = !sesi.ragu[id]; simpan(); render(); };
