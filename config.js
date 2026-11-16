@@ -12,12 +12,12 @@ window.CONFIG = {
   // Firebase — salin dari Firebase Console > Project settings > Your apps (Web app).
   // Biarkan apiKey kosong untuk MODE DEMO (data tersimpan di browser ini saja).
   FIREBASE: {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: ""
+    apiKey: "AIzaSyAXwFSN6synzrgOFrUtVnY7u9HTqEl6C50",
+    authDomain: "portal-pas-c0016.firebaseapp.com",
+    projectId: "portal-pas-c0016",
+    storageBucket: "portal-pas-c0016.firebasestorage.app",
+    messagingSenderId: "129169412765",
+    appId: "1:129169412765:web:4acce3a073a40aca11fa74"
   },
   KOLEKSI: "pas_jawaban",
 
