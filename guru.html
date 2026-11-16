@@ -193,6 +193,7 @@
       <p class="muted small" style="margin:4px 0 0">Siswa wajib memasukkan token untuk <b>mulai</b> mengerjakan. Aktifkan saat ujian mapel itu dimulai, lalu bacakan atau tampilkan tokennya.
       Nonaktifkan setelah semua siswa masuk agar yang terlambat atau di luar ruangan tidak bisa mulai. Siswa yang sedang mengerjakan tidak terpengaruh.</p>
     </div>
+    <div id="tokenErr" class="hidden" style="margin-bottom:14px"></div>
     <div class="token-grid" id="tokenGrid"></div>
   </div>
 
@@ -737,9 +738,15 @@
     return [...a].map(x => HURUF_TOKEN[x % HURUF_TOKEN.length]).join("");
   }
   let TOKENS = {};
-  async function renderToken() {
+  async function renderToken(pertahankanError) {
+    if (!pertahankanError) $("tokenErr").classList.add("hidden");
     $("tokenGrid").innerHTML = '<div class="card empty">Memuat...</div>';
-    try { TOKENS = await DB.daftarToken(); } catch (e) { TOKENS = {}; toast(ico("alert") + " Gagal memuat token"); }
+    try { TOKENS = await DB.daftarToken(); }
+    catch (e) {
+      TOKENS = {};
+      $("tokenErr").innerHTML = '<div class="err">' + ico("alert") + "<span><b>Daftar token gagal dimuat.</b> Pastikan Rules terbaru sudah di-Publish. <span class=\"muted\">(kode: " + esc((e && e.code) || e) + ")</span></span></div>";
+      $("tokenErr").classList.remove("hidden");
+    }
     $("tokenGrid").innerHTML = B.mapel.map(m => {
       const t = TOKENS[m.id] || {};
       const aktif = !!(t.token && t.aktif);
@@ -756,18 +763,32 @@
         (aktif ? '<button class="btn" data-layar="' + m.id + '">' + ico("grid") + " Tampilkan besar</button>" : "") +
         "</div></div>";
     }).join("");
-    const simpanTk = async (id, data, pesan) => {
-      try { await DB.setToken(id, data); toast(ico("check") + " " + pesan); renderToken(); }
-      catch (e) { toast(ico("alert") + " Gagal menyimpan token: " + esc(e.message || e)); }
+    const simpanTk = async (id, data, pesan, btn) => {
+      $("tokenErr").classList.add("hidden");
+      $("tokenGrid").querySelectorAll("button").forEach(x => x.disabled = true);
+      if (btn) btn.innerHTML = ico("refresh") + " Menyimpan...";
+      try {
+        await Promise.race([DB.setToken(id, data), new Promise((_, rej) => setTimeout(() => rej({ code: "timeout" }), 12000))]);
+        toast(ico("check") + " " + pesan); renderToken();
+      } catch (e) {
+        const kode = (e && e.code) || "";
+        const saran = kode.includes("permission") ? "Akses ditolak oleh Firestore. Pastikan <b>Rules terbaru sudah di-Publish</b> (harus ada bagian <code>pas_token</code>), lalu keluar dan masuk lagi ke halaman guru."
+          : kode === "timeout" ? "Server tidak merespons dalam 12 detik. Periksa koneksi internet, lalu muat ulang halaman (Ctrl+F5)."
+          : kode.includes("unauthenticated") ? "Sesi login guru habis. Klik Keluar lalu masuk lagi."
+          : "Terjadi kesalahan: " + esc((e && e.message) || kode || e);
+        $("tokenErr").innerHTML = '<div class="err">' + ico("alert") + "<span><b>Token gagal disimpan.</b> " + saran + (kode ? ' <span class="muted">(kode: ' + esc(kode) + ")</span>" : "") + "</span></div>";
+        $("tokenErr").classList.remove("hidden");
+        renderToken(true);
+      }
     };
     $("tokenGrid").querySelectorAll("[data-on]").forEach(b => b.onclick = () => {
       const t = TOKENS[b.dataset.on] || {};
-      simpanTk(b.dataset.on, { token: t.token || tokenAcak(), aktif: true }, "Token aktif");
+      simpanTk(b.dataset.on, { token: t.token || tokenAcak(), aktif: true }, "Token aktif", b);
     });
-    $("tokenGrid").querySelectorAll("[data-off]").forEach(b => b.onclick = () => simpanTk(b.dataset.off, { aktif: false }, "Token dinonaktifkan"));
+    $("tokenGrid").querySelectorAll("[data-off]").forEach(b => b.onclick = () => simpanTk(b.dataset.off, { aktif: false }, "Token dinonaktifkan", b));
     $("tokenGrid").querySelectorAll("[data-baru]").forEach(b => b.onclick = () => {
       const t = TOKENS[b.dataset.baru] || {};
-      simpanTk(b.dataset.baru, { token: tokenAcak(), aktif: !!t.aktif }, "Token baru dibuat");
+      simpanTk(b.dataset.baru, { token: tokenAcak(), aktif: !!t.aktif }, "Token baru dibuat" + (t.aktif ? "" : " (belum aktif, klik Aktifkan)"), b);
     });
     $("tokenGrid").querySelectorAll("[data-layar]").forEach(b => b.onclick = () => {
       const m = B.mapel.find(x => x.id === b.dataset.layar), t = TOKENS[m.id];
