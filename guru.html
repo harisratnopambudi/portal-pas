@@ -320,10 +320,10 @@
     isiSelSoal(); muatRombel().then(muat);
   }
   DB.sudahMasuk().then(ok => { if (ok) masuk(); });
-  // Segarkan otomatis tiap 30 detik saat di tab Rekap (untuk pantauan pengawas)
+  // Segarkan otomatis tiap 60 detik saat di tab Rekap DAN satu kelas dipilih (pantauan pengawas, hemat kuota)
   setInterval(() => {
-    if (tab === "rekap" && !$("layarUtama").classList.contains("hidden") && !$("modalHost").innerHTML) muat();
-  }, 30000);
+    if (tab === "rekap" && $("selKelas").value && !$("layarUtama").classList.contains("hidden") && !$("modalHost").innerHTML) muat();
+  }, 60000);
 
   /* ---------- Data ---------- */
   function mapel() { return P.mapelById($("selMapel").value); }
@@ -332,8 +332,9 @@
   async function muat() {
     $("btnMuat").disabled = true;
     try {
-      data = await DB.daftar($("selMapel").value);
-      try { drafts = await DB.daftarDraft($("selMapel").value); } catch (e) { drafts = []; }
+      const kls = $("selKelas").value;   // bila satu kelas dipilih, hanya data kelas itu yang dibaca (hemat kuota)
+      data = await DB.daftar($("selMapel").value, kls);
+      try { drafts = await DB.daftarDraft($("selMapel").value, kls); } catch (e) { drafts = []; }
       data.forEach(r => r._h = P.nilaiRekaman(r));
     } catch (e) {
       toast(ico("alert") + " Gagal memuat data: " + esc(e.message || e));
@@ -344,7 +345,7 @@
     renderSemua();
   }
   $("selMapel").onchange = () => { pilihSiswa = null; isiSelSoal(); muat(); };
-  $("selKelas").onchange = () => renderSemua();
+  $("selKelas").onchange = () => muat();
   $("btnMuat").onclick = muat;
 
   document.querySelectorAll(".tab").forEach(b => b.onclick = () => {

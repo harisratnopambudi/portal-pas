@@ -529,7 +529,7 @@
     catch (e) {
       btn.disabled = false; btn.innerHTML = "Lanjut " + ico("right");
       if (e && e.message === "TOKEN_SALAH") { $("inToken").select(); return errMasuk("Token salah, atau ujian mapel ini belum dibuka oleh pengawas."); }
-      return errMasuk("Tidak dapat terhubung ke server. Periksa koneksi internet lalu coba lagi.");
+      return errMasuk("Tidak dapat terhubung ke server. Periksa koneksi internet lalu coba lagi. <span style=\"opacity:.7\">(kode: " + esc((e && (e.code || e.message)) || "?") + ")</span>");
     }
     btn.disabled = false; btn.innerHTML = "Lanjut " + ico("right");
     $("inToken").value = "";
@@ -610,10 +610,15 @@
     sesi.diperbarui = Date.now();
     localStorage.setItem(sesi.key, JSON.stringify(sesi));
     if (!sesi.mulai || mengirim) return;
-    clearTimeout(syncT);
-    syncT = setTimeout(kirimDraft, segera ? 0 : 1200);
+    perluSync = true;
+    if (segera) { clearTimeout(syncT); syncT = setTimeout(kirimDraft, 0); }
+    else if (syncState === "ok") setSync("pending");
     if (navigator.onLine === false) setSync("offline");
   }
+  // Ke server: saat pindah soal, tiap 20 detik bila ada perubahan, dan saat halaman disembunyikan.
+  let perluSync = false;
+  setInterval(() => { if (perluSync && sesi && sesi.mulai && !mengirim) kirimDraft(); }, 20000);
+  document.addEventListener("visibilitychange", () => { if (document.hidden && perluSync && sesi && sesi.mulai && !mengirim) kirimDraft(); });
   let syncT = null, syncSeq = 0, syncState = "";
   function draftDari(x) {
     let terjawab = 0;
@@ -623,12 +628,17 @@
       terjawab, total: (x.urutan || []).length,
       pelanggaran: x.pelanggaran || 0, terkunci: !!x.terkunci, kunciPada: x.kunciPada || 0 };
   }
+  let terakhirTerkirim = "";
   function kirimDraft() {
     if (!sesi || !sesi.mulai || mengirim) return;
+    perluSync = false;
+    // Hemat kuota: hanya kirim bila jawaban / tanda ragu / pelanggaran berubah sejak kiriman terakhir
+    const sidik = JSON.stringify([sesi.jawaban, sesi.ragu, sesi.pelanggaran || 0, !!sesi.terkunci, sesi.kunciPada || 0]);
+    if (sidik === terakhirTerkirim) { if (syncState !== "error" && syncState !== "offline") setSync("ok"); return; }
     const id = ++syncSeq;
     setSync(navigator.onLine === false ? "offline" : "saving");
-    DB.simpanDraft(draftDari(sesi)).then(() => { if (id === syncSeq) setSync("ok"); })
-      .catch(e => { if (id === syncSeq) setSync(e && e.code === "permission-denied" ? "locked" : "error"); });
+    DB.simpanDraft(draftDari(sesi)).then(() => { terakhirTerkirim = sidik; if (id === syncSeq) setSync("ok"); })
+      .catch(e => { perluSync = true; if (id === syncSeq) setSync(e && e.code === "permission-denied" ? "locked" : "error"); });
   }
   function setSync(st) {
     syncState = st;
@@ -636,6 +646,7 @@
     const map = {
       ok: ["live", ico("checkCircle") + " Tersimpan"],
       saving: ["", ico("refresh") + " Menyimpan..."],
+      pending: ["live", ico("checkCircle") + " Tersimpan di perangkat"],
       offline: ["demo", ico("alert") + " Offline · tersimpan di perangkat"],
       error: ["demo", ico("alert") + " Gagal sinkron · tersimpan di perangkat"],
       locked: ["demo", ico("lock") + " Sudah dikirim"]
@@ -671,7 +682,7 @@
     });
     $("navWrap").innerHTML = html;
     $("navWrap").querySelectorAll(".nb").forEach(b => b.onclick = () => {
-      sesi.idx = sesi.urutan.indexOf(b.dataset.id); simpan(); render();
+      sesi.idx = sesi.urutan.indexOf(b.dataset.id); simpan(true); render();
       $("aside").classList.remove("open");
     });
   }
@@ -769,9 +780,9 @@
   let tundaT = null;
   function simpanTunda() { clearTimeout(tundaT); tundaT = setTimeout(() => { simpan(); perbaruiNav(); }, 300); }
 
-  $("btnPrev").onclick = () => { if (sesi.idx > 0) { sesi.idx--; simpan(); render(); window.scrollTo(0, 0); } };
+  $("btnPrev").onclick = () => { if (sesi.idx > 0) { sesi.idx--; simpan(true); render(); window.scrollTo(0, 0); } };
   $("btnNext").onclick = () => {
-    if (sesi.idx < sesi.urutan.length - 1) { sesi.idx++; simpan(); render(); window.scrollTo(0, 0); }
+    if (sesi.idx < sesi.urutan.length - 1) { sesi.idx++; simpan(true); render(); window.scrollTo(0, 0); }
     else konfirmasiKirim();
   };
   $("btnRagu").onclick = () => { const id = sesi.urutan[sesi.idx]; sesi.ragu[id] = !sesi.ragu[id]; simpan(); render(); };

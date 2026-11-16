@@ -7,8 +7,8 @@
   if (pakaiFirebase) {
     firebase.initializeApp(F);
     fs = firebase.firestore();
-    // Cache offline: tulisan tetap tersimpan di perangkat saat internet putus, lalu tersinkron otomatis.
-    try { fs.enablePersistence({ synchronizeTabs: true }).catch(() => {}); } catch (e) {}
+    // Catatan: cache multi-tab Firestore (enablePersistence) sengaja TIDAK dipakai karena membuat penulisan
+    // menggantung bila halaman siswa & guru terbuka bersamaan. Simpanan offline ditangani sendiri (localStorage).
     if (firebase.auth) auth = firebase.auth();
   }
   const KOL = C.KOLEKSI || "pas_jawaban";
@@ -61,12 +61,14 @@
     },
 
     /* ---------- guru ---------- */
-    async daftar(mapel) {
+    async daftar(mapel, kelas) {
       let rows;
       if (fs) {
-        const snap = await fs.collection(KOL).where("mapel", "==", mapel).get();
+        let q = fs.collection(KOL).where("mapel", "==", mapel);
+        if (kelas) q = q.where("kelas", "==", kelas);
+        const snap = await q.get();
         rows = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
-      } else rows = lokalAmbil().filter(r => r.mapel === mapel);
+      } else rows = lokalAmbil().filter(r => r.mapel === mapel && (!kelas || r.kelas === kelas));
       return rows.sort((a, b) => String(a.kelas).localeCompare(String(b.kelas)) || a.absen - b.absen);
     },
 
@@ -151,12 +153,14 @@
       if (fs) { try { await fs.collection(KOL_DRAFT).doc(id).delete(); } catch (e) {} return; }
       const o = draftLokal(); delete o[id]; draftLokalSet(o);
     },
-    async daftarDraft(mapel) {
+    async daftarDraft(mapel, kelas) {
       if (fs) {
-        const snap = await fs.collection(KOL_DRAFT).where("mapel", "==", mapel).get();
+        let q = fs.collection(KOL_DRAFT).where("mapel", "==", mapel);
+        if (kelas) q = q.where("kelas", "==", kelas);
+        const snap = await q.get();
         return snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
       }
-      return Object.keys(draftLokal()).map(id => Object.assign({ id }, draftLokal()[id])).filter(d => d.mapel === mapel);
+      return Object.keys(draftLokal()).map(id => Object.assign({ id }, draftLokal()[id])).filter(d => d.mapel === mapel && (!kelas || d.kelas === kelas));
     },
     // Guru: buka kembali jawaban terkirim agar siswa melanjutkan (jawaban lama & sisa waktu dipertahankan)
     async bukaKembali(rec, draft) {
