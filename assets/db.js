@@ -11,6 +11,8 @@
   }
   const KOL = C.KOLEKSI || "pas_jawaban";
   const LKEY = "pas_db_demo";
+  const KOL_SISWA = C.KOLEKSI_SISWA || "pas_siswa";
+  const LKEY_SISWA = "pas_siswa_demo";
 
   function lokalAmbil() { try { return JSON.parse(localStorage.getItem(LKEY) || "[]"); } catch (e) { return []; } }
   function lokalSimpan(arr) { localStorage.setItem(LKEY, JSON.stringify(arr)); }
@@ -66,6 +68,30 @@
     async hapus(id) {
       if (fs) { await fs.collection(KOL).doc(id).delete(); return true; }
       lokalSimpan(lokalAmbil().filter(r => r.id !== id));
+      return true;
+    },
+
+    /* ---------- daftar siswa (per rombel) ---------- */
+    async daftarSiswa() {
+      let rows;
+      if (fs) {
+        const snap = await fs.collection(KOL_SISWA).get();
+        rows = snap.docs.map(d => d.data());
+      } else {
+        try { rows = JSON.parse(localStorage.getItem(LKEY_SISWA) || "[]"); } catch (e) { rows = []; }
+      }
+      return rows.sort((a, b) => String(a.kelas).localeCompare(String(b.kelas), "id", { numeric: true }));
+    },
+    async simpanSiswa(rombel) {           // rombel: [{kelas, tingkat, nama:[...]}] — mengganti seluruh data
+      if (fs) {
+        const lama = await fs.collection(KOL_SISWA).get();
+        const batch = fs.batch();
+        lama.docs.forEach(d => batch.delete(d.ref));
+        rombel.forEach(r => batch.set(fs.collection(KOL_SISWA).doc(r.kelas.replace(/[^\w-]/g, "-")), r));
+        await batch.commit();
+        return true;
+      }
+      localStorage.setItem(LKEY_SISWA, JSON.stringify(rombel));
       return true;
     },
 

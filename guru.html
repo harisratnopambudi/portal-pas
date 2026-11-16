@@ -152,12 +152,14 @@
     <button class="tab on" data-tab="rekap"></button>
     <button class="tab" data-tab="siswa"></button>
     <button class="tab" data-tab="soal"></button>
+    <button class="tab" data-tab="data"></button>
   </div>
 
   <!-- REKAP -->
   <div id="tabRekap">
     <div class="stats" id="stats"></div>
     <div class="card tbl-wrap" id="rekapTabel"></div>
+    <div class="card card-pad hidden" id="belumKirim" style="margin-top:16px"></div>
   </div>
 
   <!-- PER SISWA -->
@@ -171,6 +173,29 @@
         <div class="slist" id="slist"></div>
       </div>
       <div class="card" id="detail"></div>
+    </div>
+  </div>
+
+  <!-- DATA SISWA -->
+  <div id="tabData" class="hidden">
+    <div class="card card-pad" style="margin-bottom:16px">
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div>
+          <h3>Import daftar siswa dari Dapodik</h3>
+          <p class="muted small" style="margin:4px 0 0">Unggah file <b>daftar_pd-....xlsx</b> hasil unduhan Dapodik. Yang disimpan hanya <b>nama</b> dan <b>rombel</b>.</p>
+        </div>
+        <label class="btn primary" style="cursor:pointer">
+          <span id="lblUnggah"></span>
+          <input type="file" id="inXlsx" accept=".xlsx,.xls" class="hidden">
+        </label>
+      </div>
+      <div id="importPrev" class="hidden" style="margin-top:16px"></div>
+    </div>
+    <div class="card">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+        <h3>Data siswa tersimpan</h3><span class="small muted" id="dataCount"></span>
+      </div>
+      <div id="dataList"></div>
     </div>
   </div>
 
@@ -201,6 +226,7 @@
 <script src="assets/icons.js"></script>
 <script src="assets/db.js"></script>
 <script src="assets/penilaian.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 (function () {
   const C = CONFIG, B = BANK_SOAL, T = TIPE_INFO, P = PENILAIAN, H = P.HURUF;
@@ -225,12 +251,19 @@
   $("btnContoh").innerHTML = ico("users") + " Isi data contoh";
   $("btnSoalPrev").innerHTML = ico("left");
   $("btnSoalNext").innerHTML = ico("right");
-  const tabLbl = { rekap: ico("chart") + "Rekap nilai", siswa: ico("user") + "Nilai per siswa", soal: ico("list") + "Nilai per soal" };
+  const tabLbl = { rekap: ico("chart") + "Rekap nilai", siswa: ico("user") + "Nilai per siswa", soal: ico("list") + "Nilai per soal", data: ico("users") + "Data siswa" };
   document.querySelectorAll(".tab").forEach(b => b.innerHTML = tabLbl[b.dataset.tab]);
   if (DB.mode === "demo") $("btnContoh").classList.remove("hidden");
 
   B.mapel.forEach(m => $("selMapel").insertAdjacentHTML("beforeend", '<option value="' + m.id + '">' + esc(m.nama) + "</option>"));
-  $("selKelas").innerHTML = '<option value="">Semua kelas</option>' + C.KELAS.map(k => '<option>' + k + "</option>").join("");
+  $("lblUnggah").innerHTML = ico("file") + " Pilih file Dapodik";
+  let ROMBEL = [];
+  async function muatRombel() {
+    try { ROMBEL = await DB.daftarSiswa(); } catch (e) { ROMBEL = []; }
+    const cur = $("selKelas").value;
+    $("selKelas").innerHTML = '<option value="">Semua kelas</option>' + ROMBEL.map(r => '<option value="' + esc(r.kelas) + '">' + esc(r.kelas) + "</option>").join("");
+    if (ROMBEL.some(r => r.kelas === cur)) $("selKelas").value = cur;
+  }
 
   function toast(msg) {
     const t = $("toast"); t.innerHTML = msg; t.classList.add("show");
@@ -262,7 +295,7 @@
   $("btnKeluar").onclick = async () => { await DB.keluarGuru(); location.reload(); };
   function masuk() {
     $("layarPin").classList.add("hidden"); $("layarUtama").classList.remove("hidden"); $("btnKeluar").classList.remove("hidden");
-    isiSelSoal(); muat();
+    isiSelSoal(); muatRombel().then(muat);
   }
   DB.sudahMasuk().then(ok => { if (ok) masuk(); });
 
@@ -297,6 +330,8 @@
     $("tabRekap").classList.toggle("hidden", tab !== "rekap");
     $("tabSiswa").classList.toggle("hidden", tab !== "siswa");
     $("tabSoal").classList.toggle("hidden", tab !== "soal");
+    $("tabData").classList.toggle("hidden", tab !== "data");
+    if (tab === "data") renderData();
     if (tab === "rekap") renderRekap();
     if (tab === "siswa") renderSiswa();
     if (tab === "soal") renderPerSoal();
@@ -339,7 +374,23 @@
     return d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" }) + " " + d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
   }
 
+  function renderBelum() {
+    const el = $("belumKirim"), k = $("selKelas").value;
+    const rb = ROMBEL.find(r => r.kelas === k);
+    if (!rb) { el.classList.add("hidden"); return; }
+    const m = mapel();
+    if (m.tingkat && !m.tingkat.map(String).includes(String(rb.tingkat))) { el.classList.add("hidden"); return; }
+    const sudah = new Set(data.filter(r => r.kelas === k).map(r => r.absen));
+    const belum = rb.nama.map((n, i) => ({ n, no: i + 1 })).filter(x => !sudah.has(x.no));
+    el.classList.remove("hidden");
+    el.innerHTML = '<div class="row" style="justify-content:space-between"><h3>Belum mengirim · ' + esc(k) + '</h3><span class="badge ' + (belum.length ? "warn" : "ok") + '">' +
+      belum.length + " dari " + rb.nama.length + " siswa</span></div>" +
+      (belum.length ? '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">' + belum.map(x => '<span class="badge neutral" style="font-weight:500">' + x.no + ". " + esc(x.n) + "</span>").join("") + "</div>"
+        : '<p class="muted small" style="margin:8px 0 0">Semua siswa kelas ini sudah mengirim.</p>');
+  }
+
   function renderRekap() {
+    renderBelum();
     const rows = terfilter();
     const selesai = rows.filter(r => r._h.status === "selesai");
     const pendingItem = rows.reduce((a, r) => a + r._h.pending, 0);
@@ -357,7 +408,7 @@
     }
     const m = mapel();
     const tipeAda = URUTAN_TIPE.filter(t => m.soal.some(s => s.tipe === t));
-    let h = '<table class="tbl"><thead><tr><th>Kelas</th><th class="num">Abs</th><th>Nama</th><th>Dikirim</th>' +
+    let h = '<table class="tbl"><thead><tr><th>Kelas</th><th class="num">No</th><th>Nama</th><th>Dikirim</th>' +
       tipeAda.map(t => '<th class="num" title="' + T[t].nama + '">' + T[t].kode + " " + ({ pg: "PG", bs: "B/S", pgk: "PGK", isian: "Isian", essay: "Uraian" })[t] + "</th>").join("") +
       '<th class="num">Total</th><th class="num">Nilai</th><th>Status</th><th></th></tr></thead><tbody>';
     rows.forEach(r => {
@@ -619,6 +670,84 @@
     toast(ico("download") + " File CSV diunduh");
   };
 
+  /* ---------- DATA SISWA (import Dapodik) ---------- */
+  function judulNama(n) {
+    return String(n).trim().replace(/\s+/g, " ").toLowerCase().replace(/(^|[\s\-'.])([a-z\u00c0-\u024f])/g, (m, a, b) => a + b.toUpperCase());
+  }
+  function renderData() {
+    const total = ROMBEL.reduce((a, r) => a + r.nama.length, 0);
+    $("dataCount").textContent = ROMBEL.length + " rombel · " + total + " siswa";
+    if (!ROMBEL.length) {
+      $("dataList").innerHTML = '<div class="empty">' + ico("users") + "<div>Belum ada data siswa. Import file Dapodik di atas.</div></div>";
+      return;
+    }
+    $("dataList").innerHTML = '<table class="tbl"><thead><tr><th>Rombel</th><th class="num">Tingkat</th><th class="num">Siswa</th><th>Nama</th></tr></thead><tbody>' +
+      ROMBEL.map(r => "<tr><td><b>" + esc(r.kelas) + '</b></td><td class="num">' + esc(r.tingkat) + '</td><td class="num">' + r.nama.length +
+        '</td><td style="white-space:normal;color:var(--muted);font-size:13px">' + r.nama.map((n, i) => (i + 1) + ". " + esc(n)).join(", ") + "</td></tr>").join("") +
+      "</tbody></table>";
+  }
+
+  let hasilImport = null;
+  $("inXlsx").onchange = async e => {
+    const f = e.target.files[0]; e.target.value = "";
+    if (!f) return;
+    if (!window.XLSX) return toast(ico("alert") + " Pustaka pembaca Excel gagal dimuat. Periksa koneksi.");
+    try {
+      const wb = XLSX.read(await f.arrayBuffer(), { type: "array" });
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: null });
+      const hi = rows.findIndex(r => r && r.some(c => String(c || "").trim().toLowerCase() === "nama") && r.some(c => /rombel/i.test(String(c || ""))));
+      if (hi < 0) throw new Error("Kolom 'Nama' dan 'Rombel Saat Ini' tidak ditemukan.");
+      const H = rows[hi].map(c => String(c || "").trim().toLowerCase());
+      const iN = H.indexOf("nama"), iR = H.findIndex(c => c.includes("rombel"));
+      const per = {};
+      rows.slice(hi + 1).forEach(r => {
+        if (!r || !r[iN] || !r[iR]) return;
+        const kelas = String(r[iR]).trim().replace(/\s+/g, " ");
+        (per[kelas] = per[kelas] || []).push(judulNama(r[iN]));
+      });
+      const semua = Object.keys(per).map(k => ({ kelas: k, tingkat: (k.match(/^\d+/) || [""])[0], nama: per[k].sort((a, b) => a.localeCompare(b, "id")) }))
+        .sort((a, b) => a.kelas.localeCompare(b.kelas, "id", { numeric: true }));
+      if (!semua.length) throw new Error("Tidak ada data siswa di file ini.");
+      hasilImport = semua;
+      renderPrevImport();
+    } catch (err) { toast(ico("alert") + " " + esc(err.message || "File tidak dapat dibaca")); }
+  };
+  function renderPrevImport() {
+    const tingkatAda = [...new Set(hasilImport.map(r => r.tingkat))].sort();
+    const def = ["4", "5", "6"];
+    const el = $("importPrev"); el.classList.remove("hidden");
+    el.innerHTML = '<div class="small" style="font-weight:700;margin-bottom:8px">Tingkat yang diambil</div><div class="row" style="flex-wrap:wrap;gap:14px">' +
+      tingkatAda.map(t => '<label class="switch"><input type="checkbox" class="cbTk" value="' + esc(t) + '"' + (def.includes(t) ? " checked" : "") + "> Kelas " + esc(t) + "</label>").join("") +
+      '</div><div id="prevRingkas" class="small muted" style="margin-top:12px"></div>' +
+      '<div class="row" style="justify-content:flex-end;gap:10px;margin-top:14px"><button class="btn" id="btnBatalImp">Batal</button><button class="btn primary" id="btnSimpanImp">' + ico("check") + " Simpan ke database</button></div>";
+    const ringkas = () => {
+      const pilih = terpilihImport();
+      $("prevRingkas").innerHTML = pilih.length ? pilih.length + " rombel, " + pilih.reduce((a, r) => a + r.nama.length, 0) + " siswa: " + pilih.map(r => esc(r.kelas) + " (" + r.nama.length + ")").join(", ") : "Belum ada tingkat dipilih.";
+    };
+    el.querySelectorAll(".cbTk").forEach(c => c.onchange = ringkas); ringkas();
+    $("btnBatalImp").onclick = () => { hasilImport = null; el.classList.add("hidden"); };
+    $("btnSimpanImp").onclick = () => {
+      const pilih = terpilihImport();
+      if (!pilih.length) return toast("Pilih minimal satu tingkat");
+      modal("<h3>Ganti data siswa?</h3><p class=\"muted small\" style=\"margin:0\">Data siswa lama akan diganti dengan " + pilih.length + " rombel ini. Jangan lakukan saat ujian sedang berlangsung, karena urutan nama menentukan nomor siswa.</p>" +
+        '<div class="actions"><button class="btn" id="mB">Batal</button><button class="btn primary" id="mY">Simpan</button></div>');
+      $("mB").onclick = tutupModal;
+      $("mY").onclick = async () => {
+        $("mY").disabled = true;
+        try {
+          await DB.simpanSiswa(pilih);
+          tutupModal(); hasilImport = null; el.classList.add("hidden");
+          await muatRombel(); renderData();
+          toast(ico("check") + " Data siswa tersimpan");
+        } catch (err) { tutupModal(); toast(ico("alert") + " Gagal menyimpan: " + esc(err.message || err)); }
+      };
+    };
+  }
+  function terpilihImport() {
+    const tk = [...document.querySelectorAll(".cbTk:checked")].map(c => c.value);
+    return hasilImport.filter(r => tk.includes(r.tingkat));
+  }
+
   /* ---------- DATA CONTOH (mode demo) ---------- */
   $("btnContoh").onclick = async () => {
     const m = mapel();
@@ -638,7 +767,9 @@
         Object.keys(jw[s.id]).forEach(k => { if (jw[s.id][k] === "") delete jw[s.id][k]; });
       });
       try {
-        await DB.kirim({ mapel: m.id, kelas: C.KELAS[i % 2], absen: 20 + i, nama: nama[i], jawaban: jw, mulai_at: new Date(Date.now() - 3600e3).toISOString(), dikirim_at: new Date(Date.now() - (8 - i) * 60e3).toISOString() });
+        const rb = ROMBEL.find(r => !m.tingkat || m.tingkat.map(String).includes(String(r.tingkat)));
+        const kls = rb ? rb.kelas : "5 Contoh", no = rb ? i + 1 : 20 + i, nm = rb && rb.nama[i] ? rb.nama[i] : nama[i];
+        await DB.kirim({ mapel: m.id, kelas: kls, absen: no, nama: nm, jawaban: jw, mulai_at: new Date(Date.now() - 3600e3).toISOString(), dikirim_at: new Date(Date.now() - (8 - i) * 60e3).toISOString() });
         n++;
       } catch (e) {}
     }

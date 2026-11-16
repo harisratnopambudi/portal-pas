@@ -7,7 +7,6 @@ window.CONFIG = {
   NAMA_SEKOLAH: "SDS PLUS 2 AL-MUHAJIRIN",
   JUDUL_UJIAN: "Penilaian Akhir Semester 1",
   TAHUN_AJARAN: "2026/2027",
-  KELAS: ["5A", "5B", "5C"],
 
   // Firebase — salin dari Firebase Console > Project settings > Your apps (Web app).
   // Biarkan apiKey kosong untuk MODE DEMO (data tersimpan di browser ini saja).
@@ -20,6 +19,7 @@ window.CONFIG = {
     appId: "1:129169412765:web:4acce3a073a40aca11fa74"
   },
   KOLEKSI: "pas_jawaban",
+  KOLEKSI_SISWA: "pas_siswa",   // daftar siswa per rombel (diimport guru dari file Dapodik)
 
   // PIN guru — HANYA dipakai di mode demo. Di mode Firebase, guru masuk dengan
   // email & password yang dibuat di Firebase Console > Authentication.

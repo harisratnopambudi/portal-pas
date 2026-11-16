@@ -11,7 +11,7 @@
   .hero{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
   .hero h1{font-size:26px;letter-spacing:-.01em}
   .hero p{margin:4px 0 0;color:var(--muted)}
-  .form-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px}
+  .form-grid{display:grid;grid-template-columns:1fr 2fr;gap:14px}
   .mapel-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px}
   .mapel-card{display:flex;gap:14px;align-items:center;padding:16px;border:1px solid var(--line-2);border-radius:12px;background:#fff;cursor:pointer;text-align:left;transition:all .12s}
   .mapel-card:hover{border-color:var(--primary)}
@@ -84,7 +84,7 @@
     .nav-toggle{display:inline-flex}
   }
   @media (max-width:640px){
-    .form-grid{grid-template-columns:1fr 1fr}
+    .form-grid{grid-template-columns:1fr}
     .form-grid .full{grid-column:1/-1}
     .mapel-grid{grid-template-columns:1fr}
     .kv{grid-template-columns:1fr 1fr}
@@ -120,17 +120,13 @@
   </div>
   <form class="card card-pad" id="formMasuk" autocomplete="off">
     <div class="form-grid">
-      <div class="full">
-        <label class="f" for="inNama">Nama lengkap</label>
-        <input class="input" id="inNama" placeholder="Contoh: Ahmad Fauzan" required>
-      </div>
       <div>
         <label class="f" for="inKelas">Kelas</label>
-        <select class="input" id="inKelas" required></select>
+        <select class="input" id="inKelas" required><option value="">Memuat daftar kelas...</option></select>
       </div>
       <div>
-        <label class="f" for="inAbsen">No. absen</label>
-        <input class="input" id="inAbsen" type="number" min="1" max="60" placeholder="1" required>
+        <label class="f" for="inNama">Nama</label>
+        <select class="input" id="inNama" required disabled><option value="">Pilih kelas dulu</option></select>
       </div>
     </div>
 
@@ -164,7 +160,7 @@
       <li>Bacalah setiap soal dengan teliti sebelum menjawab.</li>
       <li>Pada soal <b>beralasan</b> (bagian A dan B), tuliskan alasan jawabanmu dengan kalimatmu sendiri. Alasan ikut dinilai.</li>
       <li>Pada soal <b>pilihan ganda kompleks</b> (bagian C), jawaban benar bisa lebih dari satu.</li>
-      <li>Jawaban tersimpan otomatis. Jika halaman tertutup, masuk lagi dengan nama, kelas, dan absen yang sama.</li>
+      <li>Jawaban tersimpan otomatis. Jika halaman tertutup, masuk lagi dengan memilih kelas dan nama yang sama.</li>
       <li>Tandai <b>Ragu-ragu</b> jika ingin memeriksa ulang soal tersebut.</li>
       <li>Waktu berjalan sejak tombol <b>Mulai</b> ditekan. Jawaban terkirim otomatis saat waktu habis.</li>
     </ul>
@@ -270,7 +266,37 @@
   $("doneIc").innerHTML = ico("check");
   $("btnUlang").innerHTML = ico("left") + " Kembali ke halaman awal";
 
-  C.KELAS.forEach(k => { const o = document.createElement("option"); o.value = k; o.textContent = k; $("inKelas").appendChild(o); });
+  /* ---------- Daftar siswa ---------- */
+  let ROMBEL = [];
+  DB.daftarSiswa().then(rows => {
+    ROMBEL = rows;
+    if (!rows.length) {
+      $("inKelas").innerHTML = '<option value="">Belum ada data kelas</option>';
+      errMasuk("Daftar siswa belum diimport oleh guru. Hubungi pengawas.");
+      return;
+    }
+    $("inKelas").innerHTML = '<option value="">Pilih kelas</option>' +
+      rows.map(r => '<option value="' + esc(r.kelas) + '">' + esc(r.kelas) + "</option>").join("");
+  }).catch(() => {
+    $("inKelas").innerHTML = '<option value="">Gagal memuat</option>';
+    errMasuk("Tidak dapat memuat daftar kelas. Periksa koneksi internet lalu muat ulang halaman.");
+  });
+  function rombelAktif() { return ROMBEL.find(r => r.kelas === $("inKelas").value); }
+  $("inKelas").onchange = () => {
+    const r = rombelAktif();
+    $("inNama").disabled = !r;
+    $("inNama").innerHTML = r
+      ? '<option value="">Pilih namamu</option>' + r.nama.map((n, i) => '<option value="' + (i + 1) + '">' + esc(n) + "</option>").join("")
+      : '<option value="">Pilih kelas dulu</option>';
+    // tampilkan hanya mapel untuk tingkat kelas ini
+    const tk = r ? String(r.tingkat) : null;
+    document.querySelectorAll(".mapel-card").forEach(b => {
+      const m = B.mapel.find(x => x.id === b.dataset.id);
+      const boleh = !tk || !m.tingkat || m.tingkat.map(String).includes(tk);
+      b.classList.toggle("hidden", !boleh);
+      if (!boleh && mapelPilih === m.id) { mapelPilih = null; b.classList.remove("sel"); }
+    });
+  };
 
   function toast(msg) {
     const t = $("toast"); t.innerHTML = msg; t.classList.add("show");
@@ -312,11 +338,12 @@
   $("formMasuk").onsubmit = async (ev) => {
     ev.preventDefault();
     errMasuk("");
-    const nama = $("inNama").value.trim().replace(/\s+/g, " ");
     const kelas = $("inKelas").value;
-    const absen = parseInt($("inAbsen").value, 10);
-    if (nama.length < 3) return errMasuk("Nama lengkap minimal 3 huruf.");
-    if (!absen || absen < 1) return errMasuk("Nomor absen belum diisi dengan benar.");
+    const absen = parseInt($("inNama").value, 10);
+    const r = rombelAktif();
+    if (!r) return errMasuk("Pilih kelas terlebih dahulu.");
+    if (!absen) return errMasuk("Pilih namamu dari daftar.");
+    const nama = r.nama[absen - 1];
     if (!mapelPilih) return errMasuk("Pilih mata pelajaran terlebih dahulu.");
     const token = (C.TOKEN || {})[mapelPilih];
     if (token && $("inToken").value.trim().toUpperCase() !== String(token).toUpperCase())
@@ -326,8 +353,7 @@
     try {
       const ada = await DB.cari(mapelPilih, kelas, absen);
       if (ada) {
-        errMasuk("Kelas " + kelas + " absen " + absen + " sudah mengirim jawaban untuk mapel ini" +
-          (ada.nama ? " (atas nama " + ada.nama + ")" : "") + ". Hubungi guru jika ada kesalahan.");
+        errMasuk(esc(nama) + " (" + esc(kelas) + ") sudah mengirim jawaban untuk mapel ini. Hubungi guru jika ada kesalahan.");
         return;
       }
     } catch (e) {
@@ -357,7 +383,7 @@
     $("infoSub").textContent = C.JUDUL_UJIAN + " · Tahun Ajaran " + C.TAHUN_AJARAN;
     $("infoKv").innerHTML =
       "<div><span>Nama</span><b>" + esc(sesi.nama) + "</b></div>" +
-      "<div><span>Kelas / Absen</span><b>" + sesi.kelas + " / " + sesi.absen + "</b></div>" +
+      "<div><span>Kelas</span><b>" + esc(sesi.kelas) + "</b></div>" +
       "<div><span>Jumlah soal</span><b>" + m.soal.length + "</b></div>" +
       "<div><span>Durasi</span><b>" + m.durasi + " menit</b></div>";
     const n = hitungTipe(m);
@@ -389,7 +415,7 @@
     soalMap = {}; m.soal.forEach(s => soalMap[s.id] = s);
     sesi.urutan = (sesi.urutan || []).filter(id => soalMap[id]);
     $("pesertaNama").textContent = sesi.nama;
-    $("pesertaInfo").textContent = "Kelas " + sesi.kelas + " · Absen " + sesi.absen + " · " + m.nama;
+    $("pesertaInfo").textContent = "Kelas " + sesi.kelas + " · " + m.nama;
     tampil("layarUjian");
     buatNav();
     render();
@@ -573,7 +599,7 @@
       mengirim = false;
       if (e && e.message === "SUDAH_ADA") {
         localStorage.removeItem(sesi.key);
-        modal("<h3>Jawaban sudah tercatat</h3><p class=\"muted small\">Data untuk kelas dan absen ini sudah ada di server. Hubungi guru bila ada kesalahan.</p>" +
+        modal("<h3>Jawaban sudah tercatat</h3><p class=\"muted small\">Jawabanmu untuk mapel ini sudah ada di server. Hubungi guru bila ada kesalahan.</p>" +
           '<div class="actions"><button class="btn primary" onclick="location.reload()">Tutup</button></div>');
         window.onbeforeunload = null;
         return;
@@ -600,7 +626,7 @@
     window.onbeforeunload = null;
     localStorage.removeItem(sesi.key);
     tutupModal();
-    $("doneTxt").textContent = "Terima kasih, " + sesi.nama + ". Jawaban " + mapelAktif().nama + " (kelas " + sesi.kelas + ", absen " + sesi.absen + ") sudah diterima.";
+    $("doneTxt").textContent = "Terima kasih, " + sesi.nama + ". Jawaban " + mapelAktif().nama + " (kelas " + sesi.kelas + ") sudah diterima.";
     tampil("layarSelesai");
   }
 

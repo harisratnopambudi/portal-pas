@@ -1,5 +1,7 @@
 /* =========================================================
-   BANK SOAL PAS — (DUMMY, kelas 5)
+   BANK SOAL PAS — (DUMMY, isi soal setara kelas 5)
+   tingkat: kelas yang boleh mengerjakan mapel ini. Untuk soal asli per jenjang,
+   buat mapel terpisah, mis. id "mtk4" tingkat ["4"], "mtk5" tingkat ["5"], dst.
    File ini dimuat oleh halaman siswa. JANGAN taruh kunci di sini.
    Kunci & rubrik ada di kunci.js (hanya dimuat halaman guru).
 
@@ -28,7 +30,7 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
     mapel: [
       /* ---------------- BAHASA INDONESIA & PENDIDIKAN PANCASILA ---------------- */
       {
-        id: "bipp", nama: "Bahasa Indonesia & Pendidikan Pancasila", ikon: "book", durasi: 90,
+        id: "bipp", tingkat: ["4", "5", "6"], nama: "Bahasa Indonesia & Pendidikan Pancasila", ikon: "book", durasi: 90,
         soal: [
           pg("BI-PG1", '<div class="bacaan">Setiap Minggu pagi, warga RT 05 melaksanakan kerja bakti. Bapak-bapak membersihkan selokan, ibu-ibu menyapu jalan, dan anak-anak memungut sampah plastik. Setelah selesai, mereka makan bersama di balai warga.</div><p>Ide pokok paragraf tersebut adalah ...</p>',
             ["Bapak-bapak membersihkan selokan", "Warga RT 05 melaksanakan kerja bakti setiap Minggu pagi", "Anak-anak memungut sampah plastik", "Warga makan bersama di balai warga"]),
@@ -79,7 +81,7 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
 
       /* ---------------- IPAS ---------------- */
       {
-        id: "ipas", nama: "IPAS", ikon: "flask", durasi: 90,
+        id: "ipas", tingkat: ["4", "5", "6"], nama: "IPAS", ikon: "flask", durasi: 90,
         soal: [
           pg("IP-PG1", "<p>Cahaya dapat menembus benda bening. Benda berikut yang dapat ditembus cahaya adalah ...</p>",
             ["Papan kayu", "Kaca jendela", "Tembok", "Buku tebal"]),
@@ -130,7 +132,7 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
 
       /* ---------------- PAIBP ---------------- */
       {
-        id: "paibp", nama: "Pendidikan Agama Islam & Budi Pekerti", ikon: "moon", durasi: 90,
+        id: "paibp", tingkat: ["4", "5", "6"], nama: "Pendidikan Agama Islam & Budi Pekerti", ikon: "moon", durasi: 90,
         soal: [
           pg("PA-PG1", "<p>Q.S. At-Tin terdiri atas ... ayat.</p>",
             ["6", "7", "8", "11"]),
@@ -181,7 +183,7 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
 
       /* ---------------- MATEMATIKA ---------------- */
       {
-        id: "mtk", nama: "Matematika", ikon: "calc", durasi: 90,
+        id: "mtk", tingkat: ["4", "5", "6"], nama: "Matematika", ikon: "calc", durasi: 90,
         soal: [
           pg("MT-PG1", "<p>KPK dari 12 dan 18 adalah ...</p>",
             ["6", "24", "36", "72"]),

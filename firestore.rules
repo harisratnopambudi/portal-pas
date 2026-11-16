@@ -12,7 +12,7 @@ service cloud.firestore {
       // Siswa mengirim jawaban SEKALI. Tidak boleh menyertakan nilai.
       allow create: if request.resource.data.keys().hasOnly(
                          ['mapel','kelas','absen','nama','jawaban','nilai_manual','status','mulai_at','dikirim_at'])
-                    && docId == request.resource.data.mapel + '_' + request.resource.data.kelas + '_' + string(request.resource.data.absen)
+                    && docId == (request.resource.data.mapel + '_' + request.resource.data.kelas + '_' + string(request.resource.data.absen)).replace('[^A-Za-z0-9_-]', '-')
                     && request.resource.data.nilai_manual.size() == 0
                     && request.resource.data.status == 'belum'
                     && request.resource.data.nama is string
@@ -22,6 +22,12 @@ service cloud.firestore {
 
       // Menilai dan menghapus hanya guru yang sudah login.
       allow update, delete: if request.auth != null;
+    }
+
+    // Daftar siswa per rombel: dibaca halaman siswa, diubah hanya oleh guru.
+    match /pas_siswa/{kelas} {
+      allow read: if true;
+      allow write: if request.auth != null;
     }
   }
 }
