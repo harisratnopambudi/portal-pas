@@ -991,6 +991,18 @@
         if (!rbs.length) return toast("Belum ada data siswa. Import di menu Data siswa.");
         rbs.forEach(rb => XLSX.utils.book_append_sheet(wb, sheetRekapMapel(m, rb, recs.filter(r => r.kelas === rb.kelas)), namaSheet(rb.kelas, dipakai)));
         unduhBuku(wb, "Rekap_PAS_" + m.nama + "_" + (jenis === "kelas" ? kls : "semua_kelas") + ".xlsx");
+      } else if (jenis === "kelasSemuaMapel" || jenis === "semuaRinci") {
+        const rbs = jenis === "kelasSemuaMapel" ? ROMBEL.filter(r => r.kelas === kls) : ROMBEL;
+        if (!rbs.length) return toast("Belum ada data siswa. Import di menu Data siswa.");
+        const singkatMapel = { bipp: "B. Indonesia & PP", ipas: "IPAS", paibp: "PAIBP", mtk: "Matematika" };
+        for (const mp of B.mapel) {
+          const recs = await DB.daftar(mp.id, jenis === "kelasSemuaMapel" ? kls : undefined);
+          rbs.filter(rb => !mp.tingkat || mp.tingkat.map(String).includes(String(rb.tingkat))).forEach(rb => {
+            const nm = (singkatMapel[mp.id] || mp.nama) + (jenis === "semuaRinci" ? " " + rb.kelas : "");
+            XLSX.utils.book_append_sheet(wb, sheetRekapMapel(mp, rb, recs.filter(r => r.kelas === rb.kelas)), namaSheet(nm, dipakai));
+          });
+        }
+        unduhBuku(wb, "Rekap_PAS_semua_mapel_" + (jenis === "kelasSemuaMapel" ? kls : "semua_kelas") + ".xlsx");
       } else {
         const perMapel = {};
         for (const mp of B.mapel) perMapel[mp.id] = await DB.daftar(mp.id);
@@ -1008,13 +1020,17 @@
     modal("<h3>Unduh rekap ke Excel</h3><p class=\"muted small\" style=\"margin:0\">Semua siswa di rombel tercantum, termasuk yang belum mengerjakan.</p>" +
       '<div class="grid" style="margin-top:14px;gap:10px">' +
       (kls ? opsi("xKelas", esc(m.nama) + ", kelas " + esc(kls), "Satu sheet: rincian skor per bagian dan per soal.") : "") +
+      (kls ? opsi("xKelasMapel", "Kelas " + esc(kls) + ", semua mapel", "Satu sheet per mapel (B. Indonesia & PP, IPAS, PAIBP, Matematika), rincian lengkap.") : "") +
       opsi("xMapel", esc(m.nama) + ", semua kelas", "Satu sheet per rombel, rincian skor per bagian dan per soal.") +
       opsi("xSemua", "Nilai akhir semua mapel", "Satu sheet per rombel, kolom nilai tiap mapel dan rata-ratanya. Cocok untuk wali kelas.") +
+      opsi("xSemuaRinci", "Rincian semua mapel, semua kelas", "Satu sheet per mapel per rombel, misalnya \u201cIPAS 5 Amman\u201d. Untuk arsip lengkap.") +
       '</div><div class="actions"><button class="btn" id="xBatal">Batal</button></div>');
     $("xBatal").onclick = tutupModal;
     if ($("xKelas")) $("xKelas").onclick = () => exportExcel("kelas");
     $("xMapel").onclick = () => exportExcel("mapel");
     $("xSemua").onclick = () => exportExcel("semua");
+    $("xSemuaRinci").onclick = () => exportExcel("semuaRinci");
+    if ($("xKelasMapel")) $("xKelasMapel").onclick = () => exportExcel("kelasSemuaMapel");
   };
 
   /* ---------- TOKEN UJIAN ---------- */
