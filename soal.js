@@ -8,6 +8,12 @@
    Tipe: pg (pilihan ganda + alasan), bs (benar/salah + alasan),
          pgk (pilihan ganda kompleks), isian, essay
    Teks boleh berisi HTML sederhana, mis. <div class="bacaan">...</div>
+
+   SOAL BERGAMBAR
+   - Gambar pada soal : tambahkan argumen terakhir { src: "assets/soal/nama.png", alt: "keterangan" }
+       pg("ID", "<p>Teks soal</p>", ["A", "B", "C", "D"], { src: "assets/soal/x.png", alt: "..." })
+   - Pilihan berupa gambar: tulis opsi sebagai objek { gambar: "assets/soal/a.png", teks: "(opsional)" }
+   Simpan file gambar di folder assets/soal/ (PNG, JPG, atau SVG).
    ========================================================= */
 window.TIPE_INFO = {
   pg:    { kode: "A", nama: "Pilihan Ganda Beralasan", petunjuk: "Pilih satu jawaban yang paling tepat, lalu tuliskan alasanmu." },
@@ -19,11 +25,11 @@ window.TIPE_INFO = {
 window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
 
 (function () {
-  const pg = (id, teks, opsi) => ({ id, tipe: "pg", teks, opsi });
-  const bs = (id, teks) => ({ id, tipe: "bs", teks });
-  const pgk = (id, teks, opsi) => ({ id, tipe: "pgk", teks, opsi });
-  const isian = (id, teks) => ({ id, tipe: "isian", teks });
-  const essay = (id, teks) => ({ id, tipe: "essay", teks });
+  const pg = (id, teks, opsi, gambar) => ({ id, tipe: "pg", teks, opsi, gambar });
+  const bs = (id, teks, gambar) => ({ id, tipe: "bs", teks, gambar });
+  const pgk = (id, teks, opsi, gambar) => ({ id, tipe: "pgk", teks, opsi, gambar });
+  const isian = (id, teks, gambar) => ({ id, tipe: "isian", teks, gambar });
+  const essay = (id, teks, gambar) => ({ id, tipe: "essay", teks, gambar });
 
   window.BANK_SOAL = {
     kelas: "5",
@@ -85,12 +91,14 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
         soal: [
           pg("IP-PG1", "<p>Cahaya dapat menembus benda bening. Benda berikut yang dapat ditembus cahaya adalah ...</p>",
             ["Papan kayu", "Kaca jendela", "Tembok", "Buku tebal"]),
-          pg("IP-PG2", "<p>Pensil yang dimasukkan ke dalam gelas berisi air terlihat patah. Peristiwa ini menunjukkan bahwa cahaya ...</p>",
-            ["Merambat lurus", "Dapat dipantulkan", "Dapat dibiaskan", "Dapat menembus benda gelap"]),
+          pg("IP-PG2", "<p>Perhatikan gambar pensil di dalam gelas berisi air berikut. Pensil terlihat patah. Peristiwa ini menunjukkan bahwa cahaya ...</p>",
+            ["Merambat lurus", "Dapat dipantulkan", "Dapat dibiaskan", "Dapat menembus benda gelap"],
+            { src: "assets/soal/ipas-pensil-gelas.svg", alt: "Pensil dicelupkan ke gelas berisi air, terlihat patah di permukaan air" }),
           pg("IP-PG3", "<p>Bunyi TIDAK dapat merambat melalui ...</p>",
             ["Air", "Udara", "Kayu", "Ruang hampa"]),
-          pg("IP-PG4", "<p>Perhatikan rantai makanan berikut: padi → tikus → ular → elang.<br>Ular berperan sebagai ...</p>",
-            ["Produsen", "Konsumen tingkat I", "Konsumen tingkat II", "Pengurai"]),
+          pg("IP-PG4", "<p>Perhatikan gambar rantai makanan berikut. Ular berperan sebagai ...</p>",
+            ["Produsen", "Konsumen tingkat I", "Konsumen tingkat II", "Pengurai"],
+            { src: "assets/soal/ipas-rantai-makanan.svg", alt: "Rantai makanan: padi, tikus, ular, elang" }),
           pg("IP-PG5", "<p>Makhluk hidup yang berperan menguraikan sisa-sisa makhluk hidup yang sudah mati adalah ...</p>",
             ["Jamur", "Rumput", "Belalang", "Burung"]),
 
@@ -191,8 +199,9 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
             ["6", "8", "12", "72"]),
           pg("MT-PG3", "<p>Hasil dari 3/4 + 1/2 adalah ...</p>",
             ["4/6", "1 1/4", "1 1/2", "4/8"]),
-          pg("MT-PG4", "<p>Bentuk pecahan biasa paling sederhana dari 0,75 adalah ...</p>",
-            ["7/5", "75/10", "3/4", "1/4"]),
+          pg("MT-PG4", "<p>Gambar yang daerah arsirannya menunjukkan pecahan <b>3/4</b> adalah ...</p>",
+            [{ gambar: "assets/soal/mtk-arsir-1-4.svg" }, { gambar: "assets/soal/mtk-arsir-2-4.svg" },
+             { gambar: "assets/soal/mtk-arsir-3-4.svg" }, { gambar: "assets/soal/mtk-arsir-2-3.svg" }]),
           pg("MT-PG5", "<p>Ibu membeli 2,5 kg gula. Sebanyak 1 3/4 kg digunakan untuk membuat kue. Sisa gula ibu adalah ...</p>",
             ["1/2 kg", "3/4 kg", "1 kg", "1 1/4 kg"]),
 
@@ -213,7 +222,8 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
           pgk("MT-PGK5", "<p>Bilangan berikut yang merupakan kelipatan persekutuan dari 4 dan 6 adalah ...</p>",
             ["12", "18", "24", "30", "36"]),
 
-          isian("MT-IS1", "1/4 + 2/4 = ...."),
+          isian("MT-IS1", "Pecahan yang ditunjukkan oleh daerah berwarna pada gambar adalah ....",
+            { src: "assets/soal/mtk-lingkaran-3-8.svg", alt: "Lingkaran dibagi 8 bagian sama besar, 3 bagian berwarna" }),
           isian("MT-IS2", "0,5 jika diubah ke bentuk persen menjadi ...."),
           isian("MT-IS3", "KPK dari 3 dan 5 adalah ...."),
           isian("MT-IS4", "FPB dari 16 dan 20 adalah ...."),
@@ -233,4 +243,27 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
       }
     ]
   };
+})();
+
+/* ---------- Tampilan gambar (dipakai halaman siswa & guru) ---------- */
+(function () {
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  // Gambar pada soal
+  window.GAMBAR_SOAL = function (g) {
+    if (!g) return "";
+    if (typeof g === "string") g = { src: g };
+    return '<figure class="q-fig"><button type="button" class="fig-zoom" data-zoom="' + esc(g.src) + '" data-alt="' + esc(g.alt || "") + '" aria-label="Perbesar gambar">' +
+      '<img src="' + esc(g.src) + '" alt="' + esc(g.alt || "Gambar soal") + '" draggable="false"></button>' +
+      '<figcaption>Klik gambar untuk memperbesar</figcaption></figure>';
+  };
+  // Isi satu pilihan jawaban: teks biasa, atau objek { gambar, teks }
+  window.OPSI_HTML = function (o) {
+    if (o && typeof o === "object") {
+      return (o.gambar ? '<img class="opt-img" src="' + esc(o.gambar) + '" alt="' + esc(o.alt || o.teks || "Pilihan bergambar") + '" draggable="false">' : "") +
+        (o.teks ? '<span class="opt-cap">' + o.teks + "</span>" : "");
+    }
+    return String(o);
+  };
+  window.OPSI_BERGAMBAR = o => !!(o && typeof o === "object" && o.gambar);
+  window.OPSI_TEKS = o => (o && typeof o === "object") ? (o.teks || "[gambar]") : String(o).replace(/<[^>]+>/g, "");
 })();

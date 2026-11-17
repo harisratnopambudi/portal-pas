@@ -121,7 +121,7 @@ window.KUNCI = {
   "MT-PG1": { k: "C", alasan: "12 = 2²×3, 18 = 2×3²; KPK = 2²×3² = 36 (atau kelipatan persekutuan terkecil)." },
   "MT-PG2": { k: "C", alasan: "24 = 2³×3, 36 = 2²×3²; FPB = 2²×3 = 12." },
   "MT-PG3": { k: "B", alasan: "3/4 + 2/4 = 5/4 = 1 1/4." },
-  "MT-PG4": { k: "C", alasan: "0,75 = 75/100 = 3/4 (dibagi 25)." },
+  "MT-PG4": { k: "C", alasan: "Persegi panjang dibagi 4 bagian sama besar dan 3 bagian diarsir, jadi 3/4." },
   "MT-PG5": { k: "B", alasan: "2,5 − 1,75 = 0,75 = 3/4 kg." },
 
   "MT-BS1": { k: "B", alasan: "2/3 = 10/15 dan 3/5 = 9/15, sehingga 2/3 lebih besar." },
@@ -136,7 +136,7 @@ window.KUNCI = {
   "MT-PGK4": { k: "BCE" },
   "MT-PGK5": { k: "ACE" },
 
-  "MT-IS1": { k: ["3/4"] },
+  "MT-IS1": { k: ["3/8"] },
   "MT-IS2": { k: ["50%", "50 persen", "50"] },
   "MT-IS3": { k: ["15"] },
   "MT-IS4": { k: ["4"] },
