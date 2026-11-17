@@ -368,7 +368,7 @@
   $("pinIc").innerHTML = ico("lock");
   $("btnKeluar").innerHTML = ico("logout") + " Keluar";
   $("btnMuat").innerHTML = ico("refresh") + " Muat ulang";
-  $("btnExport").innerHTML = ico("download") + " Export CSV";
+  $("btnExport").innerHTML = ico("download") + " Unduh Excel";
   $("btnContoh").innerHTML = ico("users") + " Isi data contoh";
   $("btnSoalPrev").innerHTML = ico("left");
   $("btnSoalNext").innerHTML = ico("right");
@@ -911,25 +911,110 @@
   }
 
   /* ---------- EXPORT ---------- */
-  $("btnExport").onclick = () => {
-    const rows = terfilter(), m = mapel();
-    if (!rows.length) return toast("Tidak ada data untuk diexport");
+  /* ---------- EXPORT EXCEL ---------- */
+  const r2 = x => Math.round(x * 100) / 100;
+  function namaSheet(s, dipakai) {
+    let n = String(s).replace(/[\[\]:*?\/\\]/g, "-").slice(0, 31) || "Sheet";
+    let k = n, i = 2; while (dipakai.has(k)) k = n.slice(0, 28) + " " + i++;
+    dipakai.add(k); return k;
+  }
+  function rombelUntuk(m) { return ROMBEL.filter(r => !m.tingkat || m.tingkat.map(String).includes(String(r.tingkat))); }
+  function lembar(aoa, lebar, merge) {
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws["!cols"] = lebar.map(w => ({ wch: w }));
+    if (merge) ws["!merges"] = merge;
+    return ws;
+  }
+  function kop(judul, kolom) {
+    return { rows: [[judul], [C.NAMA_SEKOLAH + ", " + C.JUDUL_UJIAN + " Tahun Ajaran " + C.TAHUN_AJARAN], []],
+      merge: [{ s: { r: 0, c: 0 }, e: { r: 0, c: kolom - 1 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: kolom - 1 } }] };
+  }
+
+  // Rekap rinci satu mapel untuk satu rombel
+  function sheetRekapMapel(m, rb, recs) {
     const tipeAda = URUTAN_TIPE.filter(t => m.soal.some(s => s.tipe === t));
-    const head = ["Kelas", "Absen", "Nama", "Dikirim"].concat(tipeAda.map(t => T[t].kode + " " + T[t].nama), ["Total", "Maks", "Nilai", "Status", "Belum dinilai", "Pelanggaran"],
-      m.soal.map((s, i) => "No" + (i + 1) + " (" + s.id + ")"));
-    const lines = [head];
-    rows.forEach(r => {
-      const x = r._h;
-      lines.push([r.kelas, r.absen, r.nama, waktu(r.dikirim_at)].concat(
-        tipeAda.map(t => fmt(x.perTipe[t].skor)), [fmt(x.total), x.maks, x.nilai, x.status, x.pending, r.pelanggaran || 0],
-        m.soal.map(s => { const it = x.rincian.find(z => z.id === s.id); return it.pending ? "" : fmt(it.auto + it.manual); })));
+    const singkat = { pg: "PG", bs: "B/S", pgk: "PGK", isian: "Isian", essay: "Uraian" };
+    const maksTipe = {}; tipeAda.forEach(t => maksTipe[t] = m.soal.filter(s => s.tipe === t).reduce((a, s) => a + P.maksItem(s.tipe), 0));
+    const maks = Object.values(maksTipe).reduce((a, b) => a + b, 0);
+    const head = ["No", "Nama", "Status", "Dikirim"].concat(tipeAda.map(t => T[t].kode + " " + singkat[t] + " (" + maksTipe[t] + ")"),
+      ["Total (" + maks + ")", "Nilai", "Belum dinilai", "Pelanggaran"], m.soal.map((s, i) => "S" + (i + 1)));
+    const k = kop("Rekap Nilai " + m.nama + ", Kelas " + rb.kelas, head.length);
+    const byNo = {}; recs.forEach(r => byNo[r.absen] = r);
+    const rows = rb.nama.map((n, i) => {
+      const r = byNo[i + 1];
+      if (!r) return [i + 1, n, "Belum mengerjakan"];
+      const x = P.nilaiRekaman(r);
+      const st = x.status === "selesai" ? "Selesai dinilai" : x.status === "sebagian" ? "Sebagian dinilai" : "Belum dinilai";
+      return [i + 1, n, st, waktu(r.dikirim_at)].concat(tipeAda.map(t => r2(x.perTipe[t].skor)), [r2(x.total), x.nilai, x.pending, r.pelanggaran || 0],
+        m.soal.map(s => { const it = x.rincian.find(z => z.id === s.id); return it.pending ? "" : r2(it.auto + it.manual); }));
     });
-    const csv = "﻿" + lines.map(l => l.map(v => { v = String(v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(";")).join("\r\n");
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-    a.download = "Nilai_PAS_" + m.id.toUpperCase() + ($("selKelas").value ? "_" + $("selKelas").value : "") + ".csv";
-    a.click();
-    toast(ico("download") + " File CSV diunduh");
+    const dinilai = rows.filter(r => typeof r[4 + tipeAda.length + 1] === "number");
+    const rata = dinilai.length ? r2(dinilai.reduce((a, r) => a + r[4 + tipeAda.length + 1], 0) / dinilai.length) : "";
+    const kaki = [[], ["", "Rata-rata nilai", "", ""].concat(tipeAda.map(() => ""), ["", rata])];
+    return lembar(k.rows.concat([head], rows, kaki), [5, 30, 18, 14].concat(tipeAda.map(() => 11), [11, 8, 12, 12], m.soal.map(() => 5)), k.merge);
+  }
+
+  // Nilai akhir semua mapel untuk satu rombel
+  function sheetSemuaMapel(rb, perMapel) {
+    const mps = B.mapel.filter(m => !m.tingkat || m.tingkat.map(String).includes(String(rb.tingkat)));
+    const head = ["No", "Nama"].concat(mps.map(m => m.nama), ["Rata-rata"]);
+    const k = kop("Nilai Akhir PAS, Kelas " + rb.kelas, head.length);
+    const rows = rb.nama.map((n, i) => {
+      const nilai = mps.map(m => {
+        const r = (perMapel[m.id] || []).find(z => z.kelas === rb.kelas && z.absen === i + 1);
+        if (!r) return "";
+        const x = P.nilaiRekaman(r);
+        return x.pending ? x.nilai + "*" : x.nilai;
+      });
+      const angka = nilai.map(v => typeof v === "number" ? v : parseFloat(v)).filter(v => !isNaN(v));
+      return [i + 1, n].concat(nilai, [angka.length ? r2(angka.reduce((a, b) => a + b, 0) / angka.length) : ""]);
+    });
+    const ket = [[], ["", "Kosong = belum mengerjakan. Tanda * = masih ada jawaban yang belum dinilai guru (nilai sementara)."]];
+    return lembar(k.rows.concat([head], rows, ket), [5, 30].concat(mps.map(() => 18), [11]), k.merge);
+  }
+
+  function unduhBuku(wb, nama) {
+    XLSX.writeFile(wb, nama.replace(/[^\w.-]+/g, "_"));
+    toast(ico("download") + " File Excel diunduh");
+  }
+
+  async function exportExcel(jenis) {
+    if (!window.XLSX) return toast(ico("alert") + " Pustaka Excel gagal dimuat. Periksa koneksi lalu muat ulang halaman.");
+    tutupModal();
+    const m = mapel(), kls = $("selKelas").value;
+    toast(ico("refresh") + " Menyiapkan file Excel...");
+    try {
+      const wb = XLSX.utils.book_new(), dipakai = new Set();
+      if (jenis === "kelas" || jenis === "mapel") {
+        const recs = await DB.daftar(m.id, jenis === "kelas" ? kls : undefined);
+        const rbs = jenis === "kelas" ? ROMBEL.filter(r => r.kelas === kls) : rombelUntuk(m);
+        if (!rbs.length) return toast("Belum ada data siswa. Import di menu Data siswa.");
+        rbs.forEach(rb => XLSX.utils.book_append_sheet(wb, sheetRekapMapel(m, rb, recs.filter(r => r.kelas === rb.kelas)), namaSheet(rb.kelas, dipakai)));
+        unduhBuku(wb, "Rekap_PAS_" + m.nama + "_" + (jenis === "kelas" ? kls : "semua_kelas") + ".xlsx");
+      } else {
+        const perMapel = {};
+        for (const mp of B.mapel) perMapel[mp.id] = await DB.daftar(mp.id);
+        if (!ROMBEL.length) return toast("Belum ada data siswa. Import di menu Data siswa.");
+        ROMBEL.forEach(rb => XLSX.utils.book_append_sheet(wb, sheetSemuaMapel(rb, perMapel), namaSheet(rb.kelas, dipakai)));
+        unduhBuku(wb, "Nilai_Akhir_PAS_semua_mapel.xlsx");
+      }
+    } catch (e) { toast(ico("alert") + " Gagal membuat file: " + esc(e.message || e)); }
+  }
+
+  $("btnExport").onclick = () => {
+    const m = mapel(), kls = $("selKelas").value;
+    const opsi = (id, judul, ket) => '<button class="btn" id="' + id + '" style="justify-content:flex-start;text-align:left;white-space:normal;padding:12px 14px;gap:12px">' + ico("file") +
+      '<span><b>' + judul + '</b><br><span class="muted small" style="font-weight:500">' + ket + "</span></span></button>";
+    modal("<h3>Unduh rekap ke Excel</h3><p class=\"muted small\" style=\"margin:0\">Semua siswa di rombel tercantum, termasuk yang belum mengerjakan.</p>" +
+      '<div class="grid" style="margin-top:14px;gap:10px">' +
+      (kls ? opsi("xKelas", esc(m.nama) + ", kelas " + esc(kls), "Satu sheet: rincian skor per bagian dan per soal.") : "") +
+      opsi("xMapel", esc(m.nama) + ", semua kelas", "Satu sheet per rombel, rincian skor per bagian dan per soal.") +
+      opsi("xSemua", "Nilai akhir semua mapel", "Satu sheet per rombel, kolom nilai tiap mapel dan rata-ratanya. Cocok untuk wali kelas.") +
+      '</div><div class="actions"><button class="btn" id="xBatal">Batal</button></div>');
+    $("xBatal").onclick = tutupModal;
+    if ($("xKelas")) $("xKelas").onclick = () => exportExcel("kelas");
+    $("xMapel").onclick = () => exportExcel("mapel");
+    $("xSemua").onclick = () => exportExcel("semua");
   };
 
   /* ---------- TOKEN UJIAN ---------- */

@@ -9,7 +9,7 @@ Setiap mapel berisi 30 soal: 5 PG beralasan, 5 Benar/Salah beralasan, 5 PG kompl
 | File | Fungsi |
 |---|---|
 | `index.html` | Halaman siswa (login, mengerjakan, kirim) |
-| `guru.html` | Halaman guru (rekap, nilai per siswa, nilai per soal, export CSV) |
+| `guru.html` | Halaman guru (pantauan, token, nilai per soal/siswa, rekap, unduh Excel per kelas) |
 | `config.js` | Pengaturan: nama sekolah, kelas, token, Firebase, bobot skor, rubrik |
 | `soal.js` | Bank soal (tanpa kunci) — dimuat halaman siswa |
 | `kunci.js` | Kunci jawaban, acuan alasan, rubrik uraian — hanya dimuat halaman guru |
