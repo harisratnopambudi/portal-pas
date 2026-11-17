@@ -336,6 +336,7 @@
 <script src="soal.js"></script>
 <script src="assets/icons.js"></script>
 <script src="assets/db.js"></script>
+<script src="assets/demo.js"></script>
 <script>
 (function () {
   const C = CONFIG, B = BANK_SOAL, T = TIPE_INFO;
@@ -353,6 +354,10 @@
   $("brandSub").textContent = C.NAMA_SEKOLAH;
   $("modeChip").className = "chip " + (DB.mode === "firebase" ? "live" : "demo");
   $("modeChip").textContent = DB.mode === "firebase" ? "Online" : "Mode demo";
+  if (DB.paksaDemo && window.DEMO) {
+    $("modeChip").textContent = "Mode demo · token " + DEMO.TOKEN;
+    $("tokenHint").innerHTML = "Mode demo: token untuk semua mapel adalah <b>" + DEMO.TOKEN + "</b>.";
+  }
   $("btnMasuk").innerHTML = "Lanjut " + ico("right");
   $("btnBatal").innerHTML = ico("left") + " Kembali";
   $("btnMulai").innerHTML = "Mulai mengerjakan " + ico("right");

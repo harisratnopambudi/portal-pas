@@ -264,6 +264,7 @@
 <script src="assets/icons.js"></script>
 <script src="assets/db.js"></script>
 <script src="assets/penilaian.js"></script>
+<script src="assets/demo.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 (function () {
@@ -295,6 +296,15 @@
   const tabLbl = { rekap: ico("chart") + "Rekap nilai", siswa: ico("user") + "Nilai per siswa", soal: ico("list") + "Nilai per soal", pantau: ico("users") + "Pantauan ujian", data: ico("users") + "Data siswa", token: ico("key") + "Token ujian" };
   document.querySelectorAll(".tab").forEach(b => b.innerHTML = tabLbl[b.dataset.tab]);
   if (DB.mode === "demo") $("btnContoh").classList.remove("hidden");
+  if (DB.paksaDemo) {
+    $("btnContoh").innerHTML = ico("refresh") + " Reset data contoh";
+    $("modeChip").textContent = "Mode demo · data fiktif";
+    document.querySelector(".wrap").insertAdjacentHTML("afterbegin",
+      '<div class="err" style="background:var(--warn-50);border-color:#f3d9a6;color:#7a4a00;margin:0 0 16px">' + ico("info") +
+      "<span><b>Mode demo.</b> Semua data di halaman ini fiktif dan hanya tersimpan di browser ini, tidak menyentuh data asli. " +
+      "Coba pilih kelas <b>5 Contoh A</b> di tab Pantauan (ujian IPAS & B. Indonesia sedang berlangsung), lalu nilai jawaban di tab Nilai per soal. " +
+      'Halaman siswa demo: <a href="index.html?demo">index.html?demo</a> dengan token <b>' + (window.DEMO ? DEMO.TOKEN : "") + "</b>.</span></div>");
+  }
 
   B.mapel.forEach(m => $("selMapel").insertAdjacentHTML("beforeend", '<option value="' + m.id + '">' + esc(m.nama) + "</option>"));
   $("lblUnggah").innerHTML = ico("file") + " Pilih file Dapodik";
@@ -338,7 +348,8 @@
     $("layarPin").classList.add("hidden"); $("layarUtama").classList.remove("hidden"); $("btnKeluar").classList.remove("hidden");
     isiSelSoal(); muatRombel().then(muat);
   }
-  DB.sudahMasuk().then(ok => { if (ok) masuk(); });
+  if (DB.paksaDemo) masuk();
+  else DB.sudahMasuk().then(ok => { if (ok) masuk(); });
   // Pantau otomatis (opsional, default mati): muat ulang data SATU kelas tiap 2 menit. Hemat kuota gratis.
   let pantauOtomatis = false;
   setInterval(() => {
@@ -979,6 +990,10 @@
 
   /* ---------- DATA CONTOH (mode demo) ---------- */
   $("btnContoh").onclick = async () => {
+    if (DB.paksaDemo && window.DEMO) {
+      DEMO.isiSemua(); pilihSiswa = null; await muatRombel(); await muat();
+      toast(ico("check") + " Data contoh diisi ulang"); return;
+    }
     const m = mapel();
     const nama = ["Ahmad Fauzan", "Aisyah Putri", "Bima Saputra", "Citra Lestari", "Dimas Pratama", "Fatimah Azzahra", "Gilang Ramadhan", "Hana Salsabila"];
     const alasanContoh = ["karena sesuai dengan penjelasan di buku", "sebab itu yang paling tepat menurut materi", "karena kalau dihitung hasilnya itu", "", "karena itu ciri-cirinya", "menurut saya karena sesuai pengertian"];

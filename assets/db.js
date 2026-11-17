@@ -2,7 +2,9 @@
 (function () {
   const C = window.CONFIG;
   const F = C.FIREBASE || {};
-  const pakaiFirebase = !!(F.apiKey && F.projectId && window.firebase);
+  // ?demo di alamat halaman = mode demo dengan data fiktif (tidak menyentuh Firebase)
+  const paksaDemo = /(^|[?&#])demo\b/.test((location.search || "") + "&" + (location.hash || "").replace("#", ""));
+  const pakaiFirebase = !paksaDemo && !!(F.apiKey && F.projectId && window.firebase);
   let fs = null, auth = null;
   if (pakaiFirebase) {
     firebase.initializeApp(F);
@@ -31,6 +33,7 @@
 
   window.DB = {
     mode: pakaiFirebase ? "firebase" : "demo",
+    paksaDemo,
 
     /* ---------- siswa ---------- */
     async cari(mapel, kelas, absen) {
