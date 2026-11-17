@@ -39,8 +39,8 @@ window.KUNCI = {
   "BI-IS9": { k: ["apotek"] },
   "BI-IS10": { k: ["hukum"] },
 
-  "BI-ES1": { rubrik: "Contoh: bermain dengan semua teman tanpa membedakan suku/agama, ikut upacara bendera dengan khidmat, kerja kelompok bersama, memakai bahasa Indonesia saat bergaul, ikut lomba antarkelas dengan sportif. Skor 4 = 3 contoh tepat; 3 = 2 tepat + 1 kurang tepat; 2 = 2 tepat; 1 = 1 tepat." },
-  "BI-ES2": { rubrik: "Ide pokok: sampah plastik berbahaya bagi lingkungan. Kalimat penjelas: sulit terurai; asap pembakarannya beracun; menyebabkan banjir. Skor 4 = ide pokok + 2 penjelas tepat." },
+  "BI-ES1": { rubrik: "Contoh: bermain dengan semua teman tanpa membedakan suku/agama, ikut upacara bendera dengan khidmat, kerja kelompok bersama, memakai bahasa Indonesia saat bergaul, ikut lomba antarkelas dengan sportif. Skor 3 = 3 contoh tepat; 2 = 2 contoh tepat; 1 = 1 contoh tepat." },
+  "BI-ES2": { rubrik: "Ide pokok: sampah plastik berbahaya bagi lingkungan. Kalimat penjelas: sulit terurai; asap pembakarannya beracun; menyebabkan banjir. Skor 3 = ide pokok + 2 penjelas tepat; 2 = ide pokok + 1 penjelas; 1 = ide pokok saja." },
   "BI-ES3": { rubrik: "Protagonis: tokoh utama/berwatak baik. Antagonis: lawan tokoh utama/berwatak jahat. Masing-masing disertai contoh tokoh yang sesuai." },
   "BI-ES4": { rubrik: "Karena setiap orang punya hak berpendapat, perbedaan dapat menghasilkan keputusan terbaik, menjaga persatuan dan menghindari pertengkaran; sesuai sila keempat." },
   "BI-ES5": { rubrik: "Kalimat ajakan (memakai kata mari/ayo), diawali huruf kapital, diakhiri tanda seru/titik, isi sesuai tema kebersihan sekolah." },
@@ -76,7 +76,7 @@ window.KUNCI = {
   "IP-IS10": { k: ["ultrasonik"] },
 
   "IP-ES1": { rubrik: "Ada cahaya dari sumber cahaya yang mengenai benda, dipantulkan oleh benda, lalu masuk ke mata sehingga benda terlihat." },
-  "IP-ES2": { rubrik: "Contoh: padi → tikus → ular → elang. Padi produsen, tikus konsumen I, ular konsumen II, elang konsumen III (pengurai boleh disebut). Skor 4 = urutan & semua peran benar." },
+  "IP-ES2": { rubrik: "Contoh: padi → tikus → ular → elang. Padi produsen, tikus konsumen I, ular konsumen II, elang konsumen III (pengurai boleh disebut). Skor 3 = urutan & semua peran benar; 2 = urutan benar, sebagian peran salah; 1 = hanya urutan." },
   "IP-ES3": { rubrik: "Populasi tikus meningkat karena tidak ada pemangsa, padi banyak dimakan tikus (gagal panen), elang kekurangan makanan; keseimbangan ekosistem terganggu." },
   "IP-ES4": { rubrik: "Padat: menempelkan telinga di meja/telepon kaleng. Cair: suara terdengar saat menyelam. Gas: mendengar suara orang berbicara/bel lewat udara." },
   "IP-ES5": { rubrik: "Contoh: cermin/spion (pemantulan), kacamata/lup (pembiasan), periskop (pemantulan), lampu senter (merambat lurus). Skor penuh bila 2 contoh dengan sifat cahaya yang tepat." },
@@ -147,7 +147,7 @@ window.KUNCI = {
   "MT-IS9": { k: ["1/2"] },
   "MT-IS10": { k: ["2x2x3", "2^2x3", "2²x3", "2pangkat2x3"] },
 
-  "MT-ES1": { rubrik: "KPK 6 dan 8 = 24. Menyala bersama lagi 24 detik kemudian, pukul 08.00.24. Skor 4 = cara (KPK) + jawaban benar; 2 = cara benar jawaban salah / jawaban tanpa cara." },
+  "MT-ES1": { rubrik: "KPK 6 dan 8 = 24. Menyala bersama lagi 24 detik kemudian, pukul 08.00.24. Skor 3 = cara (KPK) + jawaban benar; 2 = cara benar tetapi jawaban salah; 1 = jawaban tanpa cara." },
   "MT-ES2": { rubrik: "FPB 24 dan 36 = 12. Jadi 12 kantong; tiap kantong 2 apel dan 3 jeruk." },
   "MT-ES3": { rubrik: "3 1/2 − 1 1/4 = 3 2/4 − 1 1/4 = 2 1/4 meter." },
   "MT-ES4": { rubrik: "Ubah ke desimal: 0,45; 0,5; 0,6; 0,4. Urutan: 2/5 ; 0,45 ; 1/2 ; 60%." },

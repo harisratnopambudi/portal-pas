@@ -74,9 +74,9 @@
     m.soal.forEach(s => {
       const j = jw[s.id]; if (!j) return;
       if ((s.tipe === "pg" || s.tipe === "bs") && j.a && rnd() < porsi) {
-        nm[s.id + "|alasan"] = j.a.startsWith("Karena sesuai") || j.a.startsWith("Menurut") || j.a.startsWith("Sebab ") ? 2 : alasanSedang.includes(j.a) ? 1 : 0;
+        nm[s.id + "|alasan"] = j.a.startsWith("Karena sesuai") || j.a.startsWith("Menurut") || j.a.startsWith("Sebab ") ? 1 : (alasanSedang.includes(j.a) && rnd() < 0.4 ? 1 : 0);
       }
-      if (s.tipe === "essay" && j.t && rnd() < porsi) nm[s.id + "|essay"] = j.t.length > 90 ? 3 + Math.round(rnd()) : 1 + Math.round(rnd());
+      if (s.tipe === "essay" && j.t && rnd() < porsi) nm[s.id + "|essay"] = j.t.length > 90 ? 2 + Math.round(rnd()) : Math.round(rnd());
     });
     return nm;
   }
@@ -122,5 +122,8 @@
 
   window.DEMO = { TOKEN: TOKEN_DEMO, isiDasar, isiSemua, adaJawaban: () => !!localStorage.getItem("pas_db_demo") };
   isiDasar(false);
-  if (window.KUNCI && !localStorage.getItem("pas_db_demo")) isiSemua();
+  const VERSI = "skor-2";   // naikkan bila aturan skor berubah agar data contoh dibuat ulang
+  if (window.KUNCI && (!localStorage.getItem("pas_db_demo") || localStorage.getItem("pas_demo_versi") !== VERSI)) {
+    isiSemua(); localStorage.setItem("pas_demo_versi", VERSI);
+  }
 })();

@@ -36,16 +36,17 @@ Siswa masuk dengan memilih **kelas** lalu **nama** dari daftar. Nomor siswa = ur
 
 ## Penskoran (bisa diubah di `config.js` → `SKOR`)
 
-| Bagian | Otomatis | Manual oleh guru | Maks/soal |
-|---|---|---|---|
-| A. PG beralasan | Pilihan benar = 1 | Alasan 0–2 | 3 |
-| B. Benar/Salah beralasan | Pilihan benar = 1 | Alasan 0–2 | 3 |
-| C. PG kompleks | Parsial: (benar − salah) / jumlah kunci × 2 | – | 2 |
-| D. Isian | Dicocokkan dengan daftar jawaban di `kunci.js` | Guru bisa mengubah benar/salah | 1 |
-| E. Uraian | – | 0–4 sesuai rubrik | 4 |
+| Bagian | Otomatis | Manual oleh guru | Maks/soal | Jumlah soal | Maks bagian |
+|---|---|---|---|---|---|
+| A. PG beralasan | Pilihan benar = 1 | Alasan benar = 1 | 2 | 5 | 10 |
+| B. Benar/Salah beralasan | Pilihan benar = 1 | Alasan benar = 1 | 2 | 5 | 10 |
+| C. PG kompleks | Maks 1 (parsial: (benar − salah) / jumlah kunci) | – | 1 | 5 | 5 |
+| D. Isian | Dicocokkan dengan daftar jawaban di `kunci.js` | Guru bisa mengubah benar/salah | 1 | 10 | 10 |
+| E. Uraian | – | 0–3 sesuai rubrik | 3 | 5 | 15 |
 
-Total maksimal 70 → **Nilai = skor ÷ 70 × 100**.
-Alasan atau uraian yang dikosongkan siswa otomatis bernilai 0, jadi guru hanya menilai yang benar-benar diisi.
+Total maksimal 50 → **Nilai = skor ÷ 50 × 100**.
+Alasan atau uraian yang dikosongkan siswa otomatis bernilai 0.
+`ALASAN_HANYA_JIKA_JAWABAN_BENAR: true` membuat alasan otomatis 0 bila pilihan jawabannya salah. PG kompleks bisa dibuat harus tepat semua dengan `mode: "mutlak"`.
 
 Dua cara menilai:
 - **Nilai per siswa** — buka satu siswa, nilai semua jawabannya, lalu "Siswa berikutnya".

@@ -41,8 +41,9 @@
       const alasan = (jwb.a || "").trim();
       r.info.alasanKosong = !alasan;
       const key = soal.id + "|alasan";
-      if (!alasan) { r.manual = 0; }
-      else if (nm[key] != null) { r.manual = Number(nm[key]); r.info.dinilai = true; }
+      r.info.alasanDiabaikan = !!window.CONFIG.ALASAN_HANYA_JIKA_JAWABAN_BENAR && !benar;
+      if (!alasan || r.info.alasanDiabaikan) { r.manual = 0; }
+      else if (nm[key] != null) { r.manual = Math.min(Number(nm[key]), S[soal.tipe].alasanMaks); r.info.dinilai = true; }
       else { r.pending = true; }
       r.info.manualKey = key;
       r.info.manualMaks = S[soal.tipe].alasanMaks;
@@ -71,7 +72,7 @@
       const key = soal.id + "|isian";
       r.info.manualKey = key;
       r.info.manualMaks = S.isian.maks;
-      if (nm[key] != null) { r.auto = 0; r.manual = Number(nm[key]); r.info.override = true; }
+      if (nm[key] != null) { r.auto = 0; r.manual = Math.min(Number(nm[key]), S.isian.maks); r.info.override = true; }
       else r.auto = cocok ? S.isian.maks : 0;
     }
 
@@ -82,7 +83,7 @@
       r.info.manualMaks = S.essay.maks;
       r.info.kosong = !t;
       if (!t) r.manual = 0;
-      else if (nm[key] != null) { r.manual = Number(nm[key]); r.info.dinilai = true; }
+      else if (nm[key] != null) { r.manual = Math.min(Number(nm[key]), S.essay.maks); r.info.dinilai = true; }
       else r.pending = true;
     }
     return r;

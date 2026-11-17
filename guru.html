@@ -810,7 +810,8 @@
       h += '<div class="lbl-mini">' + ico("edit") + " Alasan siswa · jawaban " + (it.info.benar ? '<span style="color:var(--ok)">benar (+' + C.SKOR[s.tipe].jawaban + ")</span>" : '<span style="color:var(--bad)">salah (0)</span>') + "</div>";
       h += '<div class="ans' + (jw.a ? "" : " kosong") + '">' + (jw.a ? esc(jw.a) : "Alasan tidak diisi — otomatis 0") + "</div>";
       if (K.alasan) h += '<div class="ref"><b>Acuan alasan:</b> ' + esc(K.alasan) + "</div>";
-      if (jw.a) h += tombolSkor(rec, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, C.RUBRIK_ALASAN);
+      if (jw.a && it.info.alasanDiabaikan) h += '<div class="small muted" style="margin-top:8px">Pilihan jawaban salah, alasan otomatis 0.</div>';
+      else if (jw.a) h += tombolSkor(rec, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, C.RUBRIK_ALASAN);
     }
 
     if (s.tipe === "isian") {
@@ -889,7 +890,8 @@
         const pj = jw.p == null ? "Tidak dijawab" : s.tipe === "bs" ? (jw.p === 0 ? "Benar" : "Salah") : H[jw.p] + ". " + OPSI_TEKS(s.opsi[jw.p]);
         kanan += '<span class="badge ' + (it.info.benar ? "ok" : "bad") + '">Pilihan: ' + pj + "</span>";
         kanan += '<div class="ans' + (jw.a ? "" : " kosong") + '">' + (jw.a ? esc(jw.a) : "Alasan tidak diisi — otomatis 0") + "</div>";
-        if (jw.a) kanan += tombolSkor(r, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, C.RUBRIK_ALASAN);
+        if (jw.a && it.info.alasanDiabaikan) kanan += '<div class="small muted" style="margin-top:8px">Pilihan jawaban salah, alasan otomatis 0.</div>';
+        else if (jw.a) kanan += tombolSkor(r, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, C.RUBRIK_ALASAN);
       } else if (s.tipe === "essay") {
         kanan += '<div class="ans' + (jw.t ? "" : " kosong") + '" style="margin-top:0">' + (jw.t ? esc(jw.t) : "Tidak dijawab — otomatis 0") + "</div>";
         if (jw.t) kanan += tombolSkor(r, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, C.RUBRIK_ESSAY);

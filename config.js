@@ -46,24 +46,25 @@ window.CONFIG = {
 
   // Skor per tipe soal
   SKOR: {
-    pg:    { jawaban: 1, alasanMaks: 2 },   // Pilihan Ganda + Alasan
-    bs:    { jawaban: 1, alasanMaks: 2 },   // Benar/Salah + Alasan
-    pgk:   { maks: 2, mode: "parsial" },     // PG Kompleks: "parsial" atau "mutlak"
+    pg:    { jawaban: 1, alasanMaks: 1 },   // Pilihan Ganda: jawaban benar 1 + alasan benar 1
+    bs:    { jawaban: 1, alasanMaks: 1 },   // Benar/Salah: jawaban benar 1 + alasan benar 1
+    pgk:   { maks: 1, mode: "parsial" },     // PG Kompleks maks 1. "parsial" (nilai sebagian) atau "mutlak" (harus tepat semua)
     isian: { maks: 1 },
-    essay: { maks: 4 }
+    essay: { maks: 3 }
   },
+  // true  = alasan hanya dinilai bila pilihan jawabannya benar (pilihan salah -> alasan otomatis 0)
+  // false = alasan dinilai guru apa pun pilihannya
+  ALASAN_HANYA_JIKA_JAWABAN_BENAR: false,
 
-  // Rubrik singkat yang tampil di tombol skor alasan
+  // Rubrik singkat yang tampil di tombol skor
   RUBRIK_ALASAN: {
-    2: "Alasan tepat dan lengkap",
-    1: "Alasan sebagian benar / kurang lengkap",
+    1: "Alasan benar dan sesuai",
     0: "Alasan salah / tidak relevan / kosong"
   },
 
   RUBRIK_ESSAY: {
-    4: "Jawaban lengkap, tepat, runtut",
-    3: "Sebagian besar tepat, ada kekurangan kecil",
-    2: "Separuh tepat",
+    3: "Jawaban lengkap dan tepat",
+    2: "Sebagian besar tepat",
     1: "Sedikit yang tepat",
     0: "Salah / kosong"
   }
