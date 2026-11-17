@@ -130,6 +130,61 @@
     .stats{grid-template-columns:repeat(2,1fr)}
     .ps-row{grid-template-columns:1fr}
   }
+
+  /* =================== BUKU NILAI GURU =================== */
+  .pin-wrap{max-width:420px;margin:9vh auto;padding:0 20px}
+  .pin-card{padding:30px!important;border-top:5px double var(--ljk)}
+  .pin-ic{width:52px;height:52px;border-radius:50%;background:#fff;border:2px solid var(--ljk);color:var(--ljk)}
+  .g-shell{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:calc(100vh - 60px)}
+  .g-side{background:#fff;border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:60px;height:calc(100vh - 60px);display:flex;flex-direction:column;gap:2px;overflow:auto}
+  .g-grp{font-size:12.5px;font-weight:700;color:var(--faint);padding:14px 12px 6px}
+  .g-grp:first-child{padding-top:2px}
+  .g-side .tab{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:8px;border:0;background:transparent;font-weight:700;font-size:14.5px;color:var(--muted);cursor:pointer;text-align:left}
+  .g-side .tab .icon{width:18px;height:18px}
+  .g-side .tab:hover{background:var(--surface-2);color:var(--text)}
+  .g-side .tab.on{background:var(--primary-50);color:var(--primary);box-shadow:inset 4px 0 0 var(--ljk)}
+  .g-side-foot{margin-top:auto;padding:12px 4px 0}
+  .g-main{padding:22px 30px 60px;min-width:0;max-width:1320px;width:100%}
+  .g-kop{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;padding-bottom:16px;margin-bottom:20px;border-bottom:5px double var(--ljk)}
+  .g-kop-sel{display:flex;gap:22px;align-items:flex-end;flex-wrap:wrap}
+  .g-kop-sel label.f{color:var(--ljk);font-size:12.5px;margin-bottom:2px}
+  select.sel-head{font-size:22px;font-weight:800;border:0;border-bottom:2px dashed var(--line-2);border-radius:0;padding:2px 34px 6px 0;background-color:transparent;background-position:right 4px center;min-width:300px;color:var(--text)}
+  select.sel-head.sm{min-width:170px}
+  select.sel-head:focus{box-shadow:none;border-bottom:2px solid var(--primary)}
+  .g-kop-act{display:flex;gap:8px;flex-wrap:wrap}
+
+  /* ringkasan: satu lajur bersekat, bukan kartu-kartu terpisah */
+  .stats,.pt-stats{gap:0!important;background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--sheet-shadow);overflow:hidden}
+  .stats .card,.pt-stats .card{border:0;border-left:1px solid var(--line);border-radius:0;box-shadow:none}
+  .stats .card:first-child,.pt-stats .card:first-child{border-left:0}
+  .stat b,.pt-stat b{font-size:30px;font-weight:800}
+
+  /* tabel = buku nilai */
+  .tbl th{font-size:13px!important;text-transform:none!important;letter-spacing:0!important;color:var(--text)!important;background:#fff!important;border-bottom:3px double var(--ljk-line)!important}
+  .tbl td+td,.tbl th+th{border-left:1px solid #EEF0F4}
+  .tbl tr:hover td{background:var(--stabilo-50)!important}
+  .tbl td.num:first-child{color:var(--ljk);font-weight:800}
+  .tbl .nilai{font-size:17px}
+
+  .tk-code{font-family:var(--font)!important;letter-spacing:.24em!important;color:var(--primary)}
+  .tk-big .code{font-family:var(--font)!important}
+  .split .card:first-child{border-top:5px double var(--ljk)}
+  .sitem .av{border-radius:50%;border:2px solid var(--ljk-line);background:#fff;color:var(--ljk)}
+  #detail,#psWrap{border-top:5px double var(--ljk)}
+  .detail-head{border-bottom:1px solid var(--line)}
+  .score-big b{font-size:36px;color:var(--primary)}
+  .sec-title{text-transform:none!important;letter-spacing:0!important;font-size:14px!important;color:var(--ljk)!important}
+  .qi.pending,.ps-row.pending{background:var(--stabilo-50)!important}
+  .ans{border-color:var(--ruled)!important}
+
+  @media (max-width:980px){
+    .g-shell{grid-template-columns:1fr}
+    .g-side{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:8px;border-right:0;border-bottom:1px solid var(--line)}
+    .g-grp,.g-side-foot{display:none}
+    .g-side .tab{width:auto;white-space:nowrap}
+    .g-main{padding:16px 14px 60px}
+    select.sel-head{min-width:0;width:100%}
+  }
 </style>
 </head>
 <body>
@@ -150,7 +205,7 @@
 
 <!-- PIN -->
 <section id="layarPin" class="pin-wrap">
-  <form class="card" id="formPin">
+  <form class="card pin-card" id="formPin">
     <div class="pin-ic" id="pinIc"></div>
     <h2>Masuk sebagai guru</h2>
     <p class="muted small" style="margin:4px 0 18px" id="pinDesc">Masukkan PIN untuk membuka rekap dan penilaian jawaban siswa.</p>
@@ -166,29 +221,38 @@
 </section>
 
 <!-- UTAMA -->
-<section id="layarUtama" class="wrap hidden">
-  <div class="toolbar">
-    <div class="fld">
-      <label class="f" for="selMapel">Mata pelajaran</label>
-      <select class="input" id="selMapel"></select>
-    </div>
-    <div class="fld sm">
-      <label class="f" for="selKelas">Kelas</label>
-      <select class="input" id="selKelas"></select>
-    </div>
-    <div style="flex:1"></div>
-    <button class="btn hidden" id="btnContoh"></button>
-    <button class="btn" id="btnMuat"></button>
-    <button class="btn" id="btnExport"></button>
-  </div>
-
-  <div class="tabs" id="tabs">
+<section id="layarUtama" class="g-shell hidden">
+  <nav class="g-side" aria-label="Menu guru">
+    <div class="g-grp">Saat ujian</div>
     <button class="tab on" data-tab="pantau"></button>
-    <button class="tab" data-tab="rekap"></button>
-    <button class="tab" data-tab="siswa"></button>
-    <button class="tab" data-tab="soal"></button>
     <button class="tab" data-tab="token"></button>
+    <div class="g-grp">Penilaian</div>
+    <button class="tab" data-tab="soal"></button>
+    <button class="tab" data-tab="siswa"></button>
+    <button class="tab" data-tab="rekap"></button>
+    <div class="g-grp">Persiapan</div>
     <button class="tab" data-tab="data"></button>
+    <div class="g-side-foot">
+      <button class="btn block hidden" id="btnContoh"></button>
+    </div>
+  </nav>
+
+  <main class="g-main" id="gMain">
+  <div class="g-kop">
+    <div class="g-kop-sel">
+      <div>
+        <label class="f" for="selMapel">Mata pelajaran</label>
+        <select class="input sel-head" id="selMapel"></select>
+      </div>
+      <div>
+        <label class="f" for="selKelas">Kelas</label>
+        <select class="input sel-head sm" id="selKelas"></select>
+      </div>
+    </div>
+    <div class="g-kop-act">
+      <button class="btn" id="btnMuat"></button>
+      <button class="btn" id="btnExport"></button>
+    </div>
   </div>
 
   <!-- REKAP -->
@@ -264,6 +328,7 @@
     </div>
     <div class="card" id="psWrap"></div>
   </div>
+  </main>
 </section>
 
 <div id="modalHost"></div>
@@ -313,7 +378,7 @@
   if (DB.paksaDemo) {
     $("btnContoh").innerHTML = ico("refresh") + " Reset data contoh";
     $("modeChip").textContent = "Mode demo · data fiktif";
-    document.querySelector(".wrap").insertAdjacentHTML("afterbegin",
+    $("gMain").insertAdjacentHTML("afterbegin",
       '<div class="err" style="background:var(--warn-50);border-color:#f3d9a6;color:#7a4a00;margin:0 0 16px">' + ico("info") +
       "<span><b>Mode demo.</b> Semua data di halaman ini fiktif dan hanya tersimpan di browser ini, tidak menyentuh data asli. " +
       "Coba pilih kelas <b>5 Contoh A</b> di tab Pantauan (ujian IPAS & B. Indonesia sedang berlangsung), lalu nilai jawaban di tab Nilai per soal. " +
@@ -884,7 +949,7 @@
     $("tokenGrid").innerHTML = B.mapel.map(m => {
       const t = TOKENS[m.id] || {};
       const aktif = !!(t.token && t.aktif);
-      return '<div class="card tk-card"><div class="row" style="justify-content:space-between;gap:10px"><div class="row" style="gap:10px"><div class="mapel-ic" style="width:36px;height:36px;border-radius:9px;background:var(--primary-50);color:var(--primary);display:grid;place-items:center">' + ico(m.ikon) +
+      return '<div class="card tk-card"><div class="row" style="justify-content:space-between;gap:10px"><div class="row" style="gap:10px"><div class="mapel-ic" style="width:38px;height:38px;border-radius:50%;border:2px solid var(--ljk);color:var(--ljk);display:grid;place-items:center">' + ico(m.ikon) +
         "</div><b>" + esc(m.nama) + "</b></div>" +
         (aktif ? '<span class="badge ok">' + ico("check") + " Aktif</span>" : '<span class="badge neutral">' + ico("lock") + " Nonaktif</span>") + "</div>" +
         (t.token ? '<div class="tk-code' + (aktif ? "" : " off") + '">' + esc(t.token) + "</div>"
