@@ -80,6 +80,17 @@
   .sb.reset{font-weight:600;font-size:12.5px;color:var(--muted)}
   .sb-hint{font-size:12.5px;color:var(--muted);margin-left:4px}
 
+  /* pantauan */
+  .pt-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}
+  .pt-stat{padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+  .pt-stat span{font-size:12.5px;font-weight:600;color:var(--muted)}
+  .pt-stat b{font-size:26px;font-variant-numeric:tabular-nums}
+  .pt-bar{width:110px;height:7px;border-radius:99px;background:var(--line);overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
+  .pt-bar i{display:block;height:100%;background:var(--primary);border-radius:99px}
+  .pt-pick{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .tbl tr.row-lock td{background:#fdf3f3}
+  @media (max-width:980px){.pt-stats{grid-template-columns:repeat(2,1fr)}}
+
   /* token */
   .token-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
   .tk-card{padding:20px}
@@ -158,7 +169,8 @@
   </div>
 
   <div class="tabs" id="tabs">
-    <button class="tab on" data-tab="rekap"></button>
+    <button class="tab on" data-tab="pantau"></button>
+    <button class="tab" data-tab="rekap"></button>
     <button class="tab" data-tab="siswa"></button>
     <button class="tab" data-tab="soal"></button>
     <button class="tab" data-tab="token"></button>
@@ -166,7 +178,12 @@
   </div>
 
   <!-- REKAP -->
-  <div id="tabRekap">
+  <!-- PANTAUAN -->
+  <div id="tabPantau">
+    <div id="pantauWrap"></div>
+  </div>
+
+  <div id="tabRekap" class="hidden">
     <div class="stats" id="stats"></div>
     <div class="card tbl-wrap" id="rekapTabel"></div>
     <div class="card card-pad hidden" id="belumKirim" style="margin-top:16px"></div>
@@ -257,7 +274,9 @@
 
   let data = [];           // rekaman mapel aktif
   let drafts = [];         // siswa yang sedang mengerjakan (belum kirim)
-  let tab = "rekap";
+  let masukList = [];      // siswa yang sudah memasukkan token
+  let dimuatPada = 0;
+  let tab = "pantau";
   let pilihSiswa = null;   // id rekaman
   let hanyaPending = false;
 
@@ -273,7 +292,7 @@
   $("btnContoh").innerHTML = ico("users") + " Isi data contoh";
   $("btnSoalPrev").innerHTML = ico("left");
   $("btnSoalNext").innerHTML = ico("right");
-  const tabLbl = { rekap: ico("chart") + "Rekap nilai", siswa: ico("user") + "Nilai per siswa", soal: ico("list") + "Nilai per soal", data: ico("users") + "Data siswa", token: ico("key") + "Token ujian" };
+  const tabLbl = { rekap: ico("chart") + "Rekap nilai", siswa: ico("user") + "Nilai per siswa", soal: ico("list") + "Nilai per soal", pantau: ico("users") + "Pantauan ujian", data: ico("users") + "Data siswa", token: ico("key") + "Token ujian" };
   document.querySelectorAll(".tab").forEach(b => b.innerHTML = tabLbl[b.dataset.tab]);
   if (DB.mode === "demo") $("btnContoh").classList.remove("hidden");
 
@@ -323,7 +342,7 @@
   // Pantau otomatis (opsional, default mati): muat ulang data SATU kelas tiap 2 menit. Hemat kuota gratis.
   let pantauOtomatis = false;
   setInterval(() => {
-    if (pantauOtomatis && tab === "rekap" && $("selKelas").value && !$("layarUtama").classList.contains("hidden") && !$("modalHost").innerHTML) muat();
+    if (pantauOtomatis && tab === "pantau" && $("selKelas").value && !$("layarUtama").classList.contains("hidden") && !$("modalHost").innerHTML) muat();
   }, 120000);
 
   /* ---------- Data ---------- */
@@ -336,6 +355,8 @@
       const kls = $("selKelas").value;   // bila satu kelas dipilih, hanya data kelas itu yang dibaca (hemat kuota)
       data = await DB.daftar($("selMapel").value, kls);
       try { drafts = await DB.daftarDraft($("selMapel").value, kls); } catch (e) { drafts = []; }
+      try { masukList = kls ? await DB.daftarMasuk($("selMapel").value, kls) : []; } catch (e) { masukList = []; }
+      dimuatPada = Date.now();
       data.forEach(r => r._h = P.nilaiRekaman(r));
     } catch (e) {
       toast(ico("alert") + " Gagal memuat data: " + esc(e.message || e));
@@ -357,6 +378,8 @@
 
   function renderSemua() {
     $("tabRekap").classList.toggle("hidden", tab !== "rekap");
+    $("tabPantau").classList.toggle("hidden", tab !== "pantau");
+    if (tab === "pantau") renderPantau();
     $("tabSiswa").classList.toggle("hidden", tab !== "siswa");
     $("tabSoal").classList.toggle("hidden", tab !== "soal");
     $("tabData").classList.toggle("hidden", tab !== "data");
@@ -405,6 +428,79 @@
     return d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" }) + " " + d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
   }
 
+  /* ---------- PANTAUAN UJIAN ---------- */
+  function renderPantau() {
+    const el = $("pantauWrap"), k = $("selKelas").value, m = mapel();
+    const rbs = ROMBEL.filter(r => !m.tingkat || m.tingkat.map(String).includes(String(r.tingkat)));
+    if (!k) {
+      el.innerHTML = '<div class="card card-pad"><h3>Pilih kelas yang ingin dipantau</h3><p class="muted small" style="margin:4px 0 0">Mapel: <b>' + esc(m.nama) +
+        "</b>. Pantauan dibaca per kelas agar hemat kuota.</p>" +
+        (rbs.length ? '<div class="pt-pick">' + rbs.map(r => '<button class="btn" data-kls="' + esc(r.kelas) + '">' + ico("users") + " " + esc(r.kelas) + ' <span class="muted small">(' + r.nama.length + ")</span></button>").join("") + "</div>"
+          : '<p class="small" style="margin:12px 0 0;color:var(--warn)">Belum ada data siswa. Import di tab Data siswa.</p>') + "</div>";
+      el.querySelectorAll("[data-kls]").forEach(b => b.onclick = () => { $("selKelas").value = b.dataset.kls; muat(); });
+      return;
+    }
+    const rb = ROMBEL.find(r => r.kelas === k);
+    if (!rb) { el.innerHTML = '<div class="card empty">Data siswa kelas ini tidak ditemukan.</div>'; return; }
+    if (m.tingkat && !m.tingkat.map(String).includes(String(rb.tingkat))) {
+      el.innerHTML = '<div class="card empty">' + esc(m.nama) + " tidak diujikan untuk kelas " + esc(k) + ".</div>"; return;
+    }
+    const kirim = {}, dr = {}, ms = {};
+    data.filter(r => r.kelas === k).forEach(r => kirim[r.absen] = r);
+    drafts.filter(d => d.kelas === k).forEach(d => dr[d.absen] = d);
+    masukList.filter(d => d.kelas === k).forEach(d => ms[d.absen] = d);
+    const now = Date.now(), dur = m.durasi * 60000;
+    const mnt = t => { const x = Math.round((now - t) / 60000); return x < 1 ? "baru saja" : x + " mnt lalu"; };
+    const jam = iso => { const d = new Date(iso); return d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }); };
+    const sisa = mulai => { const s = Math.max(0, Math.round((mulai + dur - now) / 60000)); return s > 0 ? s + " mnt" : "Habis"; };
+    const hitung = { belum: 0, masuk: 0, kerja: 0, kunci: 0, kirim: 0 };
+    const rows = rb.nama.map((n, i) => {
+      const no = i + 1, J = kirim[no], D = dr[no], M = ms[no];
+      let st, badge, soal = "-", prog = "", waktuSisa = "-", pel = 0, akt = "-", cls = "";
+      if (J) {
+        st = "kirim"; badge = '<span class="badge ok">' + ico("check") + " Terkirim</span>";
+        const tj = Object.keys(J.jawaban || {}).length;
+        prog = '<span class="pt-bar"><i style="width:' + Math.round(tj / m.soal.length * 100) + '%;background:var(--ok)"></i></span>' + tj + "/" + m.soal.length;
+        waktuSisa = "Selesai " + jam(J.dikirim_at); pel = J.pelanggaran || 0; akt = mnt(new Date(J.dikirim_at).getTime());
+      } else if (D && D.terkunci) {
+        st = "kunci"; cls = "row-lock"; badge = '<span class="badge bad">' + ico("lock") + " Terkunci</span>";
+      } else if (D && D.mulai) {
+        st = "kerja"; badge = '<span class="badge info">' + ico("edit") + " Mengerjakan</span>";
+      } else if (M) {
+        st = "masuk"; badge = '<span class="badge warn">' + ico("key") + " Masuk, belum mulai</span>"; akt = mnt(M.waktu);
+      } else { st = "belum"; badge = '<span class="badge neutral">Belum masuk</span>'; }
+      if (D && !J) {
+        const tot = D.total || m.soal.length;
+        soal = D.mulai ? "No. " + ((D.idx || 0) + 1) : "-";
+        prog = '<span class="pt-bar"><i style="width:' + Math.round((D.terjawab || 0) / tot * 100) + '%"></i></span>' + (D.terjawab || 0) + "/" + tot;
+        waktuSisa = D.mulai ? sisa(D.mulai) : "-"; pel = D.pelanggaran || 0;
+        akt = D.diperbarui_at ? mnt(D.diperbarui_at) : "-";
+        if (st === "kerja" && D.diperbarui_at && now - D.diperbarui_at > 6 * 60000)
+          akt += ' <span class="badge warn" title="Tidak ada perubahan jawaban yang tersimpan ke server. Bisa karena siswa diam, offline, atau perangkat mati.">cek siswa</span>';
+      }
+      hitung[st]++;
+      return '<tr class="' + cls + '"><td class="num">' + no + "</td><td><b>" + esc(n) + "</b></td><td>" + badge + "</td><td>" + soal + "</td><td>" + (prog || "-") +
+        '</td><td class="num">' + waktuSisa + '</td><td class="num">' + (pel ? '<span class="badge bad">' + pel + "</span>" : '<span class="muted">0</span>') + '</td><td class="muted">' + akt + "</td></tr>";
+    });
+    el.innerHTML =
+      '<div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px"><div><h2>' + esc(k) + " · " + esc(m.nama) + "</h2>" +
+      '<div class="muted small">Data per ' + (dimuatPada ? new Date(dimuatPada).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "-") +
+      ". Progres siswa dikirim ke server tiap ±" + Math.round((C.SIMPAN_SERVER_DETIK || 120) / 60) + " menit; terkunci & pelanggaran langsung.</div></div>" +
+      '<div class="row" style="gap:12px;flex-wrap:wrap"><label class="switch small"><input type="checkbox" id="chkPantau"' + (pantauOtomatis ? " checked" : "") + "> Muat ulang otomatis tiap 2 menit</label>" +
+      '<button class="btn" id="btnPantauMuat">' + ico("refresh") + " Muat ulang</button></div></div>" +
+      '<div class="pt-stats">' +
+      '<div class="card pt-stat"><span>Belum masuk</span><b>' + hitung.belum + "</b></div>" +
+      '<div class="card pt-stat"><span>Masuk, belum mulai</span><b style="color:var(--warn)">' + hitung.masuk + "</b></div>" +
+      '<div class="card pt-stat"><span>Mengerjakan</span><b style="color:var(--primary)">' + hitung.kerja + "</b></div>" +
+      '<div class="card pt-stat"><span>Terkunci</span><b style="color:var(--bad)">' + hitung.kunci + "</b></div>" +
+      '<div class="card pt-stat"><span>Terkirim</span><b style="color:var(--ok)">' + hitung.kirim + "</b><small class=\"muted\">dari " + rb.nama.length + "</small></div></div>" +
+      '<div class="card tbl-wrap"><table class="tbl"><thead><tr><th class="num">No</th><th>Nama</th><th>Status</th><th>Posisi</th><th>Terjawab</th><th class="num">Sisa waktu</th><th class="num">Pelanggaran</th><th>Aktivitas terakhir</th></tr></thead><tbody>' +
+      rows.join("") + "</tbody></table></div>" +
+      (hitung.kunci ? '<p class="small" style="margin:12px 0 0;color:var(--bad)">Siswa terkunci: pengawas membuka kunci dengan mengetik token mapel (tab Token ujian, harus Aktif) di perangkat siswa.</p>' : "");
+    $("chkPantau").onchange = e => { pantauOtomatis = e.target.checked; if (pantauOtomatis) muat(); };
+    $("btnPantauMuat").onclick = muat;
+  }
+
   function renderBelum() {
     const el = $("belumKirim"), k = $("selKelas").value;
     const rb = ROMBEL.find(r => r.kelas === k);
@@ -437,7 +533,7 @@
   }
 
   function renderRekap() {
-    renderBelum();
+    $("belumKirim").classList.add("hidden");
     const rows = terfilter();
     const selesai = rows.filter(r => r._h.status === "selesai");
     const pendingItem = rows.reduce((a, r) => a + r._h.pending, 0);

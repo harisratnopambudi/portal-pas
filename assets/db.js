@@ -153,6 +153,16 @@
       if (fs) { try { await fs.collection(KOL_DRAFT).doc(id).delete(); } catch (e) {} return; }
       const o = draftLokal(); delete o[id]; draftLokalSet(o);
     },
+    async daftarMasuk(mapel, kelas) {         // guru: siswa yang sudah memasukkan token
+      if (fs) {
+        let q = fs.collection(KOL_MASUK).where("mapel", "==", mapel);
+        if (kelas) q = q.where("kelas", "==", kelas);
+        const snap = await q.get();
+        return snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+      }
+      const o = lsGet(LKEY_MASUK);
+      return Object.keys(o).map(id => Object.assign({ id }, o[id])).filter(d => d.mapel === mapel && (!kelas || d.kelas === kelas));
+    },
     async daftarDraft(mapel, kelas) {
       if (fs) {
         let q = fs.collection(KOL_DRAFT).where("mapel", "==", mapel);

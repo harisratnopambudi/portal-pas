@@ -634,7 +634,7 @@
     if (!sesi || !sesi.mulai || mengirim) return;
     perluSync = false;
     // Hemat kuota: hanya kirim bila jawaban / tanda ragu / pelanggaran berubah sejak kiriman terakhir
-    const sidik = JSON.stringify([sesi.jawaban, sesi.ragu, sesi.pelanggaran || 0, !!sesi.terkunci, sesi.kunciPada || 0]);
+    const sidik = JSON.stringify([sesi.jawaban, sesi.ragu, sesi.idx || 0, sesi.pelanggaran || 0, !!sesi.terkunci, sesi.kunciPada || 0]);
     if (sidik === terakhirTerkirim) { if (syncState !== "error" && syncState !== "offline") setSync("ok"); return; }
     const id = ++syncSeq;
     setSync(navigator.onLine === false ? "offline" : "saving");
