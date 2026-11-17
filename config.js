@@ -30,6 +30,10 @@ window.CONFIG = {
   // Alasan pada soal PG & Benar/Salah wajib diisi, minimal sekian huruf
   ALASAN_MIN_KARAKTER: 10,
 
+  // Untuk file Excel
+  NAMA_KOTA: "Purwakarta",      // tempat pada kolom tanda tangan
+  BATAS_TUNTAS: 0,              // nilai di bawah angka ini ditandai merah di Excel. 0 = tidak ditandai
+
   // Jawaban selalu tersimpan seketika di perangkat siswa. Cadangan ke server dikirim tiap sekian detik
   // (dan saat siswa keluar halaman / mulai / kirim). Makin besar makin hemat kuota Firebase gratis.
   SIMPAN_SERVER_DETIK: 120,

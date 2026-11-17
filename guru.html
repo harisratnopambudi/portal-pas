@@ -911,104 +911,240 @@
   }
 
   /* ---------- EXPORT ---------- */
-  /* ---------- EXPORT EXCEL ---------- */
+  /* ---------- EXPORT EXCEL (ExcelJS, berformat) ---------- */
+  function muatExcelJS() {
+    if (window.ExcelJS) return Promise.resolve();
+    return new Promise((res, rej) => {
+      const s = document.createElement("script");
+      s.src = "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js";
+      s.onload = res; s.onerror = () => rej(new Error("Pustaka Excel gagal dimuat. Periksa koneksi internet."));
+      document.head.appendChild(s);
+    });
+  }
+  const XC = { navy: "FF1C2B6B", ljk: "FFD2335C", ljk50: "FFFCEDF1", zebra: "FFF6F7FA", line: "FFC9D0DB", text: "FF16204A", muted: "FF7D879C",
+    okF: "FFDDF1E4", okT: "FF157A4E", partF: "FFFFF2C2", zeroF: "FFFADADF", zeroT: "FFB42335", head2: "FF2D3F86" };
+  const tipis = { style: "thin", color: { argb: XC.line } };
+  const KOTAK = { top: tipis, left: tipis, bottom: tipis, right: tipis };
+  const isi = argb => ({ type: "pattern", pattern: "solid", fgColor: { argb } });
   const r2 = x => Math.round(x * 100) / 100;
+  function sel(ws, r, c, v, g) {
+    const cell = ws.getCell(r, c);
+    if (v !== undefined) cell.value = v;
+    if (g) Object.keys(g).forEach(k => cell[k] = g[k]);
+    return cell;
+  }
   function namaSheet(s, dipakai) {
     let n = String(s).replace(/[\[\]:*?\/\\]/g, "-").slice(0, 31) || "Sheet";
     let k = n, i = 2; while (dipakai.has(k)) k = n.slice(0, 28) + " " + i++;
     dipakai.add(k); return k;
   }
   function rombelUntuk(m) { return ROMBEL.filter(r => !m.tingkat || m.tingkat.map(String).includes(String(r.tingkat))); }
-  function lembar(aoa, lebar, merge) {
-    const ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws["!cols"] = lebar.map(w => ({ wch: w }));
-    if (merge) ws["!merges"] = merge;
-    return ws;
+  function sheetBaru(wb, nama, beku) {
+    return wb.addWorksheet(nama, {
+      views: [{ state: "frozen", xSplit: beku.x, ySplit: beku.y, showGridLines: false }],
+      properties: { tabColor: { argb: XC.navy } },
+      pageSetup: { paperSize: 9, orientation: "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0,
+        margins: { left: 0.4, right: 0.4, top: 0.5, bottom: 0.5, header: 0.2, footer: 0.2 }, horizontalCentered: true }
+    });
   }
-  function kop(judul, kolom) {
-    return { rows: [[judul], [C.NAMA_SEKOLAH + ", " + C.JUDUL_UJIAN + " Tahun Ajaran " + C.TAHUN_AJARAN], []],
-      merge: [{ s: { r: 0, c: 0 }, e: { r: 0, c: kolom - 1 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: kolom - 1 } }] };
+  function kopExcel(ws, judul, ket, nCol) {
+    ws.mergeCells(1, 1, 1, nCol); ws.mergeCells(2, 1, 2, nCol); ws.mergeCells(3, 1, 3, nCol);
+    sel(ws, 1, 1, C.NAMA_SEKOLAH, { font: { name: "Calibri", size: 15, bold: true, color: { argb: XC.navy } }, alignment: { horizontal: "center" } });
+    sel(ws, 2, 1, judul, { font: { name: "Calibri", size: 12, bold: true, color: { argb: XC.text } }, alignment: { horizontal: "center" } });
+    sel(ws, 3, 1, ket, { font: { name: "Calibri", size: 11, color: { argb: XC.muted } }, alignment: { horizontal: "center" } });
+    for (let c = 1; c <= nCol; c++) ws.getCell(3, c).border = { bottom: { style: "double", color: { argb: XC.ljk } } };
+    ws.getRow(1).height = 22; ws.getRow(2).height = 18; ws.getRow(3).height = 18; ws.getRow(4).height = 8;
+  }
+  function gayaHeader(cell, gelap) {
+    cell.font = { name: "Calibri", size: 10.5, bold: true, color: { argb: "FFFFFFFF" } };
+    cell.fill = isi(gelap ? XC.navy : XC.head2);
+    cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
+    cell.border = { top: { style: "thin", color: { argb: "FFFFFFFF" } }, left: { style: "thin", color: { argb: "FFFFFFFF" } }, bottom: { style: "thin", color: { argb: "FFFFFFFF" } }, right: { style: "thin", color: { argb: "FFFFFFFF" } } };
+  }
+  function tandaTangan(ws, baris, kolom, lebar, jabatan) {
+    const tgl = C.NAMA_KOTA + ", .......................... " + new Date().getFullYear();
+    [[tgl, false], [jabatan, false], ["", false], ["", false], ["", false], ["(.......................................................)", true], ["NIP/NUPTK .......................................", false]].forEach((x, i) => {
+      ws.mergeCells(baris + i, kolom, baris + i, kolom + lebar - 1);
+      sel(ws, baris + i, kolom, x[0], { font: { name: "Calibri", size: 11, bold: x[1], color: { argb: XC.text } }, alignment: { horizontal: "center" } });
+    });
   }
 
-  // Rekap rinci satu mapel untuk satu rombel
-  function sheetRekapMapel(m, rb, recs) {
+  // Rincian satu mapel untuk satu rombel
+  function sheetRekapMapel(wb, m, rb, recs, nama) {
     const tipeAda = URUTAN_TIPE.filter(t => m.soal.some(s => s.tipe === t));
-    const singkat = { pg: "PG", bs: "B/S", pgk: "PGK", isian: "Isian", essay: "Uraian" };
+    const singkat = { pg: "PG Beralasan", bs: "Benar/Salah", pgk: "PG Kompleks", isian: "Isian", essay: "Uraian" };
     const maksTipe = {}; tipeAda.forEach(t => maksTipe[t] = m.soal.filter(s => s.tipe === t).reduce((a, s) => a + P.maksItem(s.tipe), 0));
     const maks = Object.values(maksTipe).reduce((a, b) => a + b, 0);
-    const head = ["No", "Nama", "Status", "Dikirim"].concat(tipeAda.map(t => T[t].kode + " " + singkat[t] + " (" + maksTipe[t] + ")"),
-      ["Total (" + maks + ")", "Nilai", "Belum dinilai", "Pelanggaran"], m.soal.map((s, i) => "S" + (i + 1)));
-    const k = kop("Rekap Nilai " + m.nama + ", Kelas " + rb.kelas, head.length);
-    const byNo = {}; recs.forEach(r => byNo[r.absen] = r);
-    const rows = rb.nama.map((n, i) => {
-      const r = byNo[i + 1];
-      if (!r) return [i + 1, n, "Belum mengerjakan"];
-      const x = P.nilaiRekaman(r);
-      const st = x.status === "selesai" ? "Selesai dinilai" : x.status === "sebagian" ? "Sebagian dinilai" : "Belum dinilai";
-      return [i + 1, n, st, waktu(r.dikirim_at)].concat(tipeAda.map(t => r2(x.perTipe[t].skor)), [r2(x.total), x.nilai, x.pending, r.pelanggaran || 0],
-        m.soal.map(s => { const it = x.rincian.find(z => z.id === s.id); return it.pending ? "" : r2(it.auto + it.manual); }));
+    const nT = tipeAda.length, nS = m.soal.length;
+    const cT = 5, cTot = cT + nT, cNil = cTot + 1, cPel = cNil + 1, cS = cPel + 1, nCol = cS + nS - 1;
+    const ws = sheetBaru(wb, nama, { x: 2, y: 6 });
+    kopExcel(ws, "REKAP NILAI " + C.JUDUL_UJIAN.toUpperCase(), "Mata pelajaran: " + m.nama + "     Kelas: " + rb.kelas + "     Tahun ajaran " + C.TAHUN_AJARAN, nCol);
+    // header 2 tingkat
+    [[1, "No"], [2, "Nama Siswa"], [3, "Status"], [4, "Waktu kirim"], [cTot, "Total\n(" + maks + ")"], [cNil, "Nilai"], [cPel, "Pelang-\ngaran"]].forEach(([c, t]) => {
+      ws.mergeCells(5, c, 6, c); gayaHeader(sel(ws, 5, c, t), true);
     });
-    const dinilai = rows.filter(r => typeof r[4 + tipeAda.length + 1] === "number");
-    const rata = dinilai.length ? r2(dinilai.reduce((a, r) => a + r[4 + tipeAda.length + 1], 0) / dinilai.length) : "";
-    const kaki = [[], ["", "Rata-rata nilai", "", ""].concat(tipeAda.map(() => ""), ["", rata])];
-    return lembar(k.rows.concat([head], rows, kaki), [5, 30, 18, 14].concat(tipeAda.map(() => 11), [11, 8, 12, 12], m.soal.map(() => 5)), k.merge);
+    ws.mergeCells(5, cT, 5, cT + nT - 1); gayaHeader(sel(ws, 5, cT, "Skor per bagian"), true);
+    tipeAda.forEach((t, i) => gayaHeader(sel(ws, 6, cT + i, T[t].kode + ". " + singkat[t] + "\n(" + maksTipe[t] + ")"), false));
+    ws.mergeCells(5, cS, 5, nCol); gayaHeader(sel(ws, 5, cS, "Skor per soal (A: 1–5, B: 6–10, C: 11–15, D: 16–25, E: 26–30)"), true);
+    m.soal.forEach((s, i) => gayaHeader(sel(ws, 6, cS + i, i + 1), false));
+    ws.getRow(5).height = 22; ws.getRow(6).height = 46;
+    // lebar kolom
+    const lebar = { 1: 5, 2: 30, 3: 17, 4: 13 };
+    tipeAda.forEach((t, i) => lebar[cT + i] = 12.5);
+    lebar[cTot] = 9; lebar[cNil] = 8; lebar[cPel] = 9;
+    m.soal.forEach((s, i) => lebar[cS + i] = 4.6);
+    Object.keys(lebar).forEach(c => ws.getColumn(+c).width = lebar[c]);
+
+    const byNo = {}; recs.forEach(r => byNo[r.absen] = r);
+    const kumpul = { tipe: tipeAda.map(() => []), total: [], nilai: [], soal: m.soal.map(() => []) };
+    let row = 7, sudah = 0;
+    rb.nama.forEach((n, i) => {
+      const r = byNo[i + 1], zebra = i % 2 === 1;
+      const dasar = { font: { name: "Calibri", size: 10.5, color: { argb: XC.text } }, border: KOTAK, alignment: { vertical: "middle" } };
+      if (zebra) dasar.fill = isi(XC.zebra);
+      for (let c = 1; c <= nCol; c++) sel(ws, row, c, undefined, dasar);
+      sel(ws, row, 1, i + 1, { alignment: { horizontal: "center", vertical: "middle" } });
+      sel(ws, row, 2, n);
+      if (!r) {
+        sel(ws, row, 3, "Belum mengerjakan", { font: { name: "Calibri", size: 10.5, italic: true, color: { argb: XC.muted } } });
+      } else {
+        sudah++;
+        const x = P.nilaiRekaman(r);
+        const st = x.status === "selesai" ? "Selesai dinilai" : x.status === "sebagian" ? "Sebagian dinilai" : "Belum dinilai";
+        sel(ws, row, 3, st, { font: { name: "Calibri", size: 10.5, color: { argb: x.status === "selesai" ? XC.okT : "FF9A5B00" } } });
+        const d = new Date(r.dikirim_at);
+        sel(ws, row, 4, d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" }) + " " + d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }), { alignment: { horizontal: "center", vertical: "middle" } });
+        tipeAda.forEach((t, k) => { const v = r2(x.perTipe[t].skor); kumpul.tipe[k].push(v); sel(ws, row, cT + k, v, { alignment: { horizontal: "center", vertical: "middle" } }); });
+        kumpul.total.push(r2(x.total)); kumpul.nilai.push(x.nilai);
+        sel(ws, row, cTot, r2(x.total), { alignment: { horizontal: "center", vertical: "middle" } });
+        const kurang = C.BATAS_TUNTAS > 0 && x.nilai < C.BATAS_TUNTAS;
+        sel(ws, row, cNil, x.nilai, { font: { name: "Calibri", size: 11, bold: true, color: { argb: kurang ? XC.zeroT : XC.navy } }, alignment: { horizontal: "center", vertical: "middle" } });
+        sel(ws, row, cPel, r.pelanggaran || 0, { alignment: { horizontal: "center", vertical: "middle" }, font: { name: "Calibri", size: 10.5, color: { argb: r.pelanggaran ? XC.zeroT : XC.muted } } });
+        m.soal.forEach((s, k) => {
+          const it = x.rincian.find(z => z.id === s.id);
+          const cell = sel(ws, row, cS + k, undefined, { alignment: { horizontal: "center", vertical: "middle" } });
+          if (it.pending) { cell.value = "?"; cell.font = { name: "Calibri", size: 10, color: { argb: XC.muted } }; return; }
+          const v = r2(it.auto + it.manual); cell.value = v; kumpul.soal[k].push(v / it.maks);
+          cell.fill = isi(v >= it.maks ? XC.okF : v > 0 ? XC.partF : XC.zeroF);
+          cell.font = { name: "Calibri", size: 10, color: { argb: v > 0 ? XC.text : XC.zeroT } };
+        });
+      }
+      ws.getRow(row).height = 18;
+      row++;
+    });
+    // ringkasan
+    row++;
+    const avg = a => a.length ? r2(a.reduce((x, y) => x + y, 0) / a.length) : "";
+    const ringkas = [["Rata-rata", avg], ["Tertinggi", a => a.length ? Math.max(...a) : ""], ["Terendah", a => a.length ? Math.min(...a) : ""]];
+    ringkas.forEach(([lbl, f], j) => {
+      for (let c = 1; c <= cPel; c++) sel(ws, row, c, undefined, { border: KOTAK, fill: isi(XC.ljk50), font: { name: "Calibri", size: 10.5, bold: true, color: { argb: XC.text } }, alignment: { horizontal: "center", vertical: "middle" } });
+      ws.mergeCells(row, 1, row, 4); sel(ws, row, 1, lbl, { alignment: { horizontal: "right", vertical: "middle" } });
+      tipeAda.forEach((t, k) => sel(ws, row, cT + k, f(kumpul.tipe[k])));
+      sel(ws, row, cTot, f(kumpul.total)); sel(ws, row, cNil, f(kumpul.nilai));
+      if (j === 0) {
+        m.soal.forEach((s, k) => {
+          const a = kumpul.soal[k], p = a.length ? Math.round(a.reduce((x, y) => x + y, 0) / a.length * 100) : "";
+          sel(ws, row, cS + k, p, { border: KOTAK, font: { name: "Calibri", size: 9.5, bold: true, color: { argb: p !== "" && p < 50 ? XC.zeroT : XC.text } }, fill: isi(XC.ljk50), alignment: { horizontal: "center", vertical: "middle" } });
+        });
+      }
+      row++;
+    });
+    ws.mergeCells(row, cS, row, nCol);
+    sel(ws, row, cS, "Baris Rata-rata pada kolom soal = daya serap (%): rata-rata skor siswa dibanding skor maksimal soal. Merah = di bawah 50%.", { font: { name: "Calibri", size: 9, italic: true, color: { argb: XC.muted } } });
+    row += 1;
+    ws.mergeCells(row, 1, row, 6);
+    sel(ws, row, 1, "Jumlah siswa " + rb.nama.length + ", mengerjakan " + sudah + ", belum " + (rb.nama.length - sudah) + ". Warna skor soal: hijau = penuh, kuning = sebagian, merah = 0, ? = belum dinilai.",
+      { font: { name: "Calibri", size: 9.5, italic: true, color: { argb: XC.muted } } });
+    tandaTangan(ws, row + 2, Math.max(cS, nCol - 11), 12, "Guru Mata Pelajaran");
+    ws.pageSetup.printTitlesRow = "5:6";
+    ws.pageSetup.printArea = "A1:" + ws.getColumn(nCol).letter + (row + 9);
+    return ws;
   }
 
   // Nilai akhir semua mapel untuk satu rombel
-  function sheetSemuaMapel(rb, perMapel) {
+  function sheetNilaiAkhir(wb, rb, perMapel, nama) {
     const mps = B.mapel.filter(m => !m.tingkat || m.tingkat.map(String).includes(String(rb.tingkat)));
-    const head = ["No", "Nama"].concat(mps.map(m => m.nama), ["Rata-rata"]);
-    const k = kop("Nilai Akhir PAS, Kelas " + rb.kelas, head.length);
-    const rows = rb.nama.map((n, i) => {
-      const nilai = mps.map(m => {
+    const nCol = 2 + mps.length + 1;
+    const ws = sheetBaru(wb, nama, { x: 2, y: 5 });
+    ws.pageSetup.orientation = "portrait";
+    kopExcel(ws, "DAFTAR NILAI " + C.JUDUL_UJIAN.toUpperCase(), "Kelas: " + rb.kelas + "     Tahun ajaran " + C.TAHUN_AJARAN, nCol);
+    ["No", "Nama Siswa"].concat(mps.map(m => m.nama), ["Rata-rata"]).forEach((t, i) => gayaHeader(sel(ws, 5, i + 1, t), true));
+    ws.getRow(5).height = 46;
+    ws.getColumn(1).width = 5; ws.getColumn(2).width = 32; mps.forEach((m, i) => ws.getColumn(3 + i).width = 15); ws.getColumn(nCol).width = 11;
+    const kumpul = mps.map(() => []), rataAll = [];
+    let row = 6, adaSementara = false;
+    rb.nama.forEach((n, i) => {
+      const dasar = { font: { name: "Calibri", size: 10.5, color: { argb: XC.text } }, border: KOTAK, alignment: { vertical: "middle", horizontal: "center" } };
+      if (i % 2 === 1) dasar.fill = isi(XC.zebra);
+      for (let c = 1; c <= nCol; c++) sel(ws, row, c, undefined, dasar);
+      sel(ws, row, 1, i + 1); sel(ws, row, 2, n, { alignment: { horizontal: "left", vertical: "middle" } });
+      const vals = [];
+      mps.forEach((m, k) => {
         const r = (perMapel[m.id] || []).find(z => z.kelas === rb.kelas && z.absen === i + 1);
-        if (!r) return "";
-        const x = P.nilaiRekaman(r);
-        return x.pending ? x.nilai + "*" : x.nilai;
+        if (!r) { sel(ws, row, 3 + k, "-", { font: { name: "Calibri", size: 10.5, color: { argb: XC.muted } } }); return; }
+        const x = P.nilaiRekaman(r); vals.push(x.nilai); kumpul[k].push(x.nilai);
+        const kurang = C.BATAS_TUNTAS > 0 && x.nilai < C.BATAS_TUNTAS;
+        const c = sel(ws, row, 3 + k, x.nilai, { font: { name: "Calibri", size: 11, bold: true, color: { argb: kurang ? XC.zeroT : XC.navy } } });
+        if (x.pending) { c.fill = isi(XC.partF); adaSementara = true; }
       });
-      const angka = nilai.map(v => typeof v === "number" ? v : parseFloat(v)).filter(v => !isNaN(v));
-      return [i + 1, n].concat(nilai, [angka.length ? r2(angka.reduce((a, b) => a + b, 0) / angka.length) : ""]);
+      if (vals.length) { const a = r2(vals.reduce((x, y) => x + y, 0) / vals.length); rataAll.push(a); sel(ws, row, nCol, a, { font: { name: "Calibri", size: 11, bold: true, color: { argb: XC.text } } }); }
+      ws.getRow(row).height = 18; row++;
     });
-    const ket = [[], ["", "Kosong = belum mengerjakan. Tanda * = masih ada jawaban yang belum dinilai guru (nilai sementara)."]];
-    return lembar(k.rows.concat([head], rows, ket), [5, 30].concat(mps.map(() => 18), [11]), k.merge);
+    row++;
+    const avg = a => a.length ? r2(a.reduce((x, y) => x + y, 0) / a.length) : "";
+    [["Rata-rata kelas", avg], ["Tertinggi", a => a.length ? Math.max(...a) : ""], ["Terendah", a => a.length ? Math.min(...a) : ""]].forEach(([lbl, f]) => {
+      for (let c = 1; c <= nCol; c++) sel(ws, row, c, undefined, { border: KOTAK, fill: isi(XC.ljk50), font: { name: "Calibri", size: 10.5, bold: true, color: { argb: XC.text } }, alignment: { horizontal: "center", vertical: "middle" } });
+      ws.mergeCells(row, 1, row, 2); sel(ws, row, 1, lbl, { alignment: { horizontal: "right", vertical: "middle" } });
+      mps.forEach((m, k) => sel(ws, row, 3 + k, f(kumpul[k])));
+      sel(ws, row, nCol, f(rataAll));
+      row++;
+    });
+    ws.mergeCells(row, 1, row, nCol);
+    sel(ws, row, 1, "Tanda - = belum mengerjakan." + (adaSementara ? " Sel kuning = masih ada jawaban yang belum dinilai guru (nilai sementara)." : ""),
+      { font: { name: "Calibri", size: 9.5, italic: true, color: { argb: XC.muted } } });
+    tandaTangan(ws, row + 2, Math.max(2, nCol - 2), 3, "Wali Kelas");
+    ws.pageSetup.printArea = "A1:" + ws.getColumn(nCol).letter + (row + 9);
+    return ws;
   }
 
-  function unduhBuku(wb, nama) {
-    XLSX.writeFile(wb, nama.replace(/[^\w.-]+/g, "_"));
+  async function unduhBuku(wb, nama) {
+    const buf = await wb.xlsx.writeBuffer();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+    a.download = nama.replace(/[^\w.-]+/g, "_");
+    document.body.appendChild(a); a.click(); a.remove();
     toast(ico("download") + " File Excel diunduh");
   }
 
   async function exportExcel(jenis) {
-    if (!window.XLSX) return toast(ico("alert") + " Pustaka Excel gagal dimuat. Periksa koneksi lalu muat ulang halaman.");
     tutupModal();
     const m = mapel(), kls = $("selKelas").value;
     toast(ico("refresh") + " Menyiapkan file Excel...");
     try {
-      const wb = XLSX.utils.book_new(), dipakai = new Set();
+      await muatExcelJS();
+      const wb = new ExcelJS.Workbook(); wb.creator = C.NAMA_SEKOLAH; wb.created = new Date();
+      const dipakai = new Set();
+      if (!ROMBEL.length) return toast("Belum ada data siswa. Import di menu Data siswa.");
       if (jenis === "kelas" || jenis === "mapel") {
         const recs = await DB.daftar(m.id, jenis === "kelas" ? kls : undefined);
         const rbs = jenis === "kelas" ? ROMBEL.filter(r => r.kelas === kls) : rombelUntuk(m);
-        if (!rbs.length) return toast("Belum ada data siswa. Import di menu Data siswa.");
-        rbs.forEach(rb => XLSX.utils.book_append_sheet(wb, sheetRekapMapel(m, rb, recs.filter(r => r.kelas === rb.kelas)), namaSheet(rb.kelas, dipakai)));
-        unduhBuku(wb, "Rekap_PAS_" + m.nama + "_" + (jenis === "kelas" ? kls : "semua_kelas") + ".xlsx");
+        rbs.forEach(rb => sheetRekapMapel(wb, m, rb, recs.filter(r => r.kelas === rb.kelas), namaSheet(rb.kelas, dipakai)));
+        await unduhBuku(wb, "Rekap_PAS_" + m.nama + "_" + (jenis === "kelas" ? kls : "semua_kelas") + ".xlsx");
       } else if (jenis === "kelasSemuaMapel" || jenis === "semuaRinci") {
         const rbs = jenis === "kelasSemuaMapel" ? ROMBEL.filter(r => r.kelas === kls) : ROMBEL;
-        if (!rbs.length) return toast("Belum ada data siswa. Import di menu Data siswa.");
         const singkatMapel = { bipp: "B. Indonesia & PP", ipas: "IPAS", paibp: "PAIBP", mtk: "Matematika" };
-        for (const mp of B.mapel) {
-          const recs = await DB.daftar(mp.id, jenis === "kelasSemuaMapel" ? kls : undefined);
-          rbs.filter(rb => !mp.tingkat || mp.tingkat.map(String).includes(String(rb.tingkat))).forEach(rb => {
-            const nm = (singkatMapel[mp.id] || mp.nama) + (jenis === "semuaRinci" ? " " + rb.kelas : "");
-            XLSX.utils.book_append_sheet(wb, sheetRekapMapel(mp, rb, recs.filter(r => r.kelas === rb.kelas)), namaSheet(nm, dipakai));
-          });
-        }
-        unduhBuku(wb, "Rekap_PAS_semua_mapel_" + (jenis === "kelasSemuaMapel" ? kls : "semua_kelas") + ".xlsx");
+        const perMapel = {};
+        for (const mp of B.mapel) perMapel[mp.id] = await DB.daftar(mp.id, jenis === "kelasSemuaMapel" ? kls : undefined);
+        rbs.forEach(rb => B.mapel.filter(mp => !mp.tingkat || mp.tingkat.map(String).includes(String(rb.tingkat))).forEach(mp => {
+          const nm = (singkatMapel[mp.id] || mp.nama) + (jenis === "semuaRinci" ? " " + rb.kelas : "");
+          sheetRekapMapel(wb, mp, rb, perMapel[mp.id].filter(r => r.kelas === rb.kelas), namaSheet(nm, dipakai));
+        }));
+        await unduhBuku(wb, "Rekap_PAS_semua_mapel_" + (jenis === "kelasSemuaMapel" ? kls : "semua_kelas") + ".xlsx");
       } else {
         const perMapel = {};
         for (const mp of B.mapel) perMapel[mp.id] = await DB.daftar(mp.id);
-        if (!ROMBEL.length) return toast("Belum ada data siswa. Import di menu Data siswa.");
-        ROMBEL.forEach(rb => XLSX.utils.book_append_sheet(wb, sheetSemuaMapel(rb, perMapel), namaSheet(rb.kelas, dipakai)));
-        unduhBuku(wb, "Nilai_Akhir_PAS_semua_mapel.xlsx");
+        ROMBEL.forEach(rb => sheetNilaiAkhir(wb, rb, perMapel, namaSheet(rb.kelas, dipakai)));
+        await unduhBuku(wb, "Nilai_Akhir_PAS_semua_mapel.xlsx");
       }
     } catch (e) { toast(ico("alert") + " Gagal membuat file: " + esc(e.message || e)); }
   }
@@ -1017,20 +1153,20 @@
     const m = mapel(), kls = $("selKelas").value;
     const opsi = (id, judul, ket) => '<button class="btn" id="' + id + '" style="justify-content:flex-start;text-align:left;white-space:normal;padding:12px 14px;gap:12px">' + ico("file") +
       '<span><b>' + judul + '</b><br><span class="muted small" style="font-weight:500">' + ket + "</span></span></button>";
-    modal("<h3>Unduh rekap ke Excel</h3><p class=\"muted small\" style=\"margin:0\">Semua siswa di rombel tercantum, termasuk yang belum mengerjakan.</p>" +
+    modal("<h3>Unduh rekap ke Excel</h3><p class=\"muted small\" style=\"margin:0\">Semua siswa di rombel tercantum, termasuk yang belum mengerjakan. File siap dicetak (A4).</p>" +
       '<div class="grid" style="margin-top:14px;gap:10px">' +
       (kls ? opsi("xKelas", esc(m.nama) + ", kelas " + esc(kls), "Satu sheet: rincian skor per bagian dan per soal.") : "") +
-      (kls ? opsi("xKelasMapel", "Kelas " + esc(kls) + ", semua mapel", "Satu sheet per mapel (B. Indonesia & PP, IPAS, PAIBP, Matematika), rincian lengkap.") : "") +
+      (kls ? opsi("xKelasMapel", "Kelas " + esc(kls) + ", semua mapel", "Satu sheet per mapel, rincian lengkap.") : "") +
       opsi("xMapel", esc(m.nama) + ", semua kelas", "Satu sheet per rombel, rincian skor per bagian dan per soal.") +
-      opsi("xSemua", "Nilai akhir semua mapel", "Satu sheet per rombel, kolom nilai tiap mapel dan rata-ratanya. Cocok untuk wali kelas.") +
-      opsi("xSemuaRinci", "Rincian semua mapel, semua kelas", "Satu sheet per mapel per rombel, misalnya \u201cIPAS 5 Amman\u201d. Untuk arsip lengkap.") +
+      opsi("xSemua", "Nilai akhir semua mapel", "Satu sheet per rombel, nilai tiap mapel dan rata-rata. Untuk wali kelas.") +
+      opsi("xSemuaRinci", "Rincian semua mapel, semua kelas", "Satu sheet per mapel per rombel. Untuk arsip lengkap.") +
       '</div><div class="actions"><button class="btn" id="xBatal">Batal</button></div>');
     $("xBatal").onclick = tutupModal;
     if ($("xKelas")) $("xKelas").onclick = () => exportExcel("kelas");
+    if ($("xKelasMapel")) $("xKelasMapel").onclick = () => exportExcel("kelasSemuaMapel");
     $("xMapel").onclick = () => exportExcel("mapel");
     $("xSemua").onclick = () => exportExcel("semua");
     $("xSemuaRinci").onclick = () => exportExcel("semuaRinci");
-    if ($("xKelasMapel")) $("xKelasMapel").onclick = () => exportExcel("kelasSemuaMapel");
   };
 
   /* ---------- TOKEN UJIAN ---------- */
