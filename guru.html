@@ -955,9 +955,11 @@
     for (let c = 1; c <= nCol; c++) ws.getCell(3, c).border = { bottom: { style: "double", color: { argb: XC.ljk } } };
     ws.getRow(1).height = 22; ws.getRow(2).height = 18; ws.getRow(3).height = 18; ws.getRow(4).height = 8;
   }
-  function gayaHeader(cell, gelap) {
+  // Warna per bagian soal (teks putih tetap kontras)
+  const WARNA_TIPE = { pg: "FF2F5DA8", bs: "FF0F7A72", pgk: "FF6A4C9C", isian: "FFA65A12", essay: "FFC2335A" };
+  function gayaHeader(cell, gelap, warna) {
     cell.font = { name: "Calibri", size: 10.5, bold: true, color: { argb: "FFFFFFFF" } };
-    cell.fill = isi(gelap ? XC.navy : XC.head2);
+    cell.fill = isi(warna || (gelap ? XC.navy : XC.head2));
     cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
     cell.border = { top: { style: "thin", color: { argb: "FFFFFFFF" } }, left: { style: "thin", color: { argb: "FFFFFFFF" } }, bottom: { style: "thin", color: { argb: "FFFFFFFF" } }, right: { style: "thin", color: { argb: "FFFFFFFF" } } };
   }
@@ -984,9 +986,17 @@
       ws.mergeCells(5, c, 6, c); gayaHeader(sel(ws, 5, c, t), true);
     });
     ws.mergeCells(5, cT, 5, cT + nT - 1); gayaHeader(sel(ws, 5, cT, "Skor per bagian"), true);
-    tipeAda.forEach((t, i) => gayaHeader(sel(ws, 6, cT + i, T[t].kode + ". " + singkat[t] + "\n(" + maksTipe[t] + ")"), false));
-    ws.mergeCells(5, cS, 5, nCol); gayaHeader(sel(ws, 5, cS, "Skor per soal (A: 1–5, B: 6–10, C: 11–15, D: 16–25, E: 26–30)"), true);
-    m.soal.forEach((s, i) => gayaHeader(sel(ws, 6, cS + i, i + 1), false));
+    tipeAda.forEach((t, i) => gayaHeader(sel(ws, 6, cT + i, T[t].kode + ". " + singkat[t] + "\n(" + maksTipe[t] + ")"), false, WARNA_TIPE[t]));
+    // judul kelompok per bagian di atas nomor soal, berwarna sesuai bagian
+    let awal = 0;
+    while (awal < nS) {
+      const t = m.soal[awal].tipe; let akhir = awal;
+      while (akhir + 1 < nS && m.soal[akhir + 1].tipe === t) akhir++;
+      if (akhir > awal) ws.mergeCells(5, cS + awal, 5, cS + akhir);
+      gayaHeader(sel(ws, 5, cS + awal, T[t].kode + ". " + singkat[t]), false, WARNA_TIPE[t]);
+      for (let k = awal; k <= akhir; k++) gayaHeader(sel(ws, 6, cS + k, k + 1), false, WARNA_TIPE[t]);
+      awal = akhir + 1;
+    }
     ws.getRow(5).height = 22; ws.getRow(6).height = 46;
     // lebar kolom
     const lebar = { 1: 5, 2: 30, 3: 17, 4: 13 };
@@ -1053,7 +1063,7 @@
     sel(ws, row, cS, "Baris Rata-rata pada kolom soal = daya serap (%): rata-rata skor siswa dibanding skor maksimal soal. Merah = di bawah 50%.", { font: { name: "Calibri", size: 9, italic: true, color: { argb: XC.muted } } });
     row += 1;
     ws.mergeCells(row, 1, row, 6);
-    sel(ws, row, 1, "Jumlah siswa " + rb.nama.length + ", mengerjakan " + sudah + ", belum " + (rb.nama.length - sudah) + ". Warna skor soal: hijau = penuh, kuning = sebagian, merah = 0, ? = belum dinilai.",
+    sel(ws, row, 1, "Jumlah siswa " + rb.nama.length + ", mengerjakan " + sudah + ", belum " + (rb.nama.length - sudah) + ". Warna isi skor soal: hijau = penuh, kuning = sebagian, merah = 0, ? = belum dinilai.",
       { font: { name: "Calibri", size: 9.5, italic: true, color: { argb: XC.muted } } });
     tandaTangan(ws, row + 2, Math.max(cS, nCol - 11), 12, "Guru Mata Pelajaran");
     ws.pageSetup.printTitlesRow = "5:6";
