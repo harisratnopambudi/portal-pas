@@ -963,6 +963,19 @@
     cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
     cell.border = { top: { style: "thin", color: { argb: "FFFFFFFF" } }, left: { style: "thin", color: { argb: "FFFFFFFF" } }, bottom: { style: "thin", color: { argb: "FFFFFFFF" } }, right: { style: "thin", color: { argb: "FFFFFFFF" } } };
   }
+  // Samakan format semua sel di dalam sel gabungan (sebagian aplikasi hanya memakai format sel pertama)
+  function ratakanGabungan(ws, r1, r2, nCol) {
+    for (let r = r1; r <= r2; r++) for (let c = 1; c <= nCol; c++) {
+      const cell = ws.getCell(r, c);
+      if (cell.isMerged && cell.master && cell.master.address !== cell.address) {
+        const m = cell.master;
+        if (m.fill) cell.fill = m.fill;
+        if (m.font) cell.font = m.font;
+        if (m.border) cell.border = m.border;
+        if (m.alignment) cell.alignment = m.alignment;
+      }
+    }
+  }
   function tandaTangan(ws, baris, kolom, lebar, jabatan) {
     const tgl = C.NAMA_KOTA + ", .......................... " + new Date().getFullYear();
     [[tgl, false], [jabatan, false], ["", false], ["", false], ["", false], ["(.......................................................)", true], ["NIP/NUPTK .......................................", false]].forEach((x, i) => {
@@ -985,8 +998,8 @@
     [[1, "No"], [2, "Nama Siswa"], [3, "Status"], [4, "Waktu kirim"], [cTot, "Total\n(" + maks + ")"], [cNil, "Nilai"], [cPel, "Pelang-\ngaran"]].forEach(([c, t]) => {
       ws.mergeCells(5, c, 6, c); gayaHeader(sel(ws, 5, c, t), true);
     });
-    ws.mergeCells(5, cT, 5, cT + nT - 1); gayaHeader(sel(ws, 5, cT, "Skor per bagian"), true);
-    tipeAda.forEach((t, i) => gayaHeader(sel(ws, 6, cT + i, T[t].kode + ". " + singkat[t] + "\n(" + maksTipe[t] + ")"), false, WARNA_TIPE[t]));
+    // skor per bagian: setiap judul setinggi 2 baris, warna sesuai bagian
+    tipeAda.forEach((t, i) => { ws.mergeCells(5, cT + i, 6, cT + i); gayaHeader(sel(ws, 5, cT + i, T[t].kode + ". " + singkat[t] + "\n(" + maksTipe[t] + ")"), false, WARNA_TIPE[t]); });
     // judul kelompok per bagian di atas nomor soal, berwarna sesuai bagian
     let awal = 0;
     while (awal < nS) {
@@ -998,6 +1011,7 @@
       awal = akhir + 1;
     }
     ws.getRow(5).height = 22; ws.getRow(6).height = 46;
+    ratakanGabungan(ws, 5, 6, nCol);
     // lebar kolom
     const lebar = { 1: 5, 2: 30, 3: 17, 4: 13 };
     tipeAda.forEach((t, i) => lebar[cT + i] = 12.5);
