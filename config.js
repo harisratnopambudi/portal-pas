@@ -4,7 +4,7 @@
    ========================================================= */
 window.CONFIG = {
   // Identitas
-  NAMA_SEKOLAH: "SDS PLUS 2 AL-MUHAJIRIN",
+  NAMA_SEKOLAH: "SDS PLUS 2 ALMUHAJIRIN",
   JUDUL_UJIAN: "Penilaian Akhir Semester 1",
   TAHUN_AJARAN: "2026/2027",
 
