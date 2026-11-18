@@ -947,11 +947,12 @@
         margins: { left: 0.4, right: 0.4, top: 0.5, bottom: 0.5, header: 0.2, footer: 0.2 }, horizontalCentered: true }
     });
   }
+  // Kop: baris 1 judul dokumen, baris 2 nama sekolah, baris 3 kelas & tahun ajaran
   function kopExcel(ws, judul, ket, nCol) {
     ws.mergeCells(1, 1, 1, nCol); ws.mergeCells(2, 1, 2, nCol); ws.mergeCells(3, 1, 3, nCol);
-    sel(ws, 1, 1, C.NAMA_SEKOLAH, { font: { name: "Calibri", size: 15, bold: true, color: { argb: XC.navy } }, alignment: { horizontal: "center" } });
-    sel(ws, 2, 1, judul, { font: { name: "Calibri", size: 12, bold: true, color: { argb: XC.text } }, alignment: { horizontal: "center" } });
-    sel(ws, 3, 1, ket, { font: { name: "Calibri", size: 11, color: { argb: XC.muted } }, alignment: { horizontal: "center" } });
+    sel(ws, 1, 1, judul, { font: { name: "Calibri", size: 14, bold: true, color: { argb: XC.navy } }, alignment: { horizontal: "center", vertical: "middle" } });
+    sel(ws, 2, 1, C.NAMA_SEKOLAH, { font: { name: "Calibri", size: 12, bold: true, color: { argb: XC.text } }, alignment: { horizontal: "center", vertical: "middle" } });
+    sel(ws, 3, 1, ket, { font: { name: "Calibri", size: 11, color: { argb: XC.muted } }, alignment: { horizontal: "center", vertical: "middle" } });
     for (let c = 1; c <= nCol; c++) ws.getCell(3, c).border = { bottom: { style: "double", color: { argb: XC.ljk } } };
     ws.getRow(1).height = 30; ws.getRow(2).height = 22; ws.getRow(3).height = 22; ws.getRow(4).height = 8;
   }
@@ -1017,7 +1018,7 @@
     const nT = tipeAda.length, nS = m.soal.length;
     const cT = 5, cTot = cT + nT, cNil = cTot + 1, cPel = cNil + 1, cS = cPel + 1, nCol = cS + nS - 1;
     const ws = sheetBaru(wb, nama, { x: 2, y: 6 });
-    kopExcel(ws, "REKAP NILAI " + C.JUDUL_UJIAN.toUpperCase(), "Mata pelajaran: " + m.nama + "     Kelas: " + rb.kelas + "     Tahun ajaran " + C.TAHUN_AJARAN, nCol);
+    kopExcel(ws, "REKAP " + C.JUDUL_UJIAN.toUpperCase() + " MATA PELAJARAN " + m.nama.toUpperCase(), "Kelas " + rb.kelas + ", Tahun Ajaran " + C.TAHUN_AJARAN, nCol);
     // header 2 tingkat
     [[1, "No"], [2, "Nama Siswa"], [3, "Status"], [4, "Waktu kirim"], [cTot, "Total\n(" + maks + ")"], [cNil, "Nilai"], [cPel, "Pelang-\ngaran"]].forEach(([c, t]) => {
       ws.mergeCells(5, c, 6, c); gayaHeader(sel(ws, 5, c, t), true);
@@ -1116,7 +1117,7 @@
     const nCol = 2 + mps.length + 1;
     const ws = sheetBaru(wb, nama, { x: 2, y: 5 });
     ws.pageSetup.orientation = "portrait";
-    kopExcel(ws, "DAFTAR NILAI " + C.JUDUL_UJIAN.toUpperCase(), "Kelas: " + rb.kelas + "     Tahun ajaran " + C.TAHUN_AJARAN, nCol);
+    kopExcel(ws, "REKAP " + C.JUDUL_UJIAN.toUpperCase() + " SEMUA MATA PELAJARAN", "Kelas " + rb.kelas + ", Tahun Ajaran " + C.TAHUN_AJARAN, nCol);
     ["No", "Nama Siswa"].concat(mps.map(m => m.nama), ["Rata-rata"]).forEach((t, i) => gayaHeader(sel(ws, 5, i + 1, t), true));
     ws.getRow(5).height = 46;
     ws.getColumn(1).width = 5; ws.getColumn(2).width = 32; mps.forEach((m, i) => ws.getColumn(3 + i).width = 15); ws.getColumn(nCol).width = 11;
