@@ -968,15 +968,15 @@
     try { LOGO.kanan = { id: wb.addImage({ base64: await ambil("assets/logo-sekolah.png"), extension: "png" }), rasio: 224 / 220 }; } catch (e) {}
   }
   function pasangLogo(ws, nCol) {
-    const tinggi = 92;                                   // px, setinggi baris kop 1-3
+    const tinggi = 62;                                   // px, tinggi tampil logo di kop
     const pxKolom = c => Math.round((ws.getColumn(c).width || 9) * 7 + 5);
-    if (LOGO.kiri) ws.addImage(LOGO.kiri.id, { tl: { col: 0.1, row: 0.12 }, ext: { width: Math.round(tinggi * LOGO.kiri.rasio), height: tinggi }, editAs: "oneCell" });
+    if (LOGO.kiri) ws.addImage(LOGO.kiri.id, { tl: { col: 0.1, row: 0.45 }, ext: { width: Math.round(tinggi * LOGO.kiri.rasio), height: tinggi }, editAs: "oneCell" });
     if (LOGO.kanan) {
       const lebar = Math.round(tinggi * LOGO.kanan.rasio);
       let sisa = lebar + 8, c = nCol;
       while (c > 1 && sisa > pxKolom(c)) { sisa -= pxKolom(c); c--; }
       const pecahan = Math.max(0, 1 - sisa / pxKolom(c));   // posisi di dalam kolom c agar rata kanan
-      ws.addImage(LOGO.kanan.id, { tl: { col: c - 1 + pecahan, row: 0.12 }, ext: { width: lebar, height: tinggi }, editAs: "oneCell" });
+      ws.addImage(LOGO.kanan.id, { tl: { col: c - 1 + pecahan, row: 0.45 }, ext: { width: lebar, height: tinggi }, editAs: "oneCell" });
     }
   }
   // Warna per bagian soal (teks putih tetap kontras)
