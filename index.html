@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <title>Portal Ujian PAS — Siswa</title>
 <link rel="stylesheet" href="assets/style.css">
 <style>
@@ -14,6 +15,7 @@
   .login-left,.info-left{display:flex;flex-direction:column;gap:16px;padding:30px;border-right:1px solid var(--line)}
   .login-right,.info-right{padding:30px;background:var(--surface-2);display:flex;flex-direction:column}
   .login-left h1{font-size:28px;line-height:1.15}
+  .login-logo{display:block;width:72px;height:72px;object-fit:contain;margin-bottom:14px}
   .login-left .lead{margin:8px 0 0;color:var(--muted);font-size:15px}
   .err{display:flex;gap:8px;align-items:flex-start;background:var(--bad-50);border:1px solid #F0C2CA;color:var(--bad);padding:10px 12px;border-radius:8px;font-size:14px}
   .err .icon{margin-top:2px}
@@ -172,6 +174,7 @@
     .opt-img{max-height:14vh}
     .login-left,.login-right,.info-left,.info-right{padding:22px}
     .login-left{gap:12px}
+    .login-logo{width:56px;height:56px;margin-bottom:8px}
     .mapel-card{padding:12px}
     .nb{width:31px;height:31px}
     .timer b{font-size:26px}
@@ -217,6 +220,7 @@
   <form class="card login-card" id="formMasuk" autocomplete="off">
     <div class="login-left">
       <div>
+        <img class="login-logo" src="assets/logo-sekolah.png" alt="Logo SD Plus 2 Al-Muhajirin" draggable="false">
         <h1>Ujian Penilaian Akhir Semester</h1>
         <p class="lead">Pilih kelas dan namamu, pilih mata pelajaran, lalu masukkan token dari pengawas.</p>
       </div>
@@ -354,7 +358,7 @@
   const MIN_ALASAN = C.ALASAN_MIN_KARAKTER || 10;
 
   /* ---------- Header & teks tombol ---------- */
-  $("brandMark").innerHTML = ico("school");
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png" alt="Logo SD Plus 2 Al-Muhajirin" draggable="false">';
   $("brandTitle").textContent = C.JUDUL_UJIAN + " · " + C.TAHUN_AJARAN;
   $("brandSub").textContent = C.NAMA_SEKOLAH;
   $("modeChip").className = "chip " + (DB.mode === "firebase" ? "live" : "demo");

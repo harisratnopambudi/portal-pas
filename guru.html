@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <meta name="robots" content="noindex">
 <title>Portal Penilaian PAS — Guru</title>
 <link rel="stylesheet" href="assets/style.css">
@@ -134,7 +135,8 @@
   /* =================== BUKU NILAI GURU =================== */
   .pin-wrap{max-width:420px;margin:9vh auto;padding:0 20px}
   .pin-card{padding:30px!important;border-top:5px double var(--ljk)}
-  .pin-ic{width:52px;height:52px;border-radius:50%;background:#fff;border:2px solid var(--ljk);color:var(--ljk)}
+  .pin-ic{width:76px;height:76px;border:0;background:transparent;margin-bottom:12px}
+  .pin-ic img{width:76px;height:76px;object-fit:contain}
   .g-shell{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:calc(100vh - 60px)}
   .g-side{background:#fff;border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:60px;height:calc(100vh - 60px);display:flex;flex-direction:column;gap:2px;overflow:auto}
   .g-grp{font-size:12.5px;font-weight:700;color:var(--faint);padding:14px 12px 6px}
@@ -361,11 +363,11 @@
   let hanyaPending = false;
 
   /* ---------- UI awal ---------- */
-  $("brandMark").innerHTML = ico("school");
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png" alt="Logo SD Plus 2 Al-Muhajirin" draggable="false">';
   $("brandSub").textContent = C.NAMA_SEKOLAH + " · " + C.JUDUL_UJIAN + " " + C.TAHUN_AJARAN;
   $("modeChip").className = "chip " + (DB.mode === "firebase" ? "live" : "demo");
   $("modeChip").textContent = DB.mode === "firebase" ? "Online" : "Mode demo";
-  $("pinIc").innerHTML = ico("lock");
+  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png" alt="Logo SD Plus 2 Al-Muhajirin" draggable="false">';
   $("btnKeluar").innerHTML = ico("logout") + " Keluar";
   $("btnMuat").innerHTML = ico("refresh") + " Muat ulang";
   $("btnExport").innerHTML = ico("download") + " Unduh Excel";
