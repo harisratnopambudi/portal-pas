@@ -5,7 +5,7 @@
 window.CONFIG = {
   // Identitas
   NAMA_SEKOLAH: "SDS PLUS 2 ALMUHAJIRIN",
-  JUDUL_UJIAN: "Penilaian Akhir Semester 1",
+  JUDUL_UJIAN: "Penilaian Akhir Semester Ganjil",
   TAHUN_AJARAN: "2026/2027",
 
   // Firebase — salin dari Firebase Console > Project settings > Your apps (Web app).

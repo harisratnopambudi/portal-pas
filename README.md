@@ -1,4 +1,4 @@
-# Portal Ujian PAS Semester 1
+# Portal Ujian PAS Semester Ganjil
 
 Portal ujian berbasis web untuk 4 mapel: Bahasa Indonesia & Pendidikan Pancasila, IPAS, PAIBP, dan Matematika.
 Setiap mapel berisi 30 soal: 5 PG beralasan, 5 Benar/Salah beralasan, 5 PG kompleks, 10 isian, 5 uraian.
