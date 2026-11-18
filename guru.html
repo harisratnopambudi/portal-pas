@@ -953,7 +953,31 @@
     sel(ws, 2, 1, judul, { font: { name: "Calibri", size: 12, bold: true, color: { argb: XC.text } }, alignment: { horizontal: "center" } });
     sel(ws, 3, 1, ket, { font: { name: "Calibri", size: 11, color: { argb: XC.muted } }, alignment: { horizontal: "center" } });
     for (let c = 1; c <= nCol; c++) ws.getCell(3, c).border = { bottom: { style: "double", color: { argb: XC.ljk } } };
-    ws.getRow(1).height = 22; ws.getRow(2).height = 18; ws.getRow(3).height = 18; ws.getRow(4).height = 8;
+    ws.getRow(1).height = 30; ws.getRow(2).height = 22; ws.getRow(3).height = 22; ws.getRow(4).height = 8;
+  }
+  // Logo kop: yayasan di kiri, sekolah di kanan (dipanggil setelah lebar kolom diatur)
+  let LOGO = {};
+  async function muatLogo(wb) {
+    const ambil = async p => {
+      const r = await fetch(p); if (!r.ok) throw new Error(p);
+      const b = await r.blob();
+      return await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(b); });
+    };
+    LOGO = {};
+    try { LOGO.kiri = { id: wb.addImage({ base64: await ambil("assets/logo-yayasan.png"), extension: "png" }), rasio: 301 / 220 }; } catch (e) {}
+    try { LOGO.kanan = { id: wb.addImage({ base64: await ambil("assets/logo-sekolah.png"), extension: "png" }), rasio: 224 / 220 }; } catch (e) {}
+  }
+  function pasangLogo(ws, nCol) {
+    const tinggi = 92;                                   // px, setinggi baris kop 1-3
+    const pxKolom = c => Math.round((ws.getColumn(c).width || 9) * 7 + 5);
+    if (LOGO.kiri) ws.addImage(LOGO.kiri.id, { tl: { col: 0.1, row: 0.12 }, ext: { width: Math.round(tinggi * LOGO.kiri.rasio), height: tinggi }, editAs: "oneCell" });
+    if (LOGO.kanan) {
+      const lebar = Math.round(tinggi * LOGO.kanan.rasio);
+      let sisa = lebar + 8, c = nCol;
+      while (c > 1 && sisa > pxKolom(c)) { sisa -= pxKolom(c); c--; }
+      const pecahan = Math.max(0, 1 - sisa / pxKolom(c));   // posisi di dalam kolom c agar rata kanan
+      ws.addImage(LOGO.kanan.id, { tl: { col: c - 1 + pecahan, row: 0.12 }, ext: { width: lebar, height: tinggi }, editAs: "oneCell" });
+    }
   }
   // Warna per bagian soal (teks putih tetap kontras)
   const WARNA_TIPE = { pg: "FF2F5DA8", bs: "FF0F7A72", pgk: "FF6A4C9C", isian: "FFA65A12", essay: "FFC2335A" };
@@ -1080,6 +1104,7 @@
     sel(ws, row, 1, "Jumlah siswa " + rb.nama.length + ", mengerjakan " + sudah + ", belum " + (rb.nama.length - sudah) + ". Warna isi skor soal: hijau = penuh, kuning = sebagian, merah = 0, ? = belum dinilai.",
       { font: { name: "Calibri", size: 9.5, italic: true, color: { argb: XC.muted } } });
     tandaTangan(ws, row + 2, Math.max(cS, nCol - 11), 12, "Guru Mata Pelajaran");
+    pasangLogo(ws, nCol);
     ws.pageSetup.printTitlesRow = "5:6";
     ws.pageSetup.printArea = "A1:" + ws.getColumn(nCol).letter + (row + 9);
     return ws;
@@ -1127,6 +1152,7 @@
     sel(ws, row, 1, "Tanda - = belum mengerjakan." + (adaSementara ? " Sel kuning = masih ada jawaban yang belum dinilai guru (nilai sementara)." : ""),
       { font: { name: "Calibri", size: 9.5, italic: true, color: { argb: XC.muted } } });
     tandaTangan(ws, row + 2, Math.max(2, nCol - 2), 3, "Wali Kelas");
+    pasangLogo(ws, nCol);
     ws.pageSetup.printArea = "A1:" + ws.getColumn(nCol).letter + (row + 9);
     return ws;
   }
@@ -1147,6 +1173,7 @@
     try {
       await muatExcelJS();
       const wb = new ExcelJS.Workbook(); wb.creator = C.NAMA_SEKOLAH; wb.created = new Date();
+      await muatLogo(wb);
       const dipakai = new Set();
       if (!ROMBEL.length) return toast("Belum ada data siswa. Import di menu Data siswa.");
       if (jenis === "kelas" || jenis === "mapel") {
