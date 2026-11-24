@@ -38,8 +38,8 @@ Siswa masuk dengan memilih **kelas** lalu **nama** dari daftar. Nomor siswa = ur
 
 | Bagian | Otomatis | Manual oleh guru | Maks/soal | Jumlah soal | Maks bagian |
 |---|---|---|---|---|---|
-| A. PG beralasan | Pilihan benar = 1 | Alasan benar = 1 | 2 | 5 | 10 |
-| B. Benar/Salah beralasan | Pilihan benar = 1 | Alasan benar = 1 | 2 | 5 | 10 |
+| A. PG beralasan | Pilihan benar = 1 | Alasan benar = 1 (hanya bila pilihan benar) | 2 | 5 | 10 |
+| B. Benar/Salah beralasan | Pilihan benar = 1 | Alasan benar = 1 (hanya bila pilihan benar) | 2 | 5 | 10 |
 | C. PG kompleks | Maks 1 (parsial: (benar − salah) / jumlah kunci) | – | 1 | 5 | 5 |
 | D. Isian | Dicocokkan dengan daftar jawaban di `kunci.js` | Guru bisa mengubah benar/salah | 1 | 10 | 10 |
 | E. Uraian | – | 0–3 sesuai rubrik | 3 | 5 | 15 |
@@ -51,7 +51,7 @@ Skor maksimal uraian dan PG kompleks bisa diatur per soal lewat `maks` (dan pand
 - Bahasa Indonesia Kelas 5: maksimal 56 (PGK 1 per soal; uraian 5, 4, 4, 4, 4)
 - Bahasa Indonesia Kelas 6: maksimal 63 (PGK 2 per soal: lengkap 2, sebagian 1; uraian 5, 4, 5, 4, 5)
 Alasan atau uraian yang dikosongkan siswa otomatis bernilai 0.
-`ALASAN_HANYA_JIKA_JAWABAN_BENAR: true` membuat alasan otomatis 0 bila pilihan jawabannya salah. PG kompleks bisa dibuat harus tepat semua dengan `mode: "mutlak"`.
+Sesuai kunci penskoran sekolah, `ALASAN_HANYA_JIKA_JAWABAN_BENAR: true`: pilihan salah = 0 untuk soal itu, alasannya tidak dinilai (ubah ke `false` bila alasan ingin tetap dinilai). PG kompleks bisa dibuat harus tepat semua dengan `mode: "mutlak"`.
 
 Dua cara menilai:
 - **Nilai per siswa** — buka satu siswa, nilai semua jawabannya, lalu "Siswa berikutnya".

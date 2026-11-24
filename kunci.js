@@ -60,6 +60,7 @@ window.KUNCI = {
 
 /* ===== Bahasa Indonesia Kelas 5 — kunci dari FORMAT_KISI_KUNJAW_SAS_L5 =====
    Skor maksimal 56: PG 5×2, B/S 5×2, PGK 5×1, Isian 10×1, Uraian 5+4+4+4+4.
+   PGK: lengkap & tepat = 1, sebagian tepat = 0,5 (kriteria 2/1/0 di file disetarakan ke maksimal 1).
    "alasan" = acuan untuk guru saat menilai alasan siswa. */
 Object.assign(window.KUNCI, {
   "B5-PG1": { k: "B", alasan: "Inti cerita: teman-teman sekelompok bersama-sama membantu Raka menyelamatkan tanaman cabainya yang layu." },
@@ -74,11 +75,11 @@ Object.assign(window.KUNCI, {
   "B5-BS4": { k: "B", alasan: "membersihkan = me- + bersih + -kan (konfiks me-kan)." },
   "B5-BS5": { k: "S", alasan: "Kalimat itu memakai kata pembanding “seperti”, jadi majas simile (perumpamaan), bukan personifikasi." },
 
-  "B5-PGK1": { k: "AC" },
-  "B5-PGK2": { k: "BD" },
-  "B5-PGK3": { k: "AD" },
-  "B5-PGK4": { k: "BC" },
-  "B5-PGK5": { k: "CD" },
+  "B5-PGK1": { k: "AC", maks: 1, sebagian: 0.5 },
+  "B5-PGK2": { k: "BD", maks: 1, sebagian: 0.5 },
+  "B5-PGK3": { k: "AD", maks: 1, sebagian: 0.5 },
+  "B5-PGK4": { k: "BC", maks: 1, sebagian: 0.5 },
+  "B5-PGK5": { k: "CD", maks: 1, sebagian: 0.5 },
 
   "B5-IS1":  { k: ["gotong royong", "gotong-royong", "bergotong royong", "bergotong-royong", "nilai gotong royong"] },
   "B5-IS2":  { k: ["kesopanan", "norma kesopanan"] },
