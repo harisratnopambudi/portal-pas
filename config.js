@@ -58,7 +58,7 @@ window.CONFIG = {
   },
   // true  = alasan hanya dinilai bila pilihan jawabannya benar (pilihan salah -> alasan otomatis 0)
   // false = alasan dinilai guru apa pun pilihannya
-  ALASAN_HANYA_JIKA_JAWABAN_BENAR: true,
+  ALASAN_HANYA_JIKA_JAWABAN_BENAR: false,
 
   // Rubrik singkat yang tampil di tombol skor
   RUBRIK_ALASAN: {
