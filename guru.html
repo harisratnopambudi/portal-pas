@@ -6,7 +6,7 @@
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <meta name="robots" content="noindex">
 <title>Portal Penilaian PAS — Guru</title>
-<link rel="stylesheet" href="assets/style.css?v=20261124f">
+<link rel="stylesheet" href="assets/style.css?v=20261124g">
 <style>
   .pin-wrap{max-width:380px;margin:80px auto;padding:0 20px}
   .pin-wrap .card{padding:28px}
@@ -187,6 +187,105 @@
     .g-main{padding:16px 14px 60px}
     select.sel-head{min-width:0;width:100%}
   }
+
+  /* =================== MODE PERIKSA (16:9, tanpa gulir halaman) =================== */
+  .gr{display:flex;flex-direction:column;gap:10px}
+  .gr-bar{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+  .gr-bar .fld{flex:1;min-width:260px}
+  .gr-bar .switch{margin-bottom:10px}
+  .gr-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:14px}
+  .gr-body.tiga{grid-template-columns:240px minmax(0,1fr) minmax(0,1.05fr)}
+  .gr-pane{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--sheet-shadow);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .gr-pane>.hd{padding:10px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;justify-content:space-between;flex:none}
+  .gr-pane>.bd{padding:14px 16px;overflow:auto;flex:1;min-height:0}
+  .gr-pane>.ft{padding:10px 16px;border-top:1px solid var(--line);flex:none;background:var(--surface-2)}
+  .gr-q{border-top:5px double var(--ljk)}
+  .gr-a{border-top:5px double var(--primary)}
+  .gr-list{border-top:5px double var(--ljk)}
+  .gr-list .bd{padding:6px}
+  .gr-list .slist{max-height:none}
+  .gr .who{font-weight:800;font-size:17px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gr .ans.big{font-size:16px;line-height:1.6;min-height:64px}
+  .gr .lbl-sk{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:2px}
+  .gr .scorebar{margin-top:4px}
+  .gr .ft .nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+  .kbd-hint{font-size:11.5px;color:var(--faint);text-align:center}
+  .panduan{margin-top:12px;font-size:12.5px;color:var(--muted);border-top:1px dashed var(--line-2);padding-top:8px}
+  .panduan>b{display:block;color:var(--text);margin-bottom:4px}
+  .panduan>div{display:flex;gap:8px;margin:3px 0;line-height:1.35}
+  .panduan .pn{flex:none;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ljk-line);color:var(--ljk);font-weight:800;font-size:11px;display:grid;place-items:center}
+  .score-mini{text-align:right;flex:none}
+  .score-mini b{display:block;font-size:26px;line-height:1;color:var(--primary)}
+  .score-mini span{font-size:12px;color:var(--muted)}
+  .gr-list .sitem{padding:5px 8px;gap:8px}
+  .gr-list .sitem .av{width:26px;height:26px;font-size:11.5px}
+  .gr-list .sitem .nm{flex:1;min-width:0;font-size:13px;font-weight:600}
+  .gr-list .st{flex:none;min-width:22px;height:20px;border-radius:10px;padding:0 6px;font-size:11px;font-weight:800;display:inline-grid;place-items:center;background:var(--surface-2);color:var(--muted)}
+  .gr-list .st.warn{background:var(--stabilo);color:#4a3d00}
+  .gr-list .st.ok{background:var(--ok-50);color:var(--ok)}
+  .gr-list .st .icon{width:12px;height:12px}
+  .gr-strip{display:flex;gap:5px;flex-wrap:wrap;align-items:center;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;flex:none}
+  .gr-strip:empty{display:none}
+  .gr-strip .sec{font-size:12px;font-weight:800;color:var(--ljk);background:var(--ljk-50);border-radius:6px;padding:4px 7px;margin-left:6px}
+  .gr-strip .sec:first-child{margin-left:0}
+  .gr-strip .sec .icon{width:14px;height:14px;display:block}
+  .chip-n{width:28px;height:28px;border-radius:50%;border:2px solid var(--ljk-line);background:#fff;font-size:11.5px;font-weight:800;color:var(--ljk);cursor:pointer;display:inline-grid;place-items:center;padding:0;flex:none}
+  .chip-n.pend{background:var(--stabilo);border-color:#D9B800;color:#4a3d00}
+  .chip-n.done{background:var(--ok-50);border-color:var(--ok);color:var(--ok)}
+  .chip-n.part{background:var(--primary-50);border-color:#8E9BD0;color:var(--primary)}
+  .chip-n.zero{background:var(--bad-50);border-color:#E8A0A8;color:var(--bad)}
+  .chip-n.cur{outline:3px solid var(--primary);outline-offset:2px}
+  .lgd{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted)}
+  .lgd .chip-n{width:12px;height:12px;border-width:1.5px;cursor:default;margin-left:6px}
+  .is-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+  .is-cell{border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:8px;padding:6px 8px;display:flex;flex-direction:column;gap:4px}
+  .is-cell.no{border-left-color:var(--bad);background:#FFFBFB}
+  .is-who{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .is-who .av{flex:none;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ljk-line);color:var(--ljk);font-size:10.5px;display:grid;place-items:center}
+  .is-ans{font-size:14px;font-weight:600;word-break:break-word}
+  .is-ans.kosong{color:var(--faint);font-style:italic;font-weight:400}
+  .is-act{display:flex;gap:4px;align-items:center;justify-content:flex-end}
+  .sb.sm{min-width:30px;height:26px;font-size:12px;padding:0 7px}
+
+  body.fit{overflow:hidden}
+  body.fit .g-shell{height:calc(100vh - 60px);min-height:0}
+  body.fit .g-main{height:calc(100vh - 60px);display:flex;flex-direction:column;padding:12px 22px 14px;max-width:none;overflow:hidden}
+  body.fit .g-main>.err{display:none}
+  body.fit .g-kop{margin-bottom:10px;padding-bottom:8px;flex:none}
+  body.fit select.sel-head{font-size:18px;min-width:240px}
+  body.fit .g-kop-act .btn{padding-top:7px;padding-bottom:7px}
+  body.fit #tabSoal,body.fit #tabSiswa{flex:1;min-height:0}
+  body.fit .gr{height:100%}
+  body.fit .gr-body{flex:1;min-height:0}
+  @media (max-width:1599px){
+    body.fit .g-shell{grid-template-columns:64px minmax(0,1fr)}
+    body.fit .g-side{padding:12px 8px}
+    body.fit .g-grp,body.fit .g-side-foot{display:none}
+    body.fit .g-side .tab{font-size:0;gap:0;justify-content:center;padding:11px 0}
+    body.fit .g-side .tab .icon{width:20px;height:20px}
+    body.fit .kbd-hint,body.fit .lgd{display:none}
+    body.fit .gr-body.tiga{grid-template-columns:210px minmax(0,1fr) minmax(0,1fr)}
+  }
+  @media (max-height:760px){
+    body.fit .g-kop label.f,body.fit .gr-bar label.f{display:none}
+    body.fit select.sel-head{font-size:16px}
+    body.fit .g-kop{margin-bottom:8px;padding-bottom:6px}
+    body.fit .g-main{padding-top:8px;padding-bottom:10px}
+    body.fit .gr{gap:8px}
+    body.fit .gr-bar .switch{margin-bottom:0}
+    body.fit .gr-bar{align-items:center}
+    body.fit .chip-n{width:24px;height:24px;font-size:10.5px}
+    body.fit .gr-strip{padding:6px 10px;gap:4px}
+    body.fit .gr-pane>.hd{padding:8px 14px}
+    body.fit .gr-pane>.bd{padding:10px 14px}
+    body.fit .gr-pane>.ft{padding:8px 14px}
+    body.fit .gr .ft .nav{margin-top:6px}
+    body.fit .gr .ans.big{font-size:15px;min-height:48px}
+  }
+  @media (max-width:1099px){
+    .gr-body,.gr-body.tiga{grid-template-columns:1fr}
+    .gr-list .bd{max-height:260px}
+  }
 </style>
 </head>
 <body>
@@ -271,15 +370,16 @@
 
   <!-- PER SISWA -->
   <div id="tabSiswa" class="hidden">
-    <div class="split">
-      <div class="card">
-        <div style="padding:12px 12px 6px;display:flex;justify-content:space-between;align-items:center">
-          <b class="small">Daftar siswa</b>
-          <span class="small muted" id="slistCount"></span>
-        </div>
-        <div class="slist" id="slist"></div>
+    <div class="gr">
+      <div class="gr-body tiga" id="ssBody">
+        <section class="gr-pane gr-list">
+          <div class="hd"><b class="small">Daftar siswa</b><span class="small muted" id="slistCount"></span></div>
+          <div class="bd slist" id="slist"></div>
+        </section>
+        <section class="gr-pane gr-q" id="ssSoal"></section>
+        <section class="gr-pane gr-a" id="ssJawab"></section>
       </div>
-      <div class="card" id="detail"></div>
+      <div class="gr-strip" id="ssStrip"></div>
     </div>
   </div>
 
@@ -319,16 +419,19 @@
 
   <!-- PER SOAL -->
   <div id="tabSoal" class="hidden">
-    <div class="toolbar" style="margin-bottom:12px">
-      <div class="fld" style="flex:1;min-width:260px">
-        <label class="f" for="selSoal">Soal yang dinilai</label>
-        <select class="input" id="selSoal"></select>
+    <div class="gr">
+      <div class="gr-bar">
+        <div class="fld">
+          <label class="f" for="selSoal">Soal yang dinilai</label>
+          <select class="input" id="selSoal"></select>
+        </div>
+        <button class="btn" id="btnSoalPrev" title="Soal sebelumnya (Shift + panah kiri)"></button>
+        <button class="btn" id="btnSoalNext" title="Soal berikutnya (Shift + panah kanan)"></button>
+        <label class="switch"><input type="checkbox" id="chkPending"> Hanya yang belum dinilai</label>
       </div>
-      <button class="btn" id="btnSoalPrev"></button>
-      <button class="btn" id="btnSoalNext"></button>
-      <label class="switch" style="margin-bottom:10px"><input type="checkbox" id="chkPending"> Hanya yang belum dinilai</label>
+      <div class="gr-body" id="psBody"></div>
+      <div class="gr-strip" id="psStrip"></div>
     </div>
-    <div class="card" id="psWrap"></div>
   </div>
   </main>
 </section>
@@ -339,13 +442,13 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=20261124f"></script>
-<script src="soal.js?v=20261124f"></script>
-<script src="kunci.js?v=20261124f"></script>
-<script src="assets/icons.js?v=20261124f"></script>
-<script src="assets/db.js?v=20261124f"></script>
-<script src="assets/penilaian.js?v=20261124f"></script>
-<script src="assets/demo.js?v=20261124f"></script>
+<script src="config.js?v=20261124g"></script>
+<script src="soal.js?v=20261124g"></script>
+<script src="kunci.js?v=20261124g"></script>
+<script src="assets/icons.js?v=20261124g"></script>
+<script src="assets/db.js?v=20261124g"></script>
+<script src="assets/penilaian.js?v=20261124g"></script>
+<script src="assets/demo.js?v=20261124g"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 (function () {
@@ -363,11 +466,11 @@
   let hanyaPending = false;
 
   /* ---------- UI awal ---------- */
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124f" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124g" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandSub").textContent = C.NAMA_SEKOLAH + " · " + C.JUDUL_UJIAN + " " + C.TAHUN_AJARAN;
   $("modeChip").className = "chip " + (DB.mode === "firebase" ? "live" : "demo");
   $("modeChip").textContent = DB.mode === "firebase" ? "Online" : "Mode demo";
-  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124f" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
+  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124g" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
   $("btnKeluar").innerHTML = ico("logout") + " Keluar";
   $("btnMuat").innerHTML = ico("refresh") + " Muat ulang";
   $("btnExport").innerHTML = ico("download") + " Unduh Excel";
@@ -375,7 +478,7 @@
   $("btnSoalPrev").innerHTML = ico("left");
   $("btnSoalNext").innerHTML = ico("right");
   const tabLbl = { rekap: ico("chart") + "Rekap nilai", siswa: ico("user") + "Nilai per siswa", soal: ico("list") + "Nilai per soal", pantau: ico("users") + "Pantauan ujian", data: ico("users") + "Data siswa", token: ico("key") + "Token ujian" };
-  document.querySelectorAll(".tab").forEach(b => b.innerHTML = tabLbl[b.dataset.tab]);
+  document.querySelectorAll(".tab").forEach(b => { b.innerHTML = tabLbl[b.dataset.tab]; b.title = b.textContent.trim(); });
   if (DB.mode === "demo") $("btnContoh").classList.remove("hidden");
   if (DB.paksaDemo) {
     $("btnContoh").innerHTML = ico("refresh") + " Reset data contoh";
@@ -490,6 +593,7 @@
     if (tab === "rekap") renderRekap();
     if (tab === "siswa") renderSiswa();
     if (tab === "soal") renderPerSoal();
+    aturFit();
   }
 
   /* ---------- Simpan nilai manual ---------- */
@@ -701,62 +805,20 @@
     };
   }
 
-  /* ---------- PER SISWA ---------- */
-  function renderSiswa() {
-    const rows = terfilter();
-    $("slistCount").textContent = rows.length + " siswa";
-    if (!rows.length) {
-      $("slist").innerHTML = '<div class="empty small">Belum ada data.</div>';
-      $("detail").innerHTML = '<div class="empty">' + ico("user") + "<div>Pilih siswa untuk mulai menilai.</div></div>";
-      return;
-    }
-    if (!pilihSiswa || !rows.find(r => r.id === pilihSiswa)) pilihSiswa = (rows.find(r => r._h.pending) || rows[0]).id;
-    $("slist").innerHTML = rows.map(r => {
-      const st = r._h.status === "selesai" ? '<span class="badge ok" style="padding:2px 6px">' + ico("check") + "</span>"
-        : '<span class="badge ' + (r._h.status === "sebagian" ? "warn" : "neutral") + '" style="padding:2px 7px">' + r._h.pending + "</span>";
-      return '<button class="sitem' + (r.id === pilihSiswa ? " on" : "") + '" data-id="' + r.id + '"><span class="av">' + r.absen + '</span><span style="flex:1;min-width:0"><div class="nm">' +
-        esc(r.nama) + '</div><div class="mt">' + esc(r.kelas) + " · nilai " + r._h.nilai + "</div></span>" + st + "</button>";
-    }).join("");
-    $("slist").querySelectorAll(".sitem").forEach(b => b.onclick = () => { pilihSiswa = b.dataset.id; renderSiswa(); $("detail").scrollIntoView({ block: "start", behavior: "smooth" }); });
-    renderDetail();
+  /* =========================================================
+     MODE PERIKSA — pas satu layar 16:9, tanpa gulir halaman
+     Kiri: soal + kunci/pedoman. Kanan: jawaban siswa + tombol skor.
+     Bawah: deret nomor (siswa atau soal) untuk pindah cepat.
+     Keyboard: angka = beri skor, panah kiri/kanan = pindah.
+     ========================================================= */
+  const teksSoal = s => (s.teks.trim().startsWith("<") ? s.teks : "<p>" + s.teks + "</p>") + GAMBAR_SOAL(s.gambar);
+  const skorOf = it => it.auto + it.manual;
+  function kelasChip(it) {
+    if (it.pending) return "pend";
+    const v = skorOf(it);
+    return v >= it.maks ? "done" : v > 0 ? "part" : "zero";
   }
-
-  function renderDetail() {
-    const r = data.find(x => x.id === pilihSiswa);
-    if (!r) return;
-    const m = mapel(), x = r._h;
-    const rows = terfilter();
-    const idxNext = rows.findIndex(z => z.id === r.id);
-    let h = '<div class="detail-head"><div><h2>' + esc(r.nama) + '</h2><div class="muted small">Kelas ' + esc(r.kelas) + " · Absen " + r.absen +
-      " · dikirim " + waktu(r.dikirim_at) + '</div><div style="margin-top:8px" class="row">' + badgeStatus(x) +
-      '<label class="switch"><input type="checkbox" id="chkPendSiswa"' + (hanyaPending ? " checked" : "") + "> Hanya yang perlu dinilai</label></div></div>" +
-      '<div class="row" style="gap:16px"><div class="score-big"><b>' + x.nilai + "</b><span>Skor " + fmt(x.total) + " / " + x.maks + "</span></div>" +
-      '<button class="btn" id="btnSiswaNext"' + (idxNext >= rows.length - 1 ? " disabled" : "") + ">Siswa berikutnya " + ico("right") + "</button></div></div>";
-
-    let no = 0;
-    URUTAN_TIPE.forEach(t => {
-      const items = m.soal.filter(s => s.tipe === t);
-      if (!items.length) return;
-      let blok = "";
-      items.forEach(s => {
-        no++;
-        const it = x.rincian.find(z => z.id === s.id);
-        if (hanyaPending && !it.pending) return;
-        blok += kartuSoal(s, it, (r.jawaban || {})[s.id] || {}, r, no);
-      });
-      if (blok) h += '<div class="sec-title">' + T[t].kode + ". " + T[t].nama + "</div>" + blok;
-    });
-    if (hanyaPending && x.pending === 0) h += '<div class="empty">' + ico("checkCircle") + "<div>Semua jawaban siswa ini sudah dinilai.</div></div>";
-    $("detail").innerHTML = h;
-    $("chkPendSiswa").onchange = e => { hanyaPending = e.target.checked; renderDetail(); };
-    const bn = $("btnSiswaNext");
-    if (bn) bn.onclick = () => { pilihSiswa = rows[idxNext + 1].id; renderSiswa(); window.scrollTo({ top: 0, behavior: "smooth" }); };
-    pasangSkor($("detail"), () => { renderSiswaSoft(); });
-  }
-  // render ulang tanpa lompat posisi
-  function renderSiswaSoft() {
-    const y = window.scrollY; renderSiswa(); window.scrollTo(0, y);
-  }
+  function nomorSoal(m, s) { return m.soal.indexOf(s) + 1; }
 
   function tombolSkor(rec, key, maks, nilai, rubrik, bisaReset) {
     let h = '<div class="scorebar">';
@@ -773,7 +835,7 @@
       const rec = data.find(z => z.id === b.dataset.rec);
       const v = b.dataset.v === "" ? null : Number(b.dataset.v);
       setNilai(rec, b.dataset.key, v);
-      after();
+      after(b.dataset.v !== "");
     });
   }
 
@@ -791,47 +853,155 @@
     }).join("") + "</div>";
   }
 
-  function kartuSoal(s, it, jw, rec, no) {
+  // Panel kiri: soal, kunci, acuan, panduan skor. jw = jawaban siswa (untuk menandai pilihan) atau {}
+  function panelSoal(m, s, jw, ekstra) {
     const K = KUNCI[s.id] || {};
-    const nm = rec.nilai_manual || {};
-    let h = '<div class="qi' + (it.pending ? " pending" : "") + '"><div class="qi-head"><span class="qi-no">' + no + ".</span>";
-    const skorItem = it.auto + it.manual;
-    h += '<span class="badge ' + (it.pending ? "warn" : skorItem >= it.maks ? "ok" : skorItem > 0 ? "info" : "bad") + '">' +
-      (it.pending ? "Perlu dinilai" : "Skor " + fmt(skorItem) + " / " + it.maks) + "</span>";
-    if (s.tipe === "pgk") h += '<span class="muted small">' + it.info.benar + " benar, " + it.info.salah + " salah dari " + it.info.jmlKunci + " kunci</span>";
-    h += '</div><div class="qi-text">' + (s.teks.trim().startsWith("<") ? s.teks : "<p>" + s.teks + "</p>") + GAMBAR_SOAL(s.gambar) + "</div>";
-
-    if (s.tipe === "pg" || s.tipe === "pgk") h += opsiList(s, jw);
-
-    if (s.tipe === "bs") {
-      const pj = jw.p === 0 ? "Benar" : jw.p === 1 ? "Salah" : "Tidak dijawab";
-      h += '<div class="row" style="margin-top:8px;flex-wrap:wrap;gap:8px"><span class="badge ' + (it.info.benar ? "ok" : "bad") + '">Jawaban siswa: ' + pj + "</span>" +
-        '<span class="badge neutral">Kunci: ' + (K.k === "B" ? "Benar" : "Salah") + "</span></div>";
-    }
-
-    if (s.tipe === "pg" || s.tipe === "bs") {
-      h += '<div class="lbl-mini">' + ico("edit") + " Alasan siswa · jawaban " + (it.info.benar ? '<span style="color:var(--ok)">benar (+' + C.SKOR[s.tipe].jawaban + ")</span>" : '<span style="color:var(--bad)">salah (0)</span>') + "</div>";
-      h += '<div class="ans' + (jw.a ? "" : " kosong") + '">' + (jw.a ? esc(jw.a) : "Alasan tidak diisi — otomatis 0") + "</div>";
-      if (K.alasan) h += '<div class="ref"><b>Acuan alasan:</b> ' + esc(K.alasan) + "</div>";
-      if (jw.a && it.info.alasanDiabaikan) h += '<div class="small muted" style="margin-top:8px">Pilihan jawaban salah, alasan otomatis 0.</div>';
-      else if (jw.a) h += tombolSkor(rec, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, C.RUBRIK_ALASAN);
-    }
-
-    if (s.tipe === "isian") {
-      h += '<div class="ans' + (jw.t ? "" : " kosong") + '">' + (jw.t ? esc(jw.t) : "Tidak dijawab") + "</div>";
-      h += '<div class="ref"><b>Jawaban diterima:</b> ' + esc((K.k || []).join(" / ")) + "</div>";
-      const ov = nm[it.info.manualKey];
-      h += '<div class="lbl-mini">' + (it.info.override ? "Dinilai manual oleh guru" : it.info.cocok ? '<span style="color:var(--ok)">Cocok otomatis</span>' : '<span style="color:var(--bad)">Tidak cocok otomatis</span>') +
-        " · ubah bila jawaban sebenarnya benar/salah</div>";
-      h += tombolSkor(rec, it.info.manualKey, it.info.manualMaks, ov != null ? Number(ov) : null, { 0: "Salah", 1: "Benar" }, ov != null);
-    }
-
-    if (s.tipe === "essay") {
-      h += '<div class="ans' + (jw.t ? "" : " kosong") + '">' + (jw.t ? esc(jw.t) : "Tidak dijawab — otomatis 0") + "</div>";
-      if (K.rubrik) h += '<div class="ref"><b>Pedoman:</b> ' + esc(K.rubrik) + "</div>";
-      if (jw.t) h += tombolSkor(rec, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, P.rubrikEssay(s));
+    let h = '<div class="hd"><div class="qi-head" style="margin:0"><span class="qi-no">Soal ' + nomorSoal(m, s) + '</span><span class="badge info">' + T[s.tipe].kode + " · " + T[s.tipe].nama + "</span></div>" + (ekstra || "") + "</div>";
+    h += '<div class="bd"><div class="qi-text">' + teksSoal(s) + "</div>";
+    if (s.tipe === "pg" || s.tipe === "pgk") h += opsiList(s, jw || {});
+    if (s.tipe === "bs") h += '<div style="margin-top:8px"><span class="badge neutral">Kunci: ' + (K.k === "B" ? "Benar" : "Salah") + "</span></div>";
+    if (K.alasan) h += '<div class="ref"><b>Acuan alasan:</b> ' + esc(K.alasan) + "</div>";
+    if (K.rubrik) h += '<div class="ref"><b>Pedoman:</b> ' + esc(K.rubrik) + "</div>";
+    if (s.tipe === "isian") h += '<div class="ref"><b>Jawaban diterima:</b> ' + esc((K.k || []).join(" / ")) + "</div>";
+    if (s.tipe !== "pgk") {
+      const rub = s.tipe === "essay" ? P.rubrikEssay(s) : s.tipe === "isian" ? { 0: "Salah", 1: "Benar" } : C.RUBRIK_ALASAN;
+      h += '<div class="panduan"><b>Panduan skor ' + (s.tipe === "pg" || s.tipe === "bs" ? "alasan" : "") + "</b>" +
+        Object.keys(rub).sort((a, b) => b - a).map(k => '<div><span class="pn">' + k + "</span>" + esc(rub[k]) + "</div>").join("") + "</div>";
     }
     return h + "</div>";
+  }
+
+  // Isi jawaban + tombol skor untuk satu siswa pada satu soal
+  function isiJawaban(s, it, jw, r, denganPilihan) {
+    const nm = r.nilai_manual || {};
+    let body = "", skor = "", kb = null;
+    if (s.tipe === "pg" || s.tipe === "bs") {
+      if (denganPilihan) {
+        const pj = jw.p == null ? "Tidak dijawab" : s.tipe === "bs" ? (jw.p === 0 ? "Benar" : "Salah") : H[jw.p] + ". " + OPSI_TEKS(s.opsi[jw.p]);
+        body += '<span class="badge ' + (it.info.benar ? "ok" : "bad") + '">Pilihan: ' + esc(pj) + (it.info.benar ? " (+" + C.SKOR[s.tipe].jawaban + ")" : " (0)") + "</span>";
+      } else {
+        body += '<span class="badge ' + (it.info.benar ? "ok" : "bad") + '">Pilihan ' + (it.info.benar ? "benar (+" + C.SKOR[s.tipe].jawaban + ")" : "salah (0)") + "</span>";
+      }
+      body += '<div class="lbl-mini">' + ico("edit") + " Alasan siswa</div>";
+      body += '<div class="ans big' + (jw.a ? "" : " kosong") + '">' + (jw.a ? esc(jw.a) : "Alasan tidak diisi, otomatis 0") + "</div>";
+      if (jw.a && it.info.alasanDiabaikan) skor = '<div class="small muted">Pilihan jawaban salah, alasan otomatis 0.</div>';
+      else if (jw.a) {
+        const cur = nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null;
+        skor = '<div class="lbl-sk">Skor alasan</div>' + tombolSkor(r, it.info.manualKey, it.info.manualMaks, cur, C.RUBRIK_ALASAN);
+        kb = { rec: r, key: it.info.manualKey, maks: it.info.manualMaks };
+      }
+    } else if (s.tipe === "essay") {
+      body += '<div class="ans big' + (jw.t ? "" : " kosong") + '" style="margin-top:0">' + (jw.t ? esc(jw.t) : "Tidak dijawab, otomatis 0") + "</div>";
+      if (jw.t) {
+        const cur = nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null;
+        skor = '<div class="lbl-sk">Skor uraian (0–' + it.maks + ")</div>" + tombolSkor(r, it.info.manualKey, it.info.manualMaks, cur, P.rubrikEssay(s));
+        kb = { rec: r, key: it.info.manualKey, maks: it.info.manualMaks };
+      }
+    } else if (s.tipe === "isian") {
+      const ov = nm[it.info.manualKey];
+      body += '<div class="ans big' + (jw.t ? "" : " kosong") + '" style="margin-top:0">' + (jw.t ? esc(jw.t) : "Tidak dijawab") + "</div>";
+      body += '<div class="lbl-mini">' + (it.info.override ? "Dinilai manual oleh guru" : it.info.cocok ? '<span style="color:var(--ok)">Cocok otomatis</span>' : '<span style="color:var(--bad)">Tidak cocok otomatis</span>') + "</div>";
+      skor = '<div class="lbl-sk">Ubah bila jawaban sebenarnya benar/salah</div>' + tombolSkor(r, it.info.manualKey, it.info.manualMaks, ov != null ? Number(ov) : null, { 0: "Salah", 1: "Benar" }, ov != null);
+      kb = { rec: r, key: it.info.manualKey, maks: it.info.manualMaks };
+    } else if (s.tipe === "pgk") {
+      body += '<span class="badge ' + (skorOf(it) >= it.maks ? "ok" : skorOf(it) > 0 ? "info" : "bad") + '">' + it.info.benar + " benar, " + it.info.salah + " salah dari " + it.info.jmlKunci + " kunci</span>";
+      body += '<p class="small muted" style="margin-top:10px">PG kompleks dinilai otomatis. Pilihan siswa ditandai pada daftar opsi di sebelah kiri.</p>';
+    }
+    return { body, skor, kb };
+  }
+  function badgeSkor(it) {
+    return '<span class="badge ' + (it.pending ? "warn" : skorOf(it) >= it.maks ? "ok" : skorOf(it) > 0 ? "info" : "bad") + '">' +
+      (it.pending ? "Perlu dinilai" : "Skor " + fmt(skorOf(it)) + " / " + it.maks) + "</span>";
+  }
+
+  let kbAktif = null;        // target skor untuk keyboard
+  let psCur = null;          // per soal: id rekaman siswa yang sedang dilihat
+  let ssSoal = null;         // per siswa: id soal yang sedang dilihat
+
+  /* ---------- PER SISWA ---------- */
+  function renderSiswa() {
+    const rows = terfilter();
+    $("slistCount").textContent = rows.length + " siswa";
+    if (!rows.length) {
+      $("slist").innerHTML = '<div class="empty small">Belum ada jawaban masuk.</div>';
+      $("ssSoal").innerHTML = ""; $("ssJawab").innerHTML = '<div class="empty">' + ico("user") + "<div>Belum ada siswa yang mengirim.</div></div>";
+      $("ssStrip").innerHTML = ""; kbAktif = null; return;
+    }
+    if (!pilihSiswa || !rows.find(r => r.id === pilihSiswa)) pilihSiswa = (rows.find(r => r._h.pending) || rows[0]).id;
+    $("slist").innerHTML = rows.map(r => {
+      const st = r._h.status === "selesai" ? '<span class="st ok">' + ico("check") + "</span>" : '<span class="st ' + (r._h.status === "sebagian" ? "warn" : "") + '">' + r._h.pending + "</span>";
+      return '<button class="sitem' + (r.id === pilihSiswa ? " on" : "") + '" data-id="' + r.id + '"><span class="av">' + r.absen + '</span><span class="nm">' + esc(r.nama) + "</span>" + st + "</button>";
+    }).join("");
+    $("slist").querySelectorAll(".sitem").forEach(b => b.onclick = () => { pilihSiswa = b.dataset.id; ssSoal = null; renderSiswa(); });
+    const on = $("slist").querySelector(".sitem.on"); if (on) on.scrollIntoView({ block: "nearest" });
+    renderDetail();
+  }
+
+  function soalSiswaUrut(r) {
+    const m = mapel();
+    return m.soal.filter(s => !hanyaPending || r._h.rincian.find(z => z.id === s.id).pending);
+  }
+  function renderDetail() {
+    const r = data.find(x => x.id === pilihSiswa);
+    if (!r) return;
+    const m = mapel(), x = r._h;
+    if (!ssSoal || !m.soal.find(s => s.id === ssSoal)) ssSoal = ((m.soal.find(s => x.rincian.find(z => z.id === s.id).pending)) || m.soal[0]).id;
+    const s = m.soal.find(z => z.id === ssSoal);
+    const it = x.rincian.find(z => z.id === s.id);
+    const jw = (r.jawaban || {})[s.id] || {};
+
+    $("ssSoal").innerHTML = panelSoal(m, s, jw);
+    const J = isiJawaban(s, it, jw, r, s.tipe === "bs");
+    const urut = soalSiswaUrut(r), pos = urut.indexOf(s);
+    $("ssJawab").innerHTML =
+      '<div class="hd"><div style="min-width:0"><div class="who">' + esc(r.nama) + '</div><div class="small muted">' + esc(r.kelas) + " · no. " + r.absen + " · dikirim " + waktu(r.dikirim_at) + "</div></div>" +
+      '<div class="score-mini"><b>' + x.nilai + "</b><span>" + fmt(x.total) + " / " + x.maks + "</span></div></div>" +
+      '<div class="bd">' + '<div class="row" style="justify-content:space-between;margin-bottom:8px">' + badgeSkor(it) +
+      '<label class="switch"><input type="checkbox" id="chkPendSiswa"' + (hanyaPending ? " checked" : "") + "> Hanya yang perlu dinilai</label></div>" + J.body + "</div>" +
+      '<div class="ft">' + (J.skor || '<div class="small muted">Tidak ada yang perlu dinilai manual pada soal ini.</div>') +
+      '<div class="nav"><button class="btn sm" id="ssPrev"' + (pos <= 0 ? " disabled" : "") + ">" + ico("left") + " Soal sebelumnya</button>" +
+      '<span class="kbd-hint">Angka = beri skor · ← → pindah soal · ↑ ↓ pindah siswa</span>' +
+      '<button class="btn sm" id="ssNext"' + (pos < 0 || pos >= urut.length - 1 ? " disabled" : "") + ">Soal berikutnya " + ico("right") + "</button></div></div>";
+    kbAktif = J.kb;
+
+    // deret nomor soal untuk siswa ini
+    let strip = "", no = 0;
+    URUTAN_TIPE.forEach(t => {
+      const items = m.soal.filter(q => q.tipe === t);
+      if (!items.length) return;
+      strip += '<span class="sec">' + T[t].kode + "</span>";
+      items.forEach(q => {
+        no++;
+        const iq = x.rincian.find(z => z.id === q.id);
+        strip += '<button class="chip-n ' + kelasChip(iq) + (q.id === s.id ? " cur" : "") + '" data-soal="' + q.id + '" title="Soal ' + no + ": " + (iq.pending ? "perlu dinilai" : "skor " + fmt(skorOf(iq)) + "/" + iq.maks) + '">' + no + "</button>";
+      });
+    });
+    $("ssStrip").innerHTML = strip + legenda();
+    $("ssStrip").querySelectorAll("[data-soal]").forEach(b => b.onclick = () => { ssSoal = b.dataset.soal; renderDetail(); });
+    $("chkPendSiswa").onchange = e => { hanyaPending = e.target.checked; if (hanyaPending) { const p = soalSiswaUrut(r); if (p.length && !p.includes(s)) ssSoal = p[0].id; } renderDetail(); };
+    $("ssPrev").onclick = () => geserSoalSiswa(-1);
+    $("ssNext").onclick = () => geserSoalSiswa(1);
+    pasangSkor($("ssJawab"), dinilai => {
+      if (dinilai) {   // lanjut ke soal berikutnya yang masih perlu dinilai
+        const lanjut = m.soal.slice(m.soal.indexOf(s) + 1).find(q => r._h.rincian.find(z => z.id === q.id).pending);
+        if (lanjut) ssSoal = lanjut.id;
+      }
+      renderSiswa();
+    });
+  }
+  function geserSoalSiswa(d) {
+    const r = data.find(x => x.id === pilihSiswa); if (!r) return;
+    const urut = soalSiswaUrut(r), m = mapel();
+    let i = urut.findIndex(q => q.id === ssSoal);
+    if (i < 0) i = d > 0 ? -1 : urut.length;
+    const n = urut[i + d]; if (n) { ssSoal = n.id; renderDetail(); }
+  }
+  function geserSiswa(d) {
+    const rows = terfilter(); const i = rows.findIndex(r => r.id === pilihSiswa);
+    const n = rows[i + d]; if (n) { pilihSiswa = n.id; ssSoal = null; renderSiswa(); }
+  }
+  function legenda() {
+    return '<span class="lgd"><i class="chip-n pend"></i>Perlu dinilai<i class="chip-n done"></i>Penuh<i class="chip-n part"></i>Sebagian<i class="chip-n zero"></i>Nol</span>';
   }
 
   /* ---------- PER SOAL ---------- */
@@ -853,65 +1023,128 @@
     const first = m.soal.find(s => s.tipe === "pg" || s.tipe === "bs" || s.tipe === "essay");
     $("selSoal").value = first ? first.id : "";
   }
-  $("selSoal").onchange = () => renderPerSoal();
-  $("chkPending").onchange = e => { renderPerSoal(); };
+  $("selSoal").onchange = () => { psCur = null; renderPerSoal(); };
+  $("chkPending").onchange = () => { psCur = null; renderPerSoal(); };
   function geserSoal(d) {
     const opts = [...$("selSoal").options].filter(o => !o.disabled);
     const i = opts.findIndex(o => o.value === $("selSoal").value);
-    const n = opts[i + d]; if (n) { $("selSoal").value = n.value; renderPerSoal(); }
+    const n = opts[i + d]; if (n) { $("selSoal").value = n.value; psCur = null; renderPerSoal(); }
   }
   $("btnSoalPrev").onclick = () => geserSoal(-1);
   $("btnSoalNext").onclick = () => geserSoal(1);
 
+  function siswaPerSoal(s) {
+    const rows = terfilter();
+    return $("chkPending").checked ? rows.filter(r => r._h.rincian.find(z => z.id === s.id).pending) : rows;
+  }
   function renderPerSoal() {
     const m = mapel();
     const s = m.soal.find(z => z.id === $("selSoal").value);
-    if (!s) { $("psWrap").innerHTML = '<div class="empty">Pilih soal.</div>'; return; }
-    const K = KUNCI[s.id] || {};
-    const no = m.soal.indexOf(s) + 1;
-    let h = '<div class="ps-head"><div class="qi-head"><span class="qi-no">Soal ' + no + '</span><span class="badge info">' + T[s.tipe].kode + " · " + T[s.tipe].nama + "</span></div>" +
-      '<div class="qi-text">' + (s.teks.trim().startsWith("<") ? s.teks : "<p>" + s.teks + "</p>") + GAMBAR_SOAL(s.gambar) + "</div>";
-    if (s.tipe === "pg") h += opsiList(s, {});
-    if (s.tipe === "bs") h += '<div style="margin-top:8px"><span class="badge neutral">Kunci: ' + (K.k === "B" ? "Benar" : "Salah") + "</span></div>";
-    if (K.alasan) h += '<div class="ref"><b>Acuan alasan:</b> ' + esc(K.alasan) + "</div>";
-    if (K.rubrik) h += '<div class="ref"><b>Pedoman:</b> ' + esc(K.rubrik) + "</div>";
-    if (s.tipe === "isian") h += '<div class="ref"><b>Jawaban diterima:</b> ' + esc((K.k || []).join(" / ")) + "</div>";
-    const rub = s.tipe === "essay" ? P.rubrikEssay(s) : s.tipe === "isian" ? { 0: "Salah", 1: "Benar" } : C.RUBRIK_ALASAN;
-    h += '<div class="small muted" style="margin-top:10px">Panduan skor: ' + Object.keys(rub).sort((a, b) => b - a).map(k => "<b>" + k + "</b> " + esc(rub[k])).join(" · ") + "</div></div>";
+    kbAktif = null;
+    if (!s) { $("psBody").innerHTML = '<div class="empty">Pilih soal.</div>'; $("psStrip").innerHTML = ""; return; }
+    const semua = terfilter();
+    const sisa = semua.filter(r => r._h.rincian.find(z => z.id === s.id).pending).length;
+    const prog = '<span class="small" style="font-weight:700;color:' + (sisa ? "var(--warn)" : "var(--ok)") + '">' + (sisa ? sisa + " belum dinilai" : "Semua sudah dinilai") + "</span>";
 
-    const rows = terfilter();
-    const pend = $("chkPending").checked;
-    let isi = "", sisa = 0;
-    rows.forEach(r => {
-      const it = r._h.rincian.find(z => z.id === s.id);
-      const jw = (r.jawaban || {})[s.id] || {};
-      if (it.pending) sisa++;
-      if (pend && !it.pending) return;
-      const nm = r.nilai_manual || {};
-      let kanan = "";
-      if (s.tipe === "pg" || s.tipe === "bs") {
-        const pj = jw.p == null ? "Tidak dijawab" : s.tipe === "bs" ? (jw.p === 0 ? "Benar" : "Salah") : H[jw.p] + ". " + OPSI_TEKS(s.opsi[jw.p]);
-        kanan += '<span class="badge ' + (it.info.benar ? "ok" : "bad") + '">Pilihan: ' + pj + "</span>";
-        kanan += '<div class="ans' + (jw.a ? "" : " kosong") + '">' + (jw.a ? esc(jw.a) : "Alasan tidak diisi — otomatis 0") + "</div>";
-        if (jw.a && it.info.alasanDiabaikan) kanan += '<div class="small muted" style="margin-top:8px">Pilihan jawaban salah, alasan otomatis 0.</div>';
-        else if (jw.a) kanan += tombolSkor(r, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, C.RUBRIK_ALASAN);
-      } else if (s.tipe === "essay") {
-        kanan += '<div class="ans' + (jw.t ? "" : " kosong") + '" style="margin-top:0">' + (jw.t ? esc(jw.t) : "Tidak dijawab — otomatis 0") + "</div>";
-        if (jw.t) kanan += tombolSkor(r, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, P.rubrikEssay(s));
-      } else if (s.tipe === "isian") {
+    // Isian: semua jawaban sekaligus dalam kisi ringkas
+    if (s.tipe === "isian") {
+      const rows = siswaPerSoal(s);
+      let kisi = rows.map(r => {
+        const it = r._h.rincian.find(z => z.id === s.id), jw = (r.jawaban || {})[s.id] || {}, nm = r.nilai_manual || {};
         const ov = nm[it.info.manualKey];
-        kanan += '<div class="ans' + (jw.t ? "" : " kosong") + '" style="margin-top:0">' + (jw.t ? esc(jw.t) : "Tidak dijawab") + "</div>";
-        kanan += '<div class="lbl-mini">' + (it.info.override ? "Dinilai manual" : it.info.cocok ? '<span style="color:var(--ok)">Cocok otomatis</span>' : '<span style="color:var(--bad)">Tidak cocok otomatis</span>') + "</div>";
-        kanan += tombolSkor(r, it.info.manualKey, it.info.manualMaks, ov != null ? Number(ov) : null, { 0: "Salah", 1: "Benar" }, ov != null);
+        return '<div class="is-cell ' + (skorOf(it) >= 1 ? "ok" : "no") + '"><div class="is-who"><span class="av">' + r.absen + "</span>" + esc(r.nama) + "</div>" +
+          '<div class="is-ans' + (jw.t ? "" : " kosong") + '">' + (jw.t ? esc(jw.t) : "tidak dijawab") + "</div>" +
+          '<div class="is-act">' + (it.info.override ? '<span class="small muted">manual</span>' : "") +
+          '<button class="sb sm' + (ov === 0 ? " on" : "") + '" data-rec="' + r.id + '" data-key="' + it.info.manualKey + '" data-v="0" title="Salah">0</button>' +
+          '<button class="sb sm' + (ov === 1 ? " on" : "") + '" data-rec="' + r.id + '" data-key="' + it.info.manualKey + '" data-v="1" title="Benar">1</button>' +
+          (ov != null ? '<button class="sb sm reset" data-rec="' + r.id + '" data-key="' + it.info.manualKey + '" data-v="" title="Kembali ke penilaian otomatis">auto</button>' : "") + "</div></div>";
+      }).join("");
+      $("psBody").className = "gr-body";
+      $("psBody").innerHTML = '<section class="gr-pane gr-q">' + panelSoal(m, s, {}) + "</section>" +
+        '<section class="gr-pane gr-a"><div class="hd"><b>Jawaban siswa</b>' + prog + '</div><div class="bd"><div class="is-grid">' +
+        (kisi || '<div class="empty">' + ico("checkCircle") + "<div>Tidak ada jawaban yang perlu ditampilkan.</div></div>") +
+        '</div></div><div class="ft small muted">Hijau = dihitung benar, merah = dihitung salah. Klik 1 bila jawaban sebenarnya benar, 0 bila salah.</div></section>';
+      $("psStrip").innerHTML = "";
+      pasangSkor($("psBody"), () => renderPerSoal());
+      return;
+    }
+
+    const rows = siswaPerSoal(s);
+    if (!psCur || !rows.find(r => r.id === psCur)) psCur = ((rows.find(r => r._h.rincian.find(z => z.id === s.id).pending)) || rows[0] || {}).id || null;
+    const r = rows.find(x => x.id === psCur);
+    $("psBody").className = "gr-body";
+    let kanan;
+    if (!r) {
+      kanan = '<div class="hd"><b>Jawaban siswa</b>' + prog + '</div><div class="bd"><div class="empty">' +
+        (semua.length ? ico("checkCircle") + "<div>Tidak ada jawaban yang perlu dinilai pada soal ini.</div>" : ico("file") + "<div>Belum ada jawaban masuk.</div>") + "</div></div>";
+    } else {
+      const it = r._h.rincian.find(z => z.id === s.id), jw = (r.jawaban || {})[s.id] || {};
+      const J = isiJawaban(s, it, jw, r, true);
+      const pos = rows.indexOf(r);
+      kanan = '<div class="hd"><div style="min-width:0"><div class="who">' + esc(r.nama) + '</div><div class="small muted">' + esc(r.kelas) + " · no. " + r.absen + " · siswa " + (pos + 1) + " dari " + rows.length + "</div></div>" + prog + "</div>" +
+        '<div class="bd"><div style="margin-bottom:8px">' + badgeSkor(it) + "</div>" + J.body + "</div>" +
+        '<div class="ft">' + (J.skor || '<div class="small muted">Tidak ada yang perlu dinilai pada jawaban ini.</div>') +
+        '<div class="nav"><button class="btn sm" id="psPrev"' + (pos <= 0 ? " disabled" : "") + ">" + ico("left") + " Sebelumnya</button>" +
+        '<span class="kbd-hint">Angka = beri skor · ← → pindah siswa · Shift + ← → pindah soal</span>' +
+        '<button class="btn sm" id="psNext"' + (pos >= rows.length - 1 ? " disabled" : "") + ">Berikutnya " + ico("right") + "</button></div></div>";
+      kbAktif = J.kb;
+    }
+    $("psBody").innerHTML = '<section class="gr-pane gr-q">' + panelSoal(m, s, {}) + '</section><section class="gr-pane gr-a">' + kanan + "</section>";
+
+    // deret siswa
+    $("psStrip").innerHTML = '<span class="sec">' + ico("users") + "</span>" + rows.map(x => {
+      const it = x._h.rincian.find(z => z.id === s.id);
+      return '<button class="chip-n ' + kelasChip(it) + (x.id === psCur ? " cur" : "") + '" data-rec="' + x.id + '" title="' + esc(x.nama) + '">' + x.absen + "</button>";
+    }).join("") + legenda();
+    $("psStrip").querySelectorAll("[data-rec]").forEach(b => b.onclick = () => { psCur = b.dataset.rec; renderPerSoal(); });
+    const pp = $("psPrev"), pn = $("psNext");
+    if (pp) pp.onclick = () => geserSiswaSoal(-1);
+    if (pn) pn.onclick = () => geserSiswaSoal(1);
+    pasangSkor($("psBody"), dinilai => {
+      if (dinilai && r) {   // lanjut ke siswa berikutnya yang masih perlu dinilai
+        const semuaRows = terfilter(), i = semuaRows.indexOf(r);
+        const lanjut = semuaRows.slice(i + 1).concat(semuaRows.slice(0, i)).find(x => x._h.rincian.find(z => z.id === s.id).pending);
+        if (lanjut) psCur = lanjut.id;
       }
-      isi += '<div class="ps-row' + (it.pending ? " pending" : "") + '"><div class="ps-who"><div class="nm">' + esc(r.nama) + '</div><div class="mt">' + esc(r.kelas) + " · no. " + r.absen + "</div></div><div>" + kanan + "</div></div>";
+      renderPerSoal();
     });
-    h += '<div style="padding:10px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between" class="small"><span class="muted">' + rows.length +
-      ' jawaban</span><span style="color:' + (sisa ? "var(--warn)" : "var(--ok)") + ';font-weight:700">' + (sisa ? sisa + " belum dinilai" : "Semua sudah dinilai") + "</span></div>";
-    h += isi || '<div class="empty">' + (rows.length ? ico("checkCircle") + "<div>Tidak ada jawaban yang perlu dinilai pada soal ini.</div>" : ico("file") + "<div>Belum ada jawaban masuk.</div>") + "</div>";
-    $("psWrap").innerHTML = h;
-    pasangSkor($("psWrap"), () => { const y = window.scrollY; renderPerSoal(); window.scrollTo(0, y); });
   }
+  function geserSiswaSoal(d) {
+    const s = mapel().soal.find(z => z.id === $("selSoal").value); if (!s) return;
+    const rows = siswaPerSoal(s); const i = rows.findIndex(r => r.id === psCur);
+    const n = rows[i + d]; if (n) { psCur = n.id; renderPerSoal(); }
+  }
+
+  /* ---------- Keyboard & tata letak layar penuh ---------- */
+  document.addEventListener("keydown", e => {
+    if (tab !== "soal" && tab !== "siswa") return;
+    if ($("modalHost").innerHTML.trim()) return;
+    const el = document.activeElement;
+    if (el && /^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName) && el.type !== "checkbox") return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (/^[0-9]$/.test(e.key) && kbAktif) {
+      const v = Number(e.key);
+      if (v > kbAktif.maks) return;
+      e.preventDefault();
+      const btn = document.querySelector('.sb[data-rec="' + kbAktif.rec.id + '"][data-key="' + kbAktif.key + '"][data-v="' + v + '"]');
+      if (btn) btn.click();
+      return;
+    }
+    if (tab === "soal") {
+      if (e.key === "ArrowRight") { e.preventDefault(); e.shiftKey ? geserSoal(1) : geserSiswaSoal(1); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); e.shiftKey ? geserSoal(-1) : geserSiswaSoal(-1); }
+    } else {
+      if (e.key === "ArrowRight") { e.preventDefault(); geserSoalSiswa(1); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); geserSoalSiswa(-1); }
+      if (e.key === "ArrowDown") { e.preventDefault(); geserSiswa(1); }
+      if (e.key === "ArrowUp") { e.preventDefault(); geserSiswa(-1); }
+    }
+  });
+  function aturFit() {
+    const muat = window.matchMedia("(min-width: 1100px) and (min-height: 560px)").matches;
+    document.body.classList.toggle("fit", muat && (tab === "soal" || tab === "siswa"));
+  }
+  window.addEventListener("resize", aturFit);
 
   /* ---------- EXPORT ---------- */
   /* ---------- EXPORT EXCEL (ExcelJS, berformat) ---------- */
