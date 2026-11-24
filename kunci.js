@@ -82,10 +82,10 @@ window.KUNCI = {
   "MT-ES5": { rubrik: "Diskon = 25% × 20.000 = 5.000. Harga bayar = 20.000 − 5.000 = Rp15.000,00." }
 };
 
-/* Soal dummy dipakai bersama oleh kelas 5 dan 6: salin kunci BI-* ke B5-* dan B6-*,
-   MT-* ke M5-* dan M6-*. Hapus bagian ini setelah kunci asli per kelas diisi. */
+/* Kunci dummy untuk paket yang belum ada soal aslinya: BI-* ke B6-*, MT-* ke M5-* dan M6-*.
+   Hapus awalan dari peta setelah kunci asli paket itu diisi. */
 (function () {
-  const peta = { BI: ["B5", "B6"], MT: ["M5", "M6"] };
+  const peta = { BI: ["B6"], MT: ["M5", "M6"] };
   Object.keys(KUNCI).forEach(id => {
     const [awal, sisa] = [id.split("-")[0], id.slice(id.indexOf("-"))];
     if (!peta[awal]) return;
@@ -93,3 +93,55 @@ window.KUNCI = {
     delete KUNCI[id];
   });
 })();
+
+/* ===== Bahasa Indonesia Kelas 5 — kunci dari FORMAT_KISI_KUNJAW_SAS_L5 =====
+   Skor maksimal 56: PG 5×2, B/S 5×2, PGK 5×1, Isian 10×1, Uraian 5+4+4+4+4.
+   "alasan" = acuan untuk guru saat menilai alasan siswa. */
+Object.assign(window.KUNCI, {
+  "B5-PG1": { k: "B", alasan: "Inti cerita: teman-teman sekelompok bersama-sama membantu Raka menyelamatkan tanaman cabainya yang layu." },
+  "B5-PG2": { k: "D", alasan: "Raka menyesal karena lupa tugasnya (tanggung jawab), dan masalahnya selesai berkat bantuan teman-teman (bersama-sama)." },
+  "B5-PG3": { k: "A", alasan: "Dinda menghampiri Raka sambil membawa ember dan mengajak menyelamatkan tanaman bersama, tanda ia peduli dan suka menolong." },
+  "B5-PG4": { k: "C", alasan: "Rajin bersinonim dengan giat (sama arti) dan berantonim dengan malas (lawan arti)." },
+  "B5-PG5": { k: "B", alasan: "Ombak (benda mati) digambarkan dapat berkejaran dan memeluk seperti manusia. A simile/hiperbola, C ungkapan, D kalimat biasa." },
+
+  "B5-BS1": { k: "B", alasan: "Gotong royong tidak harus turun langsung; Bu Sari ikut membantu dengan menyiapkan minuman untuk peserta kerja bakti." },
+  "B5-BS2": { k: "S", alasan: "Pelanggaran norma kesopanan sanksinya sosial (dicela, dikucilkan, ditegur), bukan penjara. Penjara adalah sanksi norma hukum." },
+  "B5-BS3": { k: "S", alasan: "Kata ganti orang harus diubah: “kalian” menjadi “mereka”, sehingga: Pak RT berpesan kepada warga bahwa mereka harus membawa kantong sampah." },
+  "B5-BS4": { k: "B", alasan: "membersihkan = me- + bersih + -kan (konfiks me-kan)." },
+  "B5-BS5": { k: "S", alasan: "Kalimat itu memakai kata pembanding “seperti”, jadi majas simile (perumpamaan), bukan personifikasi." },
+
+  "B5-PGK1": { k: "AC" },
+  "B5-PGK2": { k: "BD" },
+  "B5-PGK3": { k: "AD" },
+  "B5-PGK4": { k: "BC" },
+  "B5-PGK5": { k: "CD" },
+
+  "B5-IS1":  { k: ["gotong royong", "gotong-royong", "bergotong royong", "bergotong-royong", "nilai gotong royong"] },
+  "B5-IS2":  { k: ["kesopanan", "norma kesopanan"] },
+  "B5-IS3":  { k: ["ke-an", "ke-...-an", "ke...an", "ke- -an", "ke-/-an", "ke- dan -an", "kean", "konfiks ke-an", "imbuhan ke-an"] },
+  "B5-IS4":  { k: ["kikir", "pelit", "kikir/pelit"] },
+  "B5-IS5":  { k: ["simile", "majas simile", "perumpamaan", "majas perumpamaan", "persamaan", "majas persamaan"] },
+  "B5-IS6":  { k: ["Ibu berkata bahwa dia akan ikut kerja bakti besok", "Ibu berkata bahwa ia akan ikut kerja bakti besok",
+                   "Ibu mengatakan bahwa dia akan ikut kerja bakti besok", "Ibu mengatakan bahwa ia akan ikut kerja bakti besok",
+                   "Ibu berkata, bahwa dia akan ikut kerja bakti besok"] },
+  "B5-IS7":  { k: ["teras rumah Nenek", "di teras rumah Nenek", "teras rumah", "di teras rumah", "teras", "di teras"] },
+  "B5-IS8":  { k: ["2", "dua", "2 (dua)", "(2)", "nomor 2", "nomor dua", "kalimat 2", "kalimat nomor 2", "kalimat (2)"] },
+  "B5-IS9":  { k: ["kotor"] },
+  "B5-IS10": { k: ["hukum", "norma hukum"] },
+
+  "B5-ES1": { maks: 5,
+    rubrik: "Jawaban disesuaikan dengan pemikiran siswa. Memuat 5 elemen: tokoh (Pak Joko, Rani, teman-teman/pedagang), watak Rani (peduli/suka menolong) beserta bukti, latar (pasar; Minggu pagi sampai menjelang siang), amanat (saling menolong/bergotong royong saat ada yang kesusahan), dan contoh gotong royong sehari-hari.",
+    skor: { 5: "Sangat tepat dan jelas, memenuhi 5 elemen cerita", 4: "Memenuhi 4 dari 5 elemen", 3: "Memenuhi 3 dari 5 elemen", 2: "Memenuhi 2 dari 5 elemen", 1: "Memenuhi 1 dari 5 elemen", 0: "Tidak menjawab" } },
+  "B5-ES2": { maks: 4,
+    rubrik: "Jawaban disesuaikan dengan pemikiran siswa. Paragraf memuat 4 konten: isi sesuai fakta, memuat kata sifat, kalimat langsung lengkap, ejaan benar.",
+    skor: { 4: "Memuat 4 konten dalam paragraf secara jelas", 3: "Memuat 3 konten", 2: "Memuat 2 konten", 1: "Memuat 1 konten", 0: "Tidak menjawab" } },
+  "B5-ES3": { maks: 4,
+    rubrik: "a. membersihkan = bersih + me-kan; kebersamaan = bersama + ke-an; berbagi = bagi + ber-; terkumpul = kumpul + ter-. b. Kalimat lengkap, logis, bertema gotong royong, memakai kata “menolong”.",
+    skor: { 4: "4 kata dasar dan imbuhan tepat, kalimat lengkap, logis, bertema gotong royong", 3: "3 kata dasar dan imbuhan tepat, kalimat lengkap, logis, bertema gotong royong", 2: "2 kata dasar dan imbuhan tepat, kalimat kurang lengkap", 1: "1 kata dasar dan imbuhan tepat, kalimat tidak lengkap", 0: "Tidak menjawab" } },
+  "B5-ES4": { maks: 4,
+    rubrik: "a. Dina berkata kepada ayahnya bahwa dia ingin ikut membersihkan sungai agar airnya jernih lagi. b. Personifikasi, karena matahari (benda mati) digambarkan dapat tersenyum seperti manusia.",
+    skor: { 4: "Kalimat tidak langsung lengkap, ejaan tepat; personifikasi dengan alasan logis", 3: "Kalimat tidak langsung lengkap, ejaan kurang tepat; alasan kurang logis", 2: "Kalimat tidak langsung kurang lengkap, ejaan kurang tepat; alasan tidak logis", 1: "Kalimat tidak langsung tidak lengkap, ejaan tidak tepat; alasan tidak logis", 0: "Tidak menjawab" } },
+  "B5-ES5": { maks: 4,
+    rubrik: "Jawaban disesuaikan dengan pemikiran siswa. a. Musyawarah warga, membuat jadwal piket kebersihan, memasang papan larangan membuang sampah. b. Sikap Bu Lina kurang tepat: membayar iuran tidak menggantikan kewajiban ikut gotong royong, dan ia tidak menghargai hasil musyawarah. c. Contoh: “Bu Lina, mari kita ikut piket bersama agar lingkungan kita bersih dan tidak banjir lagi.”",
+    skor: { 4: "Menjawab 3 pertanyaan secara jelas dan tepat dengan alasan logis", 3: "Menjawab 3 pertanyaan kurang jelas dan tepat, alasan kurang logis", 2: "Menjawab 2 pertanyaan secara jelas dan tepat", 1: "Menjawab 1 pertanyaan secara jelas dan tepat", 0: "Tidak menjawab" } }
+});

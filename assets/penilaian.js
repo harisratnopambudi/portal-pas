@@ -19,6 +19,18 @@
     return S[tipe].maks;
   }
 
+  // Skor maksimal satu soal: uraian boleh punya "maks" sendiri di KUNCI (mis. 5 atau 4)
+  function maksSoal(soal) {
+    const k = (window.KUNCI || {})[soal.id] || {};
+    if (soal.tipe === "essay" && k.maks != null) return Number(k.maks);
+    return maksItem(soal.tipe);
+  }
+  // Panduan skor uraian per soal (KUNCI.skor), atau rubrik umum di config
+  function rubrikEssay(soal) {
+    const k = (window.KUNCI || {})[soal.id] || {};
+    return k.skor || window.CONFIG.RUBRIK_ESSAY;
+  }
+
   function kunciIndex(soal) {
     const k = (window.KUNCI[soal.id] || {}).k;
     if (soal.tipe === "bs") return k === "B" ? 0 : k === "S" ? 1 : null;
@@ -30,7 +42,7 @@
   function nilaiItem(soal, jwb, nm) {
     jwb = jwb || {};
     nm = nm || {};
-    const r = { id: soal.id, tipe: soal.tipe, maks: maksItem(soal.tipe), auto: 0, manual: 0, pending: false, info: {} };
+    const r = { id: soal.id, tipe: soal.tipe, maks: maksSoal(soal), auto: 0, manual: 0, pending: false, info: {} };
 
     if (soal.tipe === "pg" || soal.tipe === "bs") {
       const ki = kunciIndex(soal);
@@ -80,10 +92,10 @@
       const t = (jwb.t || "").trim();
       const key = soal.id + "|essay";
       r.info.manualKey = key;
-      r.info.manualMaks = S.essay.maks;
+      r.info.manualMaks = r.maks;
       r.info.kosong = !t;
       if (!t) r.manual = 0;
-      else if (nm[key] != null) { r.manual = Math.min(Number(nm[key]), S.essay.maks); r.info.dinilai = true; }
+      else if (nm[key] != null) { r.manual = Math.min(Number(nm[key]), r.maks); r.info.dinilai = true; }
       else r.pending = true;
     }
     return r;
@@ -115,5 +127,5 @@
 
   function bulat(x) { return Math.round(x * 100) / 100; }
 
-  window.PENILAIAN = { norm, mapelById, maksItem, kunciIndex, nilaiItem, nilaiRekaman, HURUF };
+  window.PENILAIAN = { norm, mapelById, maksItem, maksSoal, rubrikEssay, kunciIndex, nilaiItem, nilaiRekaman, HURUF };
 })();

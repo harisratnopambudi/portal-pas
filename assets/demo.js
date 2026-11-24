@@ -76,7 +76,7 @@
       if ((s.tipe === "pg" || s.tipe === "bs") && j.a && rnd() < porsi) {
         nm[s.id + "|alasan"] = j.a.startsWith("Karena sesuai") || j.a.startsWith("Menurut") || j.a.startsWith("Sebab ") ? 1 : (alasanSedang.includes(j.a) && rnd() < 0.4 ? 1 : 0);
       }
-      if (s.tipe === "essay" && j.t && rnd() < porsi) nm[s.id + "|essay"] = j.t.length > 90 ? 2 + Math.round(rnd()) : Math.round(rnd());
+      if (s.tipe === "essay" && j.t && rnd() < porsi) nm[s.id + "|essay"] = Math.min(PENILAIAN.maksSoal(s), j.t.length > 90 ? 2 + Math.round(rnd()) : Math.round(rnd()));
     });
     return nm;
   }

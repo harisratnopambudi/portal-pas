@@ -45,6 +45,8 @@ Siswa masuk dengan memilih **kelas** lalu **nama** dari daftar. Nomor siswa = ur
 | E. Uraian | – | 0–3 sesuai rubrik | 3 | 5 | 15 |
 
 Total maksimal 50 → **Nilai = skor ÷ 50 × 100**.
+
+Skor maksimal uraian bisa diatur per soal lewat `maks` dan panduan `skor` di `kunci.js`. Contohnya Bahasa Indonesia Kelas 5 memakai uraian 5, 4, 4, 4, 4, sehingga total maksimalnya 56 dan nilai = skor ÷ 56 × 100.
 Alasan atau uraian yang dikosongkan siswa otomatis bernilai 0.
 `ALASAN_HANYA_JIKA_JAWABAN_BENAR: true` membuat alasan otomatis 0 bila pilihan jawabannya salah. PG kompleks bisa dibuat harus tepat semua dengan `mode: "mutlak"`.
 

@@ -6,7 +6,7 @@
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <meta name="robots" content="noindex">
 <title>Portal Penilaian PAS — Guru</title>
-<link rel="stylesheet" href="assets/style.css?v=20261124a">
+<link rel="stylesheet" href="assets/style.css?v=20261124b">
 <style>
   .pin-wrap{max-width:380px;margin:80px auto;padding:0 20px}
   .pin-wrap .card{padding:28px}
@@ -339,13 +339,13 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=20261124a"></script>
-<script src="soal.js?v=20261124a"></script>
-<script src="kunci.js?v=20261124a"></script>
-<script src="assets/icons.js?v=20261124a"></script>
-<script src="assets/db.js?v=20261124a"></script>
-<script src="assets/penilaian.js?v=20261124a"></script>
-<script src="assets/demo.js?v=20261124a"></script>
+<script src="config.js?v=20261124b"></script>
+<script src="soal.js?v=20261124b"></script>
+<script src="kunci.js?v=20261124b"></script>
+<script src="assets/icons.js?v=20261124b"></script>
+<script src="assets/db.js?v=20261124b"></script>
+<script src="assets/penilaian.js?v=20261124b"></script>
+<script src="assets/demo.js?v=20261124b"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 (function () {
@@ -363,11 +363,11 @@
   let hanyaPending = false;
 
   /* ---------- UI awal ---------- */
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124a" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124b" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandSub").textContent = C.NAMA_SEKOLAH + " · " + C.JUDUL_UJIAN + " " + C.TAHUN_AJARAN;
   $("modeChip").className = "chip " + (DB.mode === "firebase" ? "live" : "demo");
   $("modeChip").textContent = DB.mode === "firebase" ? "Online" : "Mode demo";
-  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124a" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
+  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124b" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
   $("btnKeluar").innerHTML = ico("logout") + " Keluar";
   $("btnMuat").innerHTML = ico("refresh") + " Muat ulang";
   $("btnExport").innerHTML = ico("download") + " Unduh Excel";
@@ -828,7 +828,7 @@
     if (s.tipe === "essay") {
       h += '<div class="ans' + (jw.t ? "" : " kosong") + '">' + (jw.t ? esc(jw.t) : "Tidak dijawab — otomatis 0") + "</div>";
       if (K.rubrik) h += '<div class="ref"><b>Pedoman:</b> ' + esc(K.rubrik) + "</div>";
-      if (jw.t) h += tombolSkor(rec, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, C.RUBRIK_ESSAY);
+      if (jw.t) h += tombolSkor(rec, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, P.rubrikEssay(s));
     }
     return h + "</div>";
   }
@@ -875,7 +875,7 @@
     if (K.alasan) h += '<div class="ref"><b>Acuan alasan:</b> ' + esc(K.alasan) + "</div>";
     if (K.rubrik) h += '<div class="ref"><b>Pedoman:</b> ' + esc(K.rubrik) + "</div>";
     if (s.tipe === "isian") h += '<div class="ref"><b>Jawaban diterima:</b> ' + esc((K.k || []).join(" / ")) + "</div>";
-    const rub = s.tipe === "essay" ? C.RUBRIK_ESSAY : s.tipe === "isian" ? { 0: "Salah", 1: "Benar" } : C.RUBRIK_ALASAN;
+    const rub = s.tipe === "essay" ? P.rubrikEssay(s) : s.tipe === "isian" ? { 0: "Salah", 1: "Benar" } : C.RUBRIK_ALASAN;
     h += '<div class="small muted" style="margin-top:10px">Panduan skor: ' + Object.keys(rub).sort((a, b) => b - a).map(k => "<b>" + k + "</b> " + esc(rub[k])).join(" · ") + "</div></div>";
 
     const rows = terfilter();
@@ -896,7 +896,7 @@
         else if (jw.a) kanan += tombolSkor(r, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, C.RUBRIK_ALASAN);
       } else if (s.tipe === "essay") {
         kanan += '<div class="ans' + (jw.t ? "" : " kosong") + '" style="margin-top:0">' + (jw.t ? esc(jw.t) : "Tidak dijawab — otomatis 0") + "</div>";
-        if (jw.t) kanan += tombolSkor(r, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, C.RUBRIK_ESSAY);
+        if (jw.t) kanan += tombolSkor(r, it.info.manualKey, it.info.manualMaks, nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null, P.rubrikEssay(s));
       } else if (s.tipe === "isian") {
         const ov = nm[it.info.manualKey];
         kanan += '<div class="ans' + (jw.t ? "" : " kosong") + '" style="margin-top:0">' + (jw.t ? esc(jw.t) : "Tidak dijawab") + "</div>";
@@ -1015,7 +1015,7 @@
   function sheetRekapMapel(wb, m, rb, recs, nama) {
     const tipeAda = URUTAN_TIPE.filter(t => m.soal.some(s => s.tipe === t));
     const singkat = { pg: "PG Beralasan", bs: "Benar/Salah", pgk: "PG Kompleks", isian: "Isian", essay: "Uraian" };
-    const maksTipe = {}; tipeAda.forEach(t => maksTipe[t] = m.soal.filter(s => s.tipe === t).reduce((a, s) => a + P.maksItem(s.tipe), 0));
+    const maksTipe = {}; tipeAda.forEach(t => maksTipe[t] = m.soal.filter(s => s.tipe === t).reduce((a, s) => a + P.maksSoal(s), 0));
     const maks = Object.values(maksTipe).reduce((a, b) => a + b, 0);
     const nT = tipeAda.length, nS = m.soal.length;
     const cT = 5, cTot = cT + nT, cNil = cTot + 1, cPel = cNil + 1, cS = cPel + 1, nCol = cS + nS - 1;

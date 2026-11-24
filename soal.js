@@ -32,7 +32,7 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
   const isian = (id, teks, gambar) => ({ id, tipe: "isian", teks, gambar });
   const essay = (id, teks, gambar) => ({ id, tipe: "essay", teks, gambar });
 
-  /* Soal DUMMY. Isi tiap paket akan diganti soal asli per kelas.
+  /* Soal DUMMY (dipakai paket yang belum ada soal aslinya).
      p = awalan id soal, mis. "B5" menghasilkan B5-PG1, B5-PG2, ... */
   const soalBI = p => [
           pg(p + "-PG1", '<div class="bacaan">Setiap Minggu pagi, warga RT 05 melaksanakan kerja bakti. Bapak-bapak membersihkan selokan, ibu-ibu menyapu jalan, dan anak-anak memungut sampah plastik. Setelah selesai, mereka makan bersama di balai warga.</div><p>Ide pokok paragraf tersebut adalah ...</p>',
@@ -129,9 +129,66 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
           essay(p + "-ES5", "Harga sebuah buku Rp20.000,00. Toko memberikan diskon 25%. Berapa harga yang harus dibayar? Tuliskan caranya!")
   ];
 
+  /* ================= BAHASA INDONESIA KELAS 5 (naskah asli SAS 1 2026/2027) ================= */
+  const CERITA_RAKA = '<div class="bacaan"><p>Pagi itu, Raka datang ke sekolah dengan mata sembab. Kemarin sore, tanaman cabai miliknya di kebun sekolah layu karena ia lupa menyiramnya. Ia malu kepada teman-teman sekelompoknya. Namun, Dinda menghampirinya sambil membawa ember. “Ayo, kita selamatkan bersama,” ajak Dinda. Satu per satu teman sekelompok ikut membantu. Ada yang mencabuti rumput, ada yang menggemburkan tanah, ada pula yang mengambil air. Menjelang bel istirahat, tanaman cabai itu kembali tegak. Raka tersenyum lega. “Terima kasih. Aku tidak akan menunda tugas lagi,” katanya.</p></div>';
+  const PENGUMUMAN_RT = '<div class="bacaan"><p style="text-align:center"><b>PENGUMUMAN</b></p><p>Warga RT 05 akan kerja bakti membersihkan saluran air pada hari Minggu pukul 07.00. Warga diminta membawa cangkul. Pak RT berpesan kepada warga, “Kalian harus membawa kantong sampah.” Bu Sari tidak dapat ikut turun ke saluran air karena harus menjaga anaknya yang demam, sehingga ia menyiapkan minuman untuk para peserta kerja bakti.</p></div>';
+  const bsPengumuman = t => PENGUMUMAN_RT + "<p>" + t + "</p>";
+
+  const soalBI5 = [
+    pg("B5-PG1", '<p class="muted small">Bacalah cerita berikut untuk menjawab soal nomor 1 sampai 3!</p>' + CERITA_RAKA + "<p>Tema yang paling tepat untuk cerita tersebut adalah ....</p>",
+      ["Persaingan antarkelompok dalam merawat tanaman", "Kerja sama teman untuk membantu menyelesaikan masalah", "Cara menanam cabai agar tumbuh subur", "Kesedihan anak yang tidak memiliki kebun"]),
+    pg("B5-PG2", CERITA_RAKA + "<p>Amanat yang paling sesuai dengan cerita tersebut adalah ....</p>",
+      ["Orang yang lupa menyiram tanaman pantas dihukum oleh teman-temannya.", "Sebaiknya kita menyembunyikan kesalahan agar tidak merasa malu.", "Setiap masalah harus diselesaikan sendiri agar tidak merepotkan orang lain.", "Tanggung jawab perlu dijaga, dan masalah terasa lebih ringan jika diselesaikan bersama."]),
+    pg("B5-PG3", CERITA_RAKA + "<p>Berdasarkan tindakannya, watak tokoh Dinda pada cerita tersebut adalah ....</p>",
+      ["peduli dan mau menolong teman", "pemalu dan penakut", "ceroboh dan pelupa", "pemarah dan mementingkan diri sendiri"]),
+    pg("B5-PG4", '<div class="bacaan"><p><i>Pak Darto dikenal sebagai warga yang sangat <b>rajin</b>. Setiap Minggu pagi ia menyapu jalan lingkungan tanpa diminta. Warga lain kemudian ikut menyapu sehingga jalan menjadi bersih.</i></p></div><p>Pasangan sinonim dan antonim yang tepat untuk kata bercetak tebal pada paragraf tersebut adalah ....</p>',
+      ["pintar – bodoh", "malas – giat", "giat – malas", "tekun – cepat"]),
+    pg("B5-PG5", "<p>Naya menulis beberapa kalimat dalam buku hariannya setelah berlibur bersama keluarga.</p><p>Kalimat dalam buku harian Naya yang mengandung majas personifikasi adalah ....</p>",
+      ["Adikku berlari secepat kilat menuju gerbang pantai.", "Ombak berkejaran di tepi pantai dan memeluk kaki kami.", "Ayah bekerja membanting tulang demi keluarga.", "Pantai itu sangat luas dan indah."]),
+
+    bs("B5-BS1", '<p class="muted small">Bacalah pengumuman berikut untuk menjawab soal nomor 6 sampai 10!</p>' + bsPengumuman("Bu Sari tetap menerapkan gotong royong walaupun tidak ikut turun ke saluran air, karena ia menyumbangkan tenaga dengan menyiapkan minuman.")),
+    bs("B5-BS2", bsPengumuman("Warga yang tidak ikut kerja bakti tanpa alasan akan dipenjara karena melanggar norma kesopanan.")),
+    bs("B5-BS3", bsPengumuman("Kalimat langsung “Pak RT berpesan kepada warga, ‘Kalian harus membawa kantong sampah.’” dapat diubah menjadi kalimat tidak langsung: <i>Pak RT berpesan kepada warga bahwa kalian harus membawa kantong sampah.</i>")),
+    bs("B5-BS4", bsPengumuman("Kata <i>membersihkan</i> terbentuk dari kata dasar <i>bersih</i> yang mendapat imbuhan me-kan.")),
+    bs("B5-BS5", bsPengumuman("Kalimat “Warga membersihkan saluran air seperti semut mengangkut makanan” mengandung majas personifikasi.")),
+
+    pgk("B5-PGK1", '<div class="bacaan"><p>Sore itu hujan deras mengguyur kampung. Di balai warga, Bu Wati membagikan jas hujan kepada anak-anak yang hendak pulang mengaji. “Pakailah, supaya kalian tidak sakit,” katanya sambil tersenyum.</p></div><p>Pernyataan yang tepat tentang unsur intrinsik cerita tersebut adalah .... <i>(jawaban lebih dari satu)</i></p>',
+      ["Latar tempat cerita adalah balai warga.", "Latar waktu cerita adalah pagi hari.", "Bu Wati berwatak perhatian dan peduli kepada anak-anak.", "Tema cerita adalah persaingan antaranak."]),
+    pgk("B5-PGK2", '<div class="bacaan"><p>Warga menanami tepi jalan dengan pohon agar lingkungan menjadi teduh dan terawat.</p></div><p>Pernyataan yang tepat tentang kata pada kalimat tersebut adalah .... <i>(jawaban lebih dari satu)</i></p>',
+      ["Kata <i>teduh</i> berasal dari kata dasar <i>duh</i> yang mendapat awalan te-.", "Kata <i>menanami</i> terbentuk dari kata dasar <i>tanam</i> yang mendapat imbuhan me-i.", "Kata <i>menjadi</i> tidak berimbuhan karena sudah merupakan kata dasar.", "Kata <i>terawat</i> terbentuk dari kata dasar <i>rawat</i> yang mendapat awalan ter-."]),
+    pgk("B5-PGK3", '<div class="bacaan"><p>Rumah Pak Yusuf sederhana, tetapi halamannya asri dan rapi. Anak-anaknya ramah kepada siapa saja.</p></div><p>Pernyataan yang tepat tentang kata sifat pada paragraf tersebut adalah .... <i>(jawaban lebih dari satu)</i></p>',
+      ["Kata <i>sederhana</i> bersinonim dengan <i>bersahaja</i>.", "Kata <i>asri</i> berantonim dengan <i>indah</i>.", "Kata <i>ramah</i> bersinonim dengan <i>galak</i>.", "Kata <i>rapi</i> berantonim dengan <i>berantakan</i>."]),
+    pgk("B5-PGK4", '<div class="bacaan"><p>Di sebuah kampung, Pak Anto meminjam cangkul milik tetangga. Ia mengembalikannya dalam keadaan patah tanpa meminta maaf. Tetangga kecewa dan warga membicarakannya.</p></div><p>Pernyataan yang tepat berdasarkan situasi tersebut adalah .... <i>(jawaban lebih dari satu)</i></p>',
+      ["Pembicaraan warga tentang Pak Anto merupakan sanksi hukum dari pengadilan.", "Sikap Pak Anto melanggar norma kesopanan karena tidak meminta maaf dan tidak bertanggung jawab.", "Agar hubungan kembali baik, Pak Anto sebaiknya meminta maaf dan mengganti cangkul yang patah.", "Aturan meminjam barang tidak perlu ditaati karena tidak tertulis."]),
+    pgk("B5-PGK5", '<div class="bacaan"><p>Bu Guru berkata kepada Dini, “Kamu boleh membantu Fikri membawa buku ke perpustakaan.”</p></div><p>Pernyataan yang tepat tentang kalimat tersebut adalah .... <i>(jawaban lebih dari satu)</i></p>',
+      ["Kalimat tersebut adalah kalimat tidak langsung karena memuat kata <i>berkata</i>.", "Jika diubah menjadi kalimat tidak langsung, tanda petik tetap dipertahankan.", "Perubahannya menjadi: Bu Guru berkata kepada Dini bahwa dia boleh membantu Fikri membawa buku ke perpustakaan.", "Pada perubahan itu, tanda petik dihilangkan dan dapat ditambahkan kata penghubung <i>bahwa</i> sebelum isi ucapan."]),
+
+    isian("B5-IS1", '<div class="bacaan"><p><i>Pada hari Sabtu, siswa kelas 5 membawa sapu, pengki, dan kantong sampah. Mereka membersihkan taman sekolah bersama-sama tanpa disuruh sehingga taman menjadi bersih dan rapi.</i></p></div><p>Sikap yang dilakukan siswa kelas 5 tersebut merupakan penerapan nilai ....</p>'),
+    isian("B5-IS2", '<div class="bacaan"><p><i>Ayu berhenti mengobrol ketika Pak Guru menjelaskan, lalu mengangkat tangan sebelum bertanya.</i></p></div><p>Sikap Ayu menunjukkan ia menaati norma yang mengatur sopan santun dalam pergaulan, yaitu norma ....</p>'),
+    isian("B5-IS3", "<p>Pak Dimas membantu tetangga yang rumahnya kebanjiran.</p><p>Kata <i>kebanjiran</i> pada kalimat tersebut mendapat imbuhan (konfiks) ....</p>"),
+    isian("B5-IS4", "<p>Kakek dikenal dermawan karena sering membantu warga yang kesulitan.</p><p>Antonim kata <i>dermawan</i> pada kalimat tersebut adalah ....</p>"),
+    isian("B5-IS5", "<p>Gotong royong itu seperti perekat yang menyatukan warga.</p><p>Majas yang digunakan pada kalimat tersebut adalah ....</p>"),
+    isian("B5-IS6", "<p>Ibu berkata, “Aku akan ikut kerja bakti besok.”</p><p>Ubahlah kalimat tersebut menjadi kalimat tidak langsung!</p>"),
+    isian("B5-IS7", "<p>Setelah pulang dari pasar, Mira langsung ke rumah Nenek di ujung gang. Di teras rumah itu, ia menemukan sebuah dompet.</p><p>Latar tempat Mira menemukan dompet adalah ....</p>"),
+    isian("B5-IS8", "<p>(1) Pada hari Minggu, 15 November 2026, empat puluh warga RW 03 membersihkan selokan.<br>(2) Kunang-kunang berbicara kepada bulan agar menerangi jalan pulang.</p><p>Kalimat yang berasal dari teks fiksi (imajinasi) adalah kalimat nomor ....</p>"),
+    isian("B5-IS9", "<p>Selokan kotor itu dibersihkan warga pada hari Minggu.</p><p>Kata sifat pada kalimat tersebut adalah ....</p>"),
+    isian("B5-IS10", "<p>Seorang pengendara motor tidak memakai helm. Petugas menilangnya dan ia harus membayar denda.</p><p>Norma yang dilanggar pengendara tersebut adalah norma ....</p>"),
+
+    essay("B5-ES1", '<div class="bacaan"><p>Hari Minggu pagi, lapak sayur milik Pak Joko roboh diterpa angin kencang di pasar. Ia hanya duduk termenung. Melihat hal itu, Rani mengajak teman-temannya dan para pedagang lain untuk membantu mendirikan lapak kembali. Menjelang siang, lapak Pak Joko berdiri lagi. Pak Joko menitikkan air mata dan berkata, “Terima kasih, Nak. Tanpa kalian, saya tidak tahu harus bagaimana.”</p></div>' +
+      "<p>a. Sebutkan dua tokoh dalam cerita dan watak Rani beserta buktinya!<br>b. Tentukan latar tempat dan latar waktu cerita!<br>c. Tuliskan amanat cerita dan hubungkan dengan contoh gotong royong dalam kehidupan sehari-hari!</p>"),
+    essay("B5-ES2", "<p>Setiap hari Jumat, sekolahmu mengadakan kegiatan Jumat Bersih. Setiap kelas bertugas membersihkan area tertentu di sekolah.</p>" +
+      "<p>Tulislah satu paragraf nonfiksi (5 kalimat) tentang kegiatan gotong royong yang pernah kamu lakukan di sekolah atau lingkungan rumahmu! Paragraf harus memuat minimal satu kata sifat dan satu kalimat langsung dengan tanda baca yang benar.</p>"),
+    essay("B5-ES3", '<div class="bacaan"><p>Sebelum kerja bakti dimulai, warga membersihkan selokan. Kebersamaan mereka terlihat saat berbagi tugas sehingga sampah terkumpul dengan cepat.</p></div>' +
+      "<p>a. Tulislah kata dasar dan imbuhan dari kata <i>membersihkan</i>, <i>kebersamaan</i>, <i>berbagi</i>, dan <i>terkumpul</i>!<br>b. Susunlah satu kalimat tentang gotong royong dengan menggunakan kata <i>menolong</i>!</p>"),
+    essay("B5-ES4", '<div class="bacaan"><p>Dina berkata kepada ayahnya, “Aku ingin ikut membersihkan sungai agar airnya jernih lagi.” Setelah itu, mereka bekerja bersama. Sinar matahari tersenyum hangat melihat warga yang bahu-membahu.</p></div>' +
+      "<p>a. Ubahlah kalimat langsung pada paragraf tersebut menjadi kalimat tidak langsung!<br>b. Sebutkan jenis majas pada kalimat “Sinar matahari tersenyum hangat melihat warga yang bahu-membahu” dan jelaskan alasannya!</p>"),
+    essay("B5-ES5", '<div class="bacaan"><p>Di Perumahan Mawar Indah, beberapa warga membuang sampah sembarangan ke selokan. Akibatnya, saat hujan deras air meluap dan menggenangi jalan. Pak RT mengajak warga bermusyawarah. Mereka sepakat membuat jadwal piket kebersihan dan memasang papan larangan membuang sampah. Bu Lina menolak ikut piket karena merasa sudah membayar iuran kebersihan.</p></div>' +
+      "<p>a. Tuliskan dua bentuk penerapan gotong royong yang dilakukan warga untuk mengatasi masalah tersebut!<br>b. Menurutmu, tepatkah sikap Bu Lina? Berikan pendapat dan alasanmu berdasarkan nilai gotong royong dan norma yang berlaku di masyarakat!<br>c. Tuliskan satu kalimat ajakan yang santun dari Pak RT kepada Bu Lina agar mau ikut piket!</p>")
+  ];
+
   window.BANK_SOAL = {
     mapel: [
-      { id: "bind5", tingkat: ["5"], nama: "Bahasa Indonesia Kelas 5", singkat: "B. Indonesia", ikon: "book", durasi: 90, soal: soalBI("B5") },
+      { id: "bind5", tingkat: ["5"], nama: "Bahasa Indonesia Kelas 5", singkat: "B. Indonesia", ikon: "book", durasi: 90, soal: soalBI5 },
       { id: "mtk5",  tingkat: ["5"], nama: "Matematika Kelas 5",       singkat: "Matematika",   ikon: "calc", durasi: 90, soal: soalMTK("M5") },
       { id: "bind6", tingkat: ["6"], nama: "Bahasa Indonesia Kelas 6", singkat: "B. Indonesia", ikon: "book", durasi: 90, soal: soalBI("B6") },
       { id: "mtk6",  tingkat: ["6"], nama: "Matematika Kelas 6",       singkat: "Matematika",   ikon: "calc", durasi: 90, soal: soalMTK("M6") }
