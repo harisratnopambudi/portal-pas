@@ -6,7 +6,7 @@
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <meta name="robots" content="noindex">
 <title>Portal Penilaian PAS — Guru</title>
-<link rel="stylesheet" href="assets/style.css?v=20261124e">
+<link rel="stylesheet" href="assets/style.css?v=20261124f">
 <style>
   .pin-wrap{max-width:380px;margin:80px auto;padding:0 20px}
   .pin-wrap .card{padding:28px}
@@ -339,13 +339,13 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=20261124e"></script>
-<script src="soal.js?v=20261124e"></script>
-<script src="kunci.js?v=20261124e"></script>
-<script src="assets/icons.js?v=20261124e"></script>
-<script src="assets/db.js?v=20261124e"></script>
-<script src="assets/penilaian.js?v=20261124e"></script>
-<script src="assets/demo.js?v=20261124e"></script>
+<script src="config.js?v=20261124f"></script>
+<script src="soal.js?v=20261124f"></script>
+<script src="kunci.js?v=20261124f"></script>
+<script src="assets/icons.js?v=20261124f"></script>
+<script src="assets/db.js?v=20261124f"></script>
+<script src="assets/penilaian.js?v=20261124f"></script>
+<script src="assets/demo.js?v=20261124f"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 (function () {
@@ -363,11 +363,11 @@
   let hanyaPending = false;
 
   /* ---------- UI awal ---------- */
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124e" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124f" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandSub").textContent = C.NAMA_SEKOLAH + " · " + C.JUDUL_UJIAN + " " + C.TAHUN_AJARAN;
   $("modeChip").className = "chip " + (DB.mode === "firebase" ? "live" : "demo");
   $("modeChip").textContent = DB.mode === "firebase" ? "Online" : "Mode demo";
-  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124e" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
+  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124f" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
   $("btnKeluar").innerHTML = ico("logout") + " Keluar";
   $("btnMuat").innerHTML = ico("refresh") + " Muat ulang";
   $("btnExport").innerHTML = ico("download") + " Unduh Excel";
@@ -390,8 +390,9 @@
   B.mapel.forEach(m => $("selMapel").insertAdjacentHTML("beforeend", '<option value="' + m.id + '">' + esc(m.nama) + "</option>"));
   $("lblUnggah").innerHTML = ico("file") + " Pilih file Dapodik";
   let ROMBEL = [];
+  const TINGKAT_UJI = [...new Set(BANK_SOAL.mapel.flatMap(m => (m.tingkat || []).map(String)))];   // hanya kelas 5 dan 6
   async function muatRombel() {
-    try { ROMBEL = await DB.daftarSiswa(); } catch (e) { ROMBEL = []; }
+    try { ROMBEL = (await DB.daftarSiswa()).filter(r => TINGKAT_UJI.includes(String(r.tingkat))); } catch (e) { ROMBEL = []; }
     const cur = $("selKelas").value;
     $("selKelas").innerHTML = '<option value="">Semua kelas</option>' + ROMBEL.map(r => '<option value="' + esc(r.kelas) + '">' + esc(r.kelas) + "</option>").join("");
     if (ROMBEL.some(r => r.kelas === cur)) $("selKelas").value = cur;
@@ -1332,8 +1333,8 @@
     } catch (err) { toast(ico("alert") + " " + esc(err.message || "File tidak dapat dibaca")); }
   };
   function renderPrevImport() {
-    const tingkatAda = [...new Set(hasilImport.map(r => r.tingkat))].sort();
-    const def = ["5", "6"];
+    const tingkatAda = [...new Set(hasilImport.map(r => r.tingkat))].filter(t => TINGKAT_UJI.includes(String(t))).sort();
+    const def = TINGKAT_UJI;
     const el = $("importPrev"); el.classList.remove("hidden");
     el.innerHTML = '<div class="small" style="font-weight:700;margin-bottom:8px">Tingkat yang diambil</div><div class="row" style="flex-wrap:wrap;gap:14px">' +
       tingkatAda.map(t => '<label class="switch"><input type="checkbox" class="cbTk" value="' + esc(t) + '"' + (def.includes(t) ? " checked" : "") + "> Kelas " + esc(t) + "</label>").join("") +
