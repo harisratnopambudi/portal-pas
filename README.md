@@ -1,8 +1,8 @@
 # Portal Ujian PAS Semester Ganjil
 
-Portal ujian berbasis web untuk 4 mapel: Bahasa Indonesia & Pendidikan Pancasila, IPAS, PAIBP, dan Matematika.
+Portal ujian berbasis web untuk Bahasa Indonesia dan Matematika, kelas 5 dan 6.
 Setiap mapel berisi 30 soal: 5 PG beralasan, 5 Benar/Salah beralasan, 5 PG kompleks, 10 isian, 5 uraian.
-**Soal dan kunci saat ini masih dummy (setara kelas 5) dan sementara dipakai untuk kelas 4, 5, dan 6.** Untuk soal asli per jenjang, buat mapel terpisah di `soal.js` dengan `tingkat` masing-masing.
+Ada 4 paket soal, masing-masing dengan token sendiri: `bind5`, `mtk5`, `bind6`, `mtk6`. **Isi soal dan kunci saat ini masih dummy** (kelas 5 dan 6 sementara memakai soal yang sama).
 
 ## Isi folder
 
@@ -29,7 +29,7 @@ Mode demo menyimpan data di browser tersebut saja (localStorage), jadi hanya unt
 3. **Authentication** → aktifkan Email/Password → **Users → Add user** untuk tiap guru penilai.
 4. **Project settings → Your apps → Web** → salin `firebaseConfig` ke `config.js` bagian `FIREBASE`.
 5. Bila perlu isi `TOKEN` per mapel, lalu deploy (GitHub Pages). Label pojok kanan atas berubah menjadi **Online**.
-6. Masuk `guru.html` → tab **Data siswa** → pilih file `daftar_pd-....xlsx` dari Dapodik → centang tingkat (default kelas 4, 5, 6) → **Simpan ke database**.
+6. Masuk `guru.html` → tab **Data siswa** → pilih file `daftar_pd-....xlsx` dari Dapodik → centang tingkat (default kelas 5 dan 6) → **Simpan ke database**.
 
 Siswa masuk dengan memilih **kelas** lalu **nama** dari daftar. Nomor siswa = urutan nama (A–Z) di rombelnya, jadi **jangan import ulang saat ujian sedang berjalan**. Daftar nama disimpan di Firestore, bukan di repo, agar tidak terbuka di GitHub.
 

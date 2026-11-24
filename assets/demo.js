@@ -88,6 +88,7 @@
     const now = Date.now();
     BANK_SOAL.mapel.forEach((m, mi) => {
       ROMBEL.forEach((rb, ri) => {
+        if (m.tingkat && !m.tingkat.map(String).includes(String(rb.tingkat))) return;
         // Kelas A ujian sedang berlangsung; kelas B sudah selesai semua
         rb.nama.forEach((nama, i) => {
           const absen = i + 1, id = DB.docId(m.id, rb.kelas, absen);
@@ -95,13 +96,13 @@
           let status;
           if (ri === 1) status = i < rb.nama.length - 1 ? "kirim" : "belum";
           else status = i < 13 ? "kirim" : i < 21 ? "kerja" : i < 23 ? "kunci" : i < 25 ? "masuk" : "belum";
-          if (mi > 1 && ri === 0) status = i < rb.nama.length - 2 ? "kirim" : "belum";   // PAIBP & MTK: kelas A juga sudah selesai
+          if (m.id === "mtk5" && ri === 0) status = i < rb.nama.length - 2 ? "kirim" : "belum";   // Matematika: kelas A juga sudah selesai
 
           if (status !== "belum") masuk[id] = { mapel: m.id, kelas: rb.kelas, absen, nama, token: TOKEN_DEMO, waktu: now - (60 + i) * 60000 };
           if (status === "kirim") {
             const jw = buatJawaban(m, kemampuan);
             const mulai = now - (95 + i * 3) * 60000, kirim = mulai + (40 + Math.floor(rnd() * 45)) * 60000;
-            const porsi = ri === 1 || mi > 1 ? 1 : (i < 5 ? 1 : i < 9 ? 0.5 : 0);   // sebagian sudah dinilai guru
+            const porsi = ri === 1 || m.id === "mtk5" ? 1 : (i < 5 ? 1 : i < 9 ? 0.5 : 0);   // sebagian sudah dinilai guru
             const pel = rnd() < 0.15 ? 1 + Math.floor(rnd() * 2) : 0;
             db.push({ id, mapel: m.id, kelas: rb.kelas, absen, nama, jawaban: jw, nilai_manual: nilaiManualAcak(m, jw, porsi),
               status: "belum", mulai_at: new Date(mulai).toISOString(), dikirim_at: new Date(kirim).toISOString(), pelanggaran: pel });
@@ -122,7 +123,7 @@
 
   window.DEMO = { TOKEN: TOKEN_DEMO, isiDasar, isiSemua, adaJawaban: () => !!localStorage.getItem("pas_db_demo") };
   isiDasar(false);
-  const VERSI = "skor-2";   // naikkan bila aturan skor berubah agar data contoh dibuat ulang
+  const VERSI = "mapel-56";   // naikkan bila aturan skor berubah agar data contoh dibuat ulang
   if (window.KUNCI && (!localStorage.getItem("pas_db_demo") || localStorage.getItem("pas_demo_versi") !== VERSI)) {
     isiSemua(); localStorage.setItem("pas_demo_versi", VERSI);
   }

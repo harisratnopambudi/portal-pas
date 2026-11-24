@@ -9,7 +9,7 @@
    essay : rubrik = pedoman / jawaban acuan
    ========================================================= */
 window.KUNCI = {
-  /* ===== Bahasa Indonesia & Pendidikan Pancasila ===== */
+  /* ===== Bahasa Indonesia (dasar dummy: awalan BI) ===== */
   "BI-PG1": { k: "B", alasan: "Kalimat utama ada di awal paragraf (deduktif); kalimat lain menjelaskan kegiatan kerja bakti." },
   "BI-PG2": { k: "C", alasan: "Huruf kapital dipakai di awal kalimat, nama tempat (Bandung), dan nama hari (Senin)." },
   "BI-PG3": { k: "C", alasan: "Sila ketiga Persatuan Indonesia: menjaga persatuan dan tidak membedakan suku." },
@@ -45,79 +45,7 @@ window.KUNCI = {
   "BI-ES4": { rubrik: "Karena setiap orang punya hak berpendapat, perbedaan dapat menghasilkan keputusan terbaik, menjaga persatuan dan menghindari pertengkaran; sesuai sila keempat." },
   "BI-ES5": { rubrik: "Kalimat ajakan (memakai kata mari/ayo), diawali huruf kapital, diakhiri tanda seru/titik, isi sesuai tema kebersihan sekolah." },
 
-  /* ===== IPAS ===== */
-  "IP-PG1": { k: "B", alasan: "Kaca adalah benda bening sehingga cahaya dapat menembusnya." },
-  "IP-PG2": { k: "C", alasan: "Cahaya berpindah dari air ke udara (medium berbeda kerapatan) sehingga dibiaskan." },
-  "IP-PG3": { k: "D", alasan: "Bunyi memerlukan medium (zat) untuk merambat; ruang hampa tidak memiliki zat perantara." },
-  "IP-PG4": { k: "C", alasan: "Ular memakan tikus (konsumen I), maka ular adalah konsumen tingkat II." },
-  "IP-PG5": { k: "A", alasan: "Jamur termasuk dekomposer yang menguraikan sisa makhluk hidup." },
-
-  "IP-BS1": { k: "B", alasan: "Sifat bayangan cermin datar: maya, tegak, sama besar, jarak sama." },
-  "IP-BS2": { k: "S", alasan: "Bunyi paling cepat merambat melalui zat padat karena partikelnya rapat." },
-  "IP-BS3": { k: "B", alasan: "Tumbuhan hijau berfotosintesis membuat makanan sendiri." },
-  "IP-BS4": { k: "B", alasan: "Gema adalah bunyi pantul yang terdengar setelah bunyi asli selesai." },
-  "IP-BS5": { k: "S", alasan: "Herbivora pemakan tumbuhan; pemakan daging adalah karnivora." },
-
-  "IP-PGK1": { k: "ABC" },
-  "IP-PGK2": { k: "ABD" },
-  "IP-PGK3": { k: "ACE" },
-  "IP-PGK4": { k: "ABE" },
-  "IP-PGK5": { k: "ACE" },
-
-  "IP-IS1": { k: ["cahaya"] },
-  "IP-IS2": { k: ["penguraian", "dispersi", "pembiasan", "pembiasan dan penguraian"] },
-  "IP-IS3": { k: ["hertz", "hz", "hertz (hz)"] },
-  "IP-IS4": { k: ["produsen", "autotrof"] },
-  "IP-IS5": { k: ["omnivora"] },
-  "IP-IS6": { k: ["infrasonik"] },
-  "IP-IS7": { k: ["jaring-jaring makanan", "jaring jaring makanan", "jaring makanan"] },
-  "IP-IS8": { k: ["retina"] },
-  "IP-IS9": { k: ["mutualisme"] },
-  "IP-IS10": { k: ["ultrasonik"] },
-
-  "IP-ES1": { rubrik: "Ada cahaya dari sumber cahaya yang mengenai benda, dipantulkan oleh benda, lalu masuk ke mata sehingga benda terlihat." },
-  "IP-ES2": { rubrik: "Contoh: padi → tikus → ular → elang. Padi produsen, tikus konsumen I, ular konsumen II, elang konsumen III (pengurai boleh disebut). Skor 3 = urutan & semua peran benar; 2 = urutan benar, sebagian peran salah; 1 = hanya urutan." },
-  "IP-ES3": { rubrik: "Populasi tikus meningkat karena tidak ada pemangsa, padi banyak dimakan tikus (gagal panen), elang kekurangan makanan; keseimbangan ekosistem terganggu." },
-  "IP-ES4": { rubrik: "Padat: menempelkan telinga di meja/telepon kaleng. Cair: suara terdengar saat menyelam. Gas: mendengar suara orang berbicara/bel lewat udara." },
-  "IP-ES5": { rubrik: "Contoh: cermin/spion (pemantulan), kacamata/lup (pembiasan), periskop (pemantulan), lampu senter (merambat lurus). Skor penuh bila 2 contoh dengan sifat cahaya yang tepat." },
-
-  /* ===== PAIBP ===== */
-  "PA-PG1": { k: "C", alasan: "Q.S. At-Tin terdiri atas 8 ayat." },
-  "PA-PG2": { k: "B", alasan: "Al-‘Alim berarti Maha Mengetahui segala sesuatu." },
-  "PA-PG3": { k: "C", alasan: "Zabur diturunkan kepada Nabi Dawud a.s." },
-  "PA-PG4": { k: "B", alasan: "Ayat 2 Q.S. Al-Ma‘un: orang yang menghardik anak yatim." },
-  "PA-PG5": { k: "D", alasan: "Puasa Ramadan termasuk rukun Islam dan wajib bagi muslim balig berakal (Q.S. Al-Baqarah: 183)." },
-
-  "PA-BS1": { k: "B", alasan: "Taurat diturunkan kepada Nabi Musa a.s." },
-  "PA-BS2": { k: "S", alasan: "As-Sami‘ artinya Maha Mendengar; Maha Melihat adalah Al-Bashir." },
-  "PA-BS3": { k: "B", alasan: "Sahur dianjurkan Rasulullah saw. karena mengandung berkah." },
-  "PA-BS4": { k: "S", alasan: "At-Tin termasuk surah Makkiyah (diturunkan di Makkah)." },
-  "PA-BS5": { k: "B", alasan: "Al-Qur’an diturunkan kepada Nabi Muhammad saw., nabi terakhir." },
-
-  "PA-PGK1": { k: "ABDE" },
-  "PA-PGK2": { k: "ACE" },
-  "PA-PGK3": { k: "ACE" },
-  "PA-PGK4": { k: "ABD" },
-  "PA-PGK5": { k: "ABD" },
-
-  "PA-IS1": { k: ["isa", "isa a.s.", "isa as", "nabi isa"] },
-  "PA-IS2": { k: ["pemberi", "pemberi karunia", "maha pemberi"] },
-  "PA-IS3": { k: ["7", "tujuh"] },
-  "PA-IS4": { k: ["lailatul qadar", "lailatulqadar", "lailatul qadr", "lailatul qodar"] },
-  "PA-IS5": { k: ["kitab-kitab allah", "kitab allah", "kitab", "kitab-kitab"] },
-  "PA-IS6": { k: ["fitrah", "fitri"] },
-  "PA-IS7": { k: ["muhammad", "muhammad saw", "muhammad saw.", "nabi muhammad"] },
-  "PA-IS8": { k: ["baik", "sempurna", "baik-baiknya", "sebaik-baiknya"] },
-  "PA-IS9": { k: ["puasa", "saum", "shaum", "shiyam"] },
-  "PA-IS10": { k: ["mendengar"] },
-
-  "PA-ES1": { rubrik: "Allah bersumpah dengan buah tin, zaitun, Bukit Sinai, dan kota Makkah; manusia diciptakan dalam bentuk sebaik-baiknya; bisa jatuh ke tempat serendah-rendahnya kecuali yang beriman dan beramal saleh; Allah hakim yang paling adil." },
-  "PA-ES2": { rubrik: "Kitab: wahyu yang dibukukan, isinya lengkap, wajib disampaikan kepada umat (Taurat, Zabur, Injil, Al-Qur’an). Suhuf: lembaran-lembaran wahyu, isinya singkat, tidak dibukukan (mis. suhuf Nabi Ibrahim dan Musa)." },
-  "PA-ES3": { rubrik: "Contoh: rajin membaca Al-Qur’an, mempelajari dan mengamalkan isinya, menghormati/merawat mushaf, meyakini kebenaran isinya." },
-  "PA-ES4": { rubrik: "Menjaga ucapan, tidak berkata kotor/bohong/ghibah, mendengarkan nasihat orang tua dan guru, berdoa dengan yakin didengar Allah." },
-  "PA-ES5": { rubrik: "Melatih kesabaran dan pengendalian diri, menumbuhkan empati pada orang miskin, menyehatkan badan, meningkatkan takwa, mempererat silaturahmi." },
-
-  /* ===== Matematika ===== */
+  /* ===== Matematika (dasar dummy: awalan MT) ===== */
   "MT-PG1": { k: "C", alasan: "12 = 2²×3, 18 = 2×3²; KPK = 2²×3² = 36 (atau kelipatan persekutuan terkecil)." },
   "MT-PG2": { k: "C", alasan: "24 = 2³×3, 36 = 2²×3²; FPB = 2²×3 = 12." },
   "MT-PG3": { k: "B", alasan: "3/4 + 2/4 = 5/4 = 1 1/4." },
@@ -153,3 +81,15 @@ window.KUNCI = {
   "MT-ES4": { rubrik: "Ubah ke desimal: 0,45; 0,5; 0,6; 0,4. Urutan: 2/5 ; 0,45 ; 1/2 ; 60%." },
   "MT-ES5": { rubrik: "Diskon = 25% × 20.000 = 5.000. Harga bayar = 20.000 − 5.000 = Rp15.000,00." }
 };
+
+/* Soal dummy dipakai bersama oleh kelas 5 dan 6: salin kunci BI-* ke B5-* dan B6-*,
+   MT-* ke M5-* dan M6-*. Hapus bagian ini setelah kunci asli per kelas diisi. */
+(function () {
+  const peta = { BI: ["B5", "B6"], MT: ["M5", "M6"] };
+  Object.keys(KUNCI).forEach(id => {
+    const [awal, sisa] = [id.split("-")[0], id.slice(id.indexOf("-"))];
+    if (!peta[awal]) return;
+    peta[awal].forEach(p => { if (!KUNCI[p + sisa]) KUNCI[p + sisa] = KUNCI[id]; });
+    delete KUNCI[id];
+  });
+})();
