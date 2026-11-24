@@ -9,42 +9,6 @@
    essay : rubrik = pedoman / jawaban acuan
    ========================================================= */
 window.KUNCI = {
-  /* ===== Bahasa Indonesia (dasar dummy: awalan BI) ===== */
-  "BI-PG1": { k: "B", alasan: "Kalimat utama ada di awal paragraf (deduktif); kalimat lain menjelaskan kegiatan kerja bakti." },
-  "BI-PG2": { k: "C", alasan: "Huruf kapital dipakai di awal kalimat, nama tempat (Bandung), dan nama hari (Senin)." },
-  "BI-PG3": { k: "C", alasan: "Sila ketiga Persatuan Indonesia: menjaga persatuan dan tidak membedakan suku." },
-  "BI-PG4": { k: "D", alasan: "Kualitas adalah bentuk baku; apotik→apotek, nasehat→nasihat, karir→karier." },
-  "BI-PG5": { k: "B", alasan: "Norma kesopanan bersumber dari tata krama pergaulan; A norma agama, C dan D norma hukum." },
-
-  "BI-BS1": { k: "B", alasan: "Narasi menceritakan peristiwa secara kronologis/berurutan." },
-  "BI-BS2": { k: "S", alasan: "Lambang sila keempat adalah kepala banteng; rantai emas lambang sila kedua." },
-  "BI-BS3": { k: "S", alasan: "Kalimat tersebut kalimat berita, diakhiri titik dan memberi informasi." },
-  "BI-BS4": { k: "B", alasan: "Sila keempat: Kerakyatan yang dipimpin oleh hikmat kebijaksanaan dalam permusyawaratan/perwakilan." },
-  "BI-BS5": { k: "S", alasan: "Bentuk baku adalah “nasihat”." },
-
-  "BI-PGK1": { k: "ABD" },
-  "BI-PGK2": { k: "ACD" },
-  "BI-PGK3": { k: "ACD" },
-  "BI-PGK4": { k: "ABD" },
-  "BI-PGK5": { k: "ABD" },
-
-  "BI-IS1": { k: ["bintang", "bintang emas"] },
-  "BI-IS2": { k: ["18 agustus 1945", "18-08-1945", "18/08/1945"] },
-  "BI-IS3": { k: ["antagonis"] },
-  "BI-IS4": { k: ["malas"] },
-  "BI-IS5": { k: ["bhinneka tunggal ika", "bhineka tunggal ika"] },
-  "BI-IS6": { k: ["seru", "tanda seru", "!", "(!)"] },
-  "BI-IS7": { k: ["1 juni", "1 juni 1945", "satu juni"] },
-  "BI-IS8": { k: ["latar", "setting"] },
-  "BI-IS9": { k: ["apotek"] },
-  "BI-IS10": { k: ["hukum"] },
-
-  "BI-ES1": { rubrik: "Contoh: bermain dengan semua teman tanpa membedakan suku/agama, ikut upacara bendera dengan khidmat, kerja kelompok bersama, memakai bahasa Indonesia saat bergaul, ikut lomba antarkelas dengan sportif. Skor 3 = 3 contoh tepat; 2 = 2 contoh tepat; 1 = 1 contoh tepat." },
-  "BI-ES2": { rubrik: "Ide pokok: sampah plastik berbahaya bagi lingkungan. Kalimat penjelas: sulit terurai; asap pembakarannya beracun; menyebabkan banjir. Skor 3 = ide pokok + 2 penjelas tepat; 2 = ide pokok + 1 penjelas; 1 = ide pokok saja." },
-  "BI-ES3": { rubrik: "Protagonis: tokoh utama/berwatak baik. Antagonis: lawan tokoh utama/berwatak jahat. Masing-masing disertai contoh tokoh yang sesuai." },
-  "BI-ES4": { rubrik: "Karena setiap orang punya hak berpendapat, perbedaan dapat menghasilkan keputusan terbaik, menjaga persatuan dan menghindari pertengkaran; sesuai sila keempat." },
-  "BI-ES5": { rubrik: "Kalimat ajakan (memakai kata mari/ayo), diawali huruf kapital, diakhiri tanda seru/titik, isi sesuai tema kebersihan sekolah." },
-
   /* ===== Matematika (dasar dummy: awalan MT) ===== */
   "MT-PG1": { k: "C", alasan: "12 = 2²×3, 18 = 2×3²; KPK = 2²×3² = 36 (atau kelipatan persekutuan terkecil)." },
   "MT-PG2": { k: "C", alasan: "24 = 2³×3, 36 = 2²×3²; FPB = 2²×3 = 12." },
@@ -82,10 +46,10 @@ window.KUNCI = {
   "MT-ES5": { rubrik: "Diskon = 25% × 20.000 = 5.000. Harga bayar = 20.000 − 5.000 = Rp15.000,00." }
 };
 
-/* Kunci dummy untuk paket yang belum ada soal aslinya: BI-* ke B6-*, MT-* ke M5-* dan M6-*.
+/* Kunci dummy untuk paket yang belum ada soal aslinya: MT-* ke M5-* dan M6-*.
    Hapus awalan dari peta setelah kunci asli paket itu diisi. */
 (function () {
-  const peta = { BI: ["B6"], MT: ["M5", "M6"] };
+  const peta = { MT: ["M5", "M6"] };
   Object.keys(KUNCI).forEach(id => {
     const [awal, sisa] = [id.split("-")[0], id.slice(id.indexOf("-"))];
     if (!peta[awal]) return;
@@ -144,4 +108,54 @@ Object.assign(window.KUNCI, {
   "B5-ES5": { maks: 4,
     rubrik: "Jawaban disesuaikan dengan pemikiran siswa. a. Musyawarah warga, membuat jadwal piket kebersihan, memasang papan larangan membuang sampah. b. Sikap Bu Lina kurang tepat: membayar iuran tidak menggantikan kewajiban ikut gotong royong, dan ia tidak menghargai hasil musyawarah. c. Contoh: “Bu Lina, mari kita ikut piket bersama agar lingkungan kita bersih dan tidak banjir lagi.”",
     skor: { 4: "Menjawab 3 pertanyaan secara jelas dan tepat dengan alasan logis", 3: "Menjawab 3 pertanyaan kurang jelas dan tepat, alasan kurang logis", 2: "Menjawab 2 pertanyaan secara jelas dan tepat", 1: "Menjawab 1 pertanyaan secara jelas dan tepat", 0: "Tidak menjawab" } }
+});
+
+/* ===== Bahasa Indonesia Kelas 6 — kunci dari FORMAT_KISI_KUNJAW_SAS_L6x =====
+   Skor maksimal 63: PG 5×2, B/S 5×2, PGK 5×2, Isian 10×1, Uraian 5+4+5+4+5.
+   PGK: lengkap & tepat = 2, sebagian tepat = 1, salah = 0. */
+Object.assign(window.KUNCI, {
+  "B6-PG1": { k: "A", alasan: "Lengang berarti sunyi/sepi (sinonim); lawannya ramai (antonim), sesuai kalimat “kini ramai dilalui anak-anak”." },
+  "B6-PG2": { k: "B", alasan: "Ide pokok mewakili seluruh isi laporan; pilihan lain hanya rincian (detail) hari tertentu atau syarat tumbuh." },
+  "B6-PG3": { k: "C", alasan: "Buku dibandingkan langsung dengan jendela dunia tanpa kata pembanding. A dan D simile (laksana, secepat), B kalimat biasa." },
+  "B6-PG4": { k: "D", alasan: "Sesuai teks: sampah menyumbat selokan, akibatnya air meluap ke jalan dan permukiman. Pilihan lain membalik atau mengarang hubungan sebab-akibat." },
+  "B6-PG5": { k: "B", alasan: "Sila ketiga menjaga persatuan dalam keberagaman: semua daerah diberi kesempatan dan saling menghargai." },
+
+  "B6-BS1": { k: "B", alasan: "Lengang bersinonim dengan sepi, jadi makna kedua kalimat sama." },
+  "B6-BS2": { k: "S", alasan: "Teks eksplanasi bertujuan menjelaskan proses terjadinya suatu peristiwa, bukan mengajak pembaca." },
+  "B6-BS3": { k: "B", alasan: "Kalimat pertama berisi pendapat (tesis), kalimat berikutnya alasan yang mendukung (argumen)." },
+  "B6-BS4": { k: "S", alasan: "Surat undangan kepala sekolah kepada orang tua adalah surat resmi/dinas, sehingga harus memakai bahasa baku dan santun." },
+  "B6-BS5": { k: "S", alasan: "Menganggap daerah sendiri paling unggul dan menolak produk daerah lain bertentangan dengan persatuan (sila ketiga); cinta tanah air berarti menghargai semua daerah." },
+
+  "B6-PGK1": { k: "AB",  maks: 2 },
+  "B6-PGK2": { k: "ABC", maks: 2 },
+  "B6-PGK3": { k: "AC",  maks: 2 },
+  "B6-PGK4": { k: "AC",  maks: 2 },
+  "B6-PGK5": { k: "ABD", maks: 2 },
+
+  "B6-IS1":  { k: ["memperhatikan", "meneliti", "memantau", "menyimak", "mencermati"] },
+  "B6-IS2":  { k: ["miskin", "melarat", "sengsara", "papa"] },
+  "B6-IS3":  { k: ["kumis", "kumisnya", "kumis kucing"] },
+  "B6-IS4":  { k: ["simile", "simile (perumpamaan)", "majas simile", "perumpamaan", "majas perumpamaan", "persamaan"] },
+  "B6-IS5":  { k: ["prestasi", "penghargaan", "bagian prestasi", "prestasi/penghargaan"] },
+  "B6-IS6":  { k: ["urutan", "kerunutan", "tidak berurutan", "urutan langkah", "susunan", "urutannya"] },
+  "B6-IS7":  { k: ["penegasan ulang", "penegasan ulang tesis", "kesimpulan", "penegasan"] },
+  "B6-IS8":  { k: ["ajakan", "kalimat ajakan", "seruan"] },
+  "B6-IS9":  { k: ["salam penutup", "penutup"] },
+  "B6-IS10": { k: ["3", "ketiga", "tiga", "ke-3", "3 (ketiga)", "3 (tiga)", "3 persatuan indonesia", "3 (ketiga) – persatuan indonesia", "3 - persatuan indonesia", "ketiga persatuan indonesia", "persatuan indonesia"] },
+
+  "B6-ES1": { maks: 5,
+    rubrik: "Jawaban disesuaikan dengan pemikiran siswa. a. Contoh: Banyak orang tua berhenti di depan gerbang sehingga jalan menyempit. Karena jalan menyempit, kendaraan lain berjalan pelan sehingga antrean memanjang. Akibatnya bus sekolah dan angkot terjebak. b. Usul terkait penyebab utama (kendaraan berhenti di depan gerbang), mis. tempat penjemputan khusus/parkir di halaman, beserta alasannya.",
+    skor: { 5: "3 tahap runtut, memakai kata sebab-akibat, usul terkait penyebab utama disertai alasan", 4: "3 tahap runtut, kata sebab-akibat, usul terkait penyebab utama tanpa alasan", 3: "2 tahap runtut, kata sebab-akibat, usul terkait penyebab utama disertai alasan", 2: "2 tahap runtut, kata sebab-akibat, tanpa usul terkait penyebab utama", 1: "1 tahap runtut, kata sebab-akibat, tanpa usul terkait penyebab utama", 0: "Tidak menjawab" } },
+  "B6-ES2": { maks: 4,
+    rubrik: "Jawaban disesuaikan dengan pemikiran siswa. a. Kalimat (4), karena berisi pendapat/berlebihan, bukan fakta hasil pengamatan. b. Contoh: Taman ini ditumbuhi bunga melati dan mawar yang terawat. c. Ide pokok: keadaan taman sekolah hasil pengamatan.",
+    skor: { 4: "3 jawaban sesuai dan tepat", 3: "3 jawaban kurang sesuai dan tepat", 2: "2 jawaban sesuai dan tepat", 1: "1 jawaban sesuai dan tepat", 0: "Tidak menjawab" } },
+  "B6-ES3": { maks: 5,
+    rubrik: "Jawaban disesuaikan dengan pemikiran siswa. 5 kriteria: isi sesuai tema Hari Pahlawan dan cinta tanah air, menyebut tindakan nyata di sekolah, memuat satu kalimat ajakan, bahasa baku, kalimat efektif dan ejaan benar.",
+    skor: { 5: "Isi pidato lengkap dengan memperhatikan 5 kriteria", 4: "Isi pidato 4 dari 5 kalimat, memperhatikan 5 kriteria", 3: "Isi pidato lengkap, memperhatikan 4 dari 5 kriteria", 2: "Kurang dari 4 kalimat, tanpa memperhatikan 5 kriteria", 1: "Kurang lengkap dan kurang memperhatikan 5 kriteria", 0: "Tidak menjawab" } },
+  "B6-ES4": { maks: 4,
+    rubrik: "Jawaban disesuaikan dengan pemikiran siswa. a. Bagian yang belum ada, mis.: tempat dan tanggal surat, salam pembuka, salam penutup, tanda tangan/nama terang (dan nama orang tua). b. Surat izin ditulis ulang dengan bahasa baku, sopan, dan bagian surat lengkap.",
+    skor: { 4: "Menyebut 2 bagian yang belum ada dan menulis ulang dengan bahasa baku dan sopan secara tepat", 3: "Menyebut 2 bagian dan menulis ulang, kurang baku/sopan", 2: "Menyebut 2 bagian dan menulis ulang", 1: "Menyebut 2 bagian, tidak menulis ulang", 0: "Tidak menjawab" } },
+  "B6-ES5": { maks: 5,
+    rubrik: "Jawaban disesuaikan dengan pemikiran siswa. a. Sikap bertentangan: mengejek logat teman, membeda-bedakan/tidak mau bermain bersama, membentuk kelompok-kelompok kecil (beserta alasannya). b. Contoh tindakan: berkenalan dan bermain bersama tanpa membedakan daerah, membuat kelompok belajar campuran, menampilkan budaya tiap daerah.",
+    skor: { 5: "3 sikap dan 2 tindakan tepat dan jelas", 4: "3 sikap dan 2 tindakan, kurang tepat dan jelas", 3: "2 sikap dan 2 tindakan tepat dan jelas", 2: "2 sikap dan 2 tindakan kurang tepat dan jelas", 1: "1 sikap dan 1 tindakan tidak tepat dan jelas", 0: "Tidak menjawab" } }
 });

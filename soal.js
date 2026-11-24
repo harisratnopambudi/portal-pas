@@ -32,54 +32,8 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
   const isian = (id, teks, gambar) => ({ id, tipe: "isian", teks, gambar });
   const essay = (id, teks, gambar) => ({ id, tipe: "essay", teks, gambar });
 
-  /* Soal DUMMY (dipakai paket yang belum ada soal aslinya).
+  /* Soal DUMMY Matematika (dipakai sampai soal asli dikirim).
      p = awalan id soal, mis. "B5" menghasilkan B5-PG1, B5-PG2, ... */
-  const soalBI = p => [
-          pg(p + "-PG1", '<div class="bacaan">Setiap Minggu pagi, warga RT 05 melaksanakan kerja bakti. Bapak-bapak membersihkan selokan, ibu-ibu menyapu jalan, dan anak-anak memungut sampah plastik. Setelah selesai, mereka makan bersama di balai warga.</div><p>Ide pokok paragraf tersebut adalah ...</p>',
-            ["Bapak-bapak membersihkan selokan", "Warga RT 05 melaksanakan kerja bakti setiap Minggu pagi", "Anak-anak memungut sampah plastik", "Warga makan bersama di balai warga"]),
-          pg(p + "-PG2", "<p>Kalimat yang penulisan ejaannya tepat adalah ...</p>",
-            ["kami berangkat ke bandung hari senin.", "Kami berangkat ke Bandung hari senin.", "Kami berangkat ke Bandung hari Senin.", "kami Berangkat ke bandung Hari Senin."]),
-          pg(p + "-PG3", "<p>Di kelas Rani terdapat teman dari suku Sunda, Jawa, dan Batak. Sikap Rani yang sesuai dengan sila ketiga Pancasila adalah ...</p>",
-            ["Hanya mau bermain dengan teman satu suku", "Mengejek logat bicara teman dari daerah lain", "Bermain dan belajar bersama semua teman tanpa membedakan suku", "Membentuk kelompok belajar khusus satu daerah"]),
-          pg(p + "-PG4", "<p>Kata berikut yang merupakan kata baku adalah ...</p>",
-            ["Apotik", "Nasehat", "Karir", "Kualitas"]),
-          pg(p + "-PG5", "<p>Berikut yang merupakan contoh norma kesopanan adalah ...</p>",
-            ["Berdoa sebelum makan", "Mengucapkan permisi ketika lewat di depan orang tua", "Membayar pajak tepat waktu", "Memakai helm saat mengendarai motor"]),
-
-          bs(p + "-BS1", "Teks narasi adalah teks yang menceritakan suatu peristiwa secara berurutan dari awal sampai akhir."),
-          bs(p + "-BS2", "Lambang sila keempat Pancasila adalah rantai emas."),
-          bs(p + "-BS3", "Kalimat “Adik sedang membaca buku di perpustakaan.” termasuk kalimat tanya."),
-          bs(p + "-BS4", "Musyawarah untuk mencapai mufakat merupakan pengamalan sila keempat Pancasila."),
-          bs(p + "-BS5", "Kata “nasehat” merupakan kata baku menurut KBBI."),
-
-          pgk(p + "-PGK1", "<p>Pilihlah ciri-ciri teks narasi berikut ini!</p>",
-            ["Menceritakan peristiwa secara runtut", "Memiliki tokoh dan latar", "Berisi langkah-langkah membuat sesuatu", "Memiliki alur cerita", "Berisi data angka dalam bentuk tabel"]),
-          pgk(p + "-PGK2", "<p>Manakah yang merupakan contoh pengamalan sila kedua Pancasila?</p>",
-            ["Menolong teman yang terjatuh", "Memaksakan pendapat saat diskusi", "Menjenguk teman yang sakit", "Tidak membeda-bedakan teman", "Mengejek teman yang berbeda"]),
-          pgk(p + "-PGK3", "<p>Pilihlah semua kata baku di bawah ini!</p>",
-            ["Aktivitas", "Sekedar", "Risiko", "Jadwal", "Hakekat"]),
-          pgk(p + "-PGK4", "<p>Yang termasuk unsur intrinsik cerita adalah ...</p>",
-            ["Tokoh", "Latar", "Nama penerbit", "Amanat", "Harga buku"]),
-          pgk(p + "-PGK5", "<p>Manfaat menaati tata tertib sekolah adalah ...</p>",
-            ["Suasana belajar menjadi tertib", "Siswa terlatih disiplin", "Siswa bebas datang terlambat", "Terhindar dari hukuman", "Guru tidak perlu mengajar"]),
-
-          isian(p + "-IS1", "Lambang sila pertama Pancasila adalah ...."),
-          isian(p + "-IS2", "Pancasila disahkan sebagai dasar negara pada tanggal ...."),
-          isian(p + "-IS3", "Tokoh dalam cerita yang memiliki watak jahat atau menjadi lawan tokoh utama disebut tokoh ...."),
-          isian(p + "-IS4", "Lawan kata (antonim) dari kata “rajin” adalah ...."),
-          isian(p + "-IS5", "Semboyan bangsa Indonesia yang tertulis pada pita lambang Garuda Pancasila adalah ...."),
-          isian(p + "-IS6", "Kalimat perintah biasanya diakhiri dengan tanda baca ...."),
-          isian(p + "-IS7", "Hari Lahir Pancasila diperingati setiap tanggal ...."),
-          isian(p + "-IS8", "Tempat, waktu, dan suasana terjadinya peristiwa dalam cerita disebut ...."),
-          isian(p + "-IS9", "Bentuk baku dari kata “apotik” adalah ...."),
-          isian(p + "-IS10", "Aturan yang dibuat oleh negara dan memiliki sanksi tegas disebut norma ...."),
-
-          essay(p + "-ES1", "Tuliskan tiga contoh pengamalan sila ketiga Pancasila di lingkungan sekolah!"),
-          essay(p + "-ES2", '<div class="bacaan">Sampah plastik sangat berbahaya bagi lingkungan. Sampah plastik sulit terurai meskipun sudah bertahun-tahun. Jika dibakar, asapnya mengandung zat beracun. Sampah plastik yang dibuang ke sungai juga dapat menyebabkan banjir.</div><p>Tentukan ide pokok dan dua kalimat penjelas dari paragraf di atas!</p>'),
-          essay(p + "-ES3", "Jelaskan perbedaan tokoh protagonis dan tokoh antagonis, lalu berikan masing-masing satu contoh dari cerita yang kamu ketahui!"),
-          essay(p + "-ES4", "Mengapa kita harus menghargai perbedaan pendapat ketika bermusyawarah? Jelaskan pendapatmu!"),
-          essay(p + "-ES5", "Buatlah satu kalimat ajakan tentang menjaga kebersihan lingkungan sekolah dengan ejaan yang benar!")
-  ];
   const soalMTK = p => [
           pg(p + "-PG1", "<p>KPK dari 12 dan 18 adalah ...</p>",
             ["6", "24", "36", "72"]),
@@ -186,11 +140,83 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
       "<p>a. Tuliskan dua bentuk penerapan gotong royong yang dilakukan warga untuk mengatasi masalah tersebut!<br>b. Menurutmu, tepatkah sikap Bu Lina? Berikan pendapat dan alasanmu berdasarkan nilai gotong royong dan norma yang berlaku di masyarakat!<br>c. Tuliskan satu kalimat ajakan yang santun dari Pak RT kepada Bu Lina agar mau ikut piket!</p>")
   ];
 
+  /* ================= BAHASA INDONESIA KELAS 6 (naskah asli SAS 1 2026/2027) ================= */
+  const bacaan = t => '<div class="bacaan">' + t + "</div>";
+  const soalBI6 = [
+    pg("B6-PG1", bacaan("<p>Pak Lurah mengumumkan hasil kerja bakti. “Setelah warga bergotong royong, jalan desa yang tadinya <b>lengang</b> kini ramai dilalui anak-anak yang berangkat sekolah,” kata beliau.</p>") +
+      "<p>Pasangan sinonim dan antonim kata <i>lengang</i> yang tepat adalah ....</p>",
+      ["sunyi – ramai", "senyap – tenang", "sepi – gelap", "riuh – sepi"]),
+    pg("B6-PG2", bacaan("<p>Kelompok Dina mengamati tanaman kacang hijau selama lima hari. Pada hari pertama, biji direndam lalu diletakkan di atas kapas basah. Pada hari ketiga, muncul akar putih kecil. Pada hari kelima, batang tumbuh setinggi 3 cm dan daun pertama mulai membuka. Selama pengamatan, kapas dijaga agar tetap lembap dan wadah diletakkan di dekat jendela.</p>") +
+      "<p>Ide pokok yang paling tepat mewakili seluruh isi laporan pengamatan tersebut adalah ....</p>",
+      ["Kacang hijau dapat tumbuh baik jika kapasnya selalu lembap.", "Kelompok Dina mengamati pertumbuhan kacang hijau dari biji hingga daun pertama membuka selama lima hari.", "Pada hari ketiga muncul akar putih kecil dari biji kacang hijau.", "Batang kacang hijau tumbuh setinggi 3 cm pada hari kelima."]),
+    pg("B6-PG3", "<p>Kelompok Sinta membuat kalimat untuk majalah dinding sekolah. Sinta ingin memasang kalimat yang memakai majas metafora, yaitu perbandingan langsung tanpa kata pembanding <i>seperti</i>, <i>bagaikan</i>, atau <i>laksana</i>.</p><p>Kalimat yang memakai majas metafora adalah ....</p>",
+      ["Senyum ibu guru laksana bunga yang baru mekar.", "Pak Anwar adalah penjaga perpustakaan sekolah kami.", "Buku adalah jendela dunia bagi para pembaca.", "Anak-anak berlari secepat kijang di lapangan."]),
+    pg("B6-PG4", bacaan("<p>Banjir sering terjadi di kota pada musim hujan. Sampah yang dibuang sembarangan menumpuk di selokan dan sungai sehingga aliran air tersumbat. Akibatnya, air meluap ke jalan dan permukiman. Banjir juga semakin parah jika tanah tertutup beton karena air hujan tidak dapat meresap ke dalam tanah.</p>") +
+      "<p>Hubungan sebab-akibat yang sesuai dengan teks eksplanasi tersebut adalah ....</p>",
+      ["Hujan deras menyebabkan sampah menumpuk di selokan.", "Tanah yang tertutup beton menyebabkan selokan tersumbat sampah.", "Air meluap ke jalan menyebabkan orang membuang sampah sembarangan.", "Selokan yang tersumbat sampah menyebabkan air meluap ke jalan dan permukiman."]),
+    pg("B6-PG5", bacaan("<p>Sekolah mengadakan lomba menyanyikan lagu daerah. Rafi berasal dari Jawa, Sari dari Sumatra, dan Toni dari Papua. Saat memilih peserta, Rafi mengusulkan agar hanya anak dari daerahnya yang tampil karena menurutnya lagu daerahnya paling bagus. Sari dan Toni merasa sedih mendengar usul itu.</p>") +
+      "<p>Tindakan wali kelas yang paling sesuai dengan sila ketiga, Persatuan Indonesia, adalah ....</p>",
+      ["Meminta hanya anak dari satu daerah yang tampil agar lomba cepat selesai.", "Mempersilakan setiap anak membawakan lagu daerahnya dan mengajak semua teman menghargai setiap penampilan.", "Memilih lagu daerah yang paling terkenal agar penonton lebih senang.", "Membatalkan lomba agar tidak terjadi perbedaan pendapat."]),
+
+    bs("B6-BS1", "Kalimat “Perpustakaan sekolah terasa lengang pada hari Minggu” memiliki makna yang sama dengan “Perpustakaan sekolah terasa sepi pada hari Minggu”."),
+    bs("B6-BS2", "Teks eksplanasi berjudul “Proses Terjadinya Pelangi” bertujuan mengajak pembaca pergi melihat pelangi."),
+    bs("B6-BS3", "<p>Perhatikan paragraf ini:</p>" + bacaan("<p>“Siswa sebaiknya membaca buku setiap hari. Dengan membaca, kosakata bertambah. Siswa yang rajin membaca juga lebih mudah memahami soal.”</p>") +
+      "<p>Kalimat pertama berisi tesis, sedangkan kalimat berikutnya berisi argumen yang mendukung tesis.</p>"),
+    bs("B6-BS4", "Surat undangan dari kepala sekolah kepada orang tua siswa termasuk surat pribadi sehingga boleh memakai bahasa gaul."),
+    bs("B6-BS5", "Sinta menolak jajanan dari daerah lain dan hanya mau membeli jajanan dari daerahnya agar daerahnya terlihat paling unggul. Sikap Sinta mencerminkan cinta tanah air sebagai penerapan sila ketiga."),
+
+    pgk("B6-PGK1", "<p>Dika akan mengikuti lomba pidato dan harus mengisi formulir pendaftaran berikut.</p>" +
+      bacaan('<p style="text-align:center"><b>FORMULIR PENDAFTARAN LOMBA PIDATO HARI PAHLAWAN</b></p><p>Nama lengkap : ......................<br>Tempat, tanggal lahir : ......................<br>Kelas : ......................<br>Alamat rumah : ......................<br>Tanda tangan orang tua/wali : ......................</p>') +
+      "<p>Pilihlah semua pernyataan yang tepat tentang cara mengisi formulir tersebut!</p>",
+      ["Kolom nama lengkap diisi dengan nama sesuai akta kelahiran, bukan nama panggilan.", "Kolom tempat, tanggal lahir diisi dengan kota kelahiran lalu tanggal lahir, misalnya Purwakarta, 9 Agustus 2014.", "Kolom alamat rumah cukup diisi nama kota karena formulir hanya untuk lomba.", "Kolom tanda tangan orang tua/wali boleh ditandatangani sendiri oleh Dika."]),
+    pgk("B6-PGK2", "<p>Perhatikan daftar riwayat hidup berikut!</p>" +
+      bacaan('<p style="text-align:center"><b>DAFTAR RIWAYAT HIDUP</b></p><p>Nama : Alya Putri Rahmawati<br>Tempat, tanggal lahir : Purwakarta, 4 April 2014<br>Pendidikan : TK Tunas Bangsa (2019–2021); SD Plus 2 Almuhajirin (2021–sekarang)<br>Prestasi : Juara 2 lomba pidato tingkat kecamatan (2026)<br>Hobi : Membaca dan menggambar<br>Cita-cita : Dokter</p>') +
+      "<p>Pilihlah semua pernyataan yang sesuai dengan daftar riwayat hidup tersebut!</p>",
+      ["Alya sudah menempuh pendidikan di dua lembaga.", "Prestasi Alya berkaitan dengan kemampuan berbicara di depan umum.", "Riwayat pendidikan ditulis dari yang paling lama ke yang paling baru.", "Bagian hobi memuat penghargaan lomba yang pernah diraih Alya."]),
+    pgk("B6-PGK3", "<p>Perhatikan teks prosedur berikut!</p>" +
+      bacaan('<p style="text-align:center"><b>Cara Membuat Telur Dadar Sayur</b></p><p>Bahan: 2 butir telur, irisan wortel, daun bawang, garam, minyak goreng.</p><p>Langkah:<br>(1) Kocok telur hingga rata.<br>(2) Masukkan irisan wortel, daun bawang, dan garam, lalu aduk.<br>(3) Panaskan sedikit minyak di wajan.<br>(4) Tuang adonan dan masak hingga kecokelatan.<br>(5) Angkat dan sajikan selagi hangat.</p>') +
+      "<p>Pilihlah semua pernyataan yang tepat tentang teks tersebut!</p>",
+      ["Teks berisi bahan dan langkah-langkah yang disusun berurutan.", "Langkah (4) boleh dikerjakan sebelum langkah (3) tanpa memengaruhi hasil.", "Kata <i>kocok</i>, <i>masukkan</i>, dan <i>panaskan</i> adalah kata perintah.", "Tujuan teks adalah menceritakan pengalaman penulis memasak."]),
+    pgk("B6-PGK4", "<p>Perhatikan kutipan pidato berikut!</p>" +
+      bacaan("<p>“Assalamu’alaikum warahmatullahi wabarakatuh. Yang terhormat Bapak dan Ibu guru serta teman-teman yang saya cintai. Hari ini kita memperingati Hari Pahlawan. Para pahlawan telah berjuang demi kemerdekaan. Sebagai pelajar, kita dapat meneladani mereka dengan belajar sungguh-sungguh dan menjaga persatuan. Mari kita rawat sekolah kita dan hormati perbedaan. Demikian pidato saya. Terima kasih. Wassalamu’alaikum warahmatullahi wabarakatuh.”</p>") +
+      "<p>Pilihlah semua pernyataan yang tepat tentang kutipan pidato tersebut!</p>",
+      ["Kalimat “Mari kita rawat sekolah kita dan hormati perbedaan.” adalah kalimat ajakan.", "Kalimat “Demikian pidato saya.” termasuk bagian pembuka pidato.", "Isi pidato mengajak pendengar meneladani pahlawan melalui tindakan sederhana.", "Pidato tersebut tidak memiliki salam pembuka."]),
+    pgk("B6-PGK5", "<p>Kelas 6 mengadakan kerja bakti membersihkan taman sekolah. Wali kelas meminta siswa menunjukkan sikap yang mencerminkan nilai-nilai Pancasila selama kegiatan.</p><p>Pilihlah semua tindakan yang mencerminkan penerapan nilai Pancasila!</p>",
+      ["Fani menghentikan kerja sejenak agar temannya dapat melaksanakan ibadah salat tepat waktu.", "Kelompok membagi tugas melalui musyawarah dan menerima keputusan bersama.", "Raka memaksa timnya mengikuti rencananya karena merasa paling pintar.", "Seluruh siswa bergotong royong membawa sapu dan kantong sampah secara bergiliran."]),
+
+    isian("B6-IS1", "<p>Dalam laporan pengamatan, Tika menulis, “Kami <b>mengamati</b> pertumbuhan tanaman selama seminggu.”</p><p>Sinonim kata bercetak tebal pada kalimat tersebut adalah ....</p>"),
+    isian("B6-IS2", "<p>Sejak desa itu membangun bendungan, hasil panen warga meningkat dan hidup mereka <b>makmur</b>.</p><p>Antonim kata bercetak tebal pada kalimat tersebut adalah ....</p>"),
+    isian("B6-IS3", "<p>Pengamatan terhadap kucing:</p>" + bacaan("<p>Kucing memiliki ciri tubuh yang membantunya berburu. Kumisnya peka terhadap getaran sehingga ia mengetahui ada benda di dekatnya. Cakarnya tajam dan dapat disembunyikan. Matanya mampu melihat dalam cahaya redup.</p>") +
+      "<p>Bagian tubuh kucing yang peka terhadap getaran, ide pendukung teks tersebut, adalah ....</p>"),
+    isian("B6-IS4", "<p>Dimas menerima piala juara lomba menggambar.</p><p>Kalimat “Wajah Dimas berseri seperti bulan purnama” termasuk majas ....</p>"),
+    isian("B6-IS5", "<p>Rani menyusun daftar riwayat hidup untuk mendaftar kegiatan sekolah. Ia ingin menuliskan “Juara 1 lomba mewarnai tingkat kota”.</p><p>Tulisan tersebut paling tepat ditempatkan pada bagian ....</p>"),
+    isian("B6-IS6", "<p>Rina menulis langkah menanam bunga: (1) siram tanah, (2) masukkan bibit, (3) siapkan pot dan tanah.</p><p>Kesalahan Rina terletak pada .... langkah-langkahnya.</p>"),
+    isian("B6-IS7", "<p>Perhatikan teks eksposisi berikut:</p>" + bacaan("<p>“Taman sekolah harus dirawat bersama. Taman membuat udara sejuk. Taman juga menjadi tempat belajar di luar kelas. Oleh karena itu, marilah kita merawat taman sekolah.”</p>") +
+      "<p>Kalimat terakhir pada teks tersebut termasuk bagian .... (tesis/argumen/penegasan ulang)</p>"),
+    isian("B6-IS8", "<p>Dalam isi pidato, Reza berkata, “Mari kita jaga kebersihan sungai di desa kita!”</p><p>Kalimat yang diucapkan Reza adalah kalimat ....</p>"),
+    isian("B6-IS9", "<p>Perhatikan bagian akhir surat undangan berikut.</p>" +
+      bacaan('<p style="text-align:right">Purwakarta, 12 November 2026</p><p>Kepada Yth. Orang Tua/Wali Murid Kelas 6<br>Dengan hormat,<br>... (isi surat) ...</p><p style="text-align:right">Hormat kami,<br>Kepala Sekolah</p>') +
+      "<p>Bagian surat yang bertuliskan “Hormat kami,” disebut ....</p>"),
+    isian("B6-IS10", "<p>Pada upacara bendera, Gita berdiri tegak, menyanyikan lagu Indonesia Raya dengan khidmat, dan bangga memakai produk dalam negeri.</p><p>Sikap Gita merupakan wujud cinta tanah air sebagai penerapan Pancasila sila ke-....</p>"),
+
+    essay("B6-ES1", bacaan('<p style="text-align:center"><b>Kemacetan di Depan Sekolah</b></p><p>Setiap pukul 12.00, banyak orang tua menjemput anak dengan kendaraan dan berhenti di depan gerbang sekolah. Kendaraan yang berhenti membuat jalan menyempit. Kendaraan lain terpaksa berjalan pelan sehingga antrean memanjang. Akibatnya, bus sekolah dan angkot terjebak di antrean.</p>') +
+      "<p>a. Tuliskan rangkaian sebab-akibat yang menyebabkan antrean kendaraan memanjang, minimal tiga tahap, memakai kata <i>karena</i>, <i>sehingga</i>, atau <i>akibatnya</i>!<br>b. Tuliskan satu usul untuk mengurangi kemacetan yang berhubungan dengan penyebab utamanya, beserta alasannya!</p>"),
+    essay("B6-ES2", bacaan('<p style="text-align:center"><b>Pengamatan Taman Sekolah</b></p><p>(1) Taman berada di samping lapangan upacara.<br>(2) Terdapat 12 pot melati dan 8 pot mawar.<br>(3) Tanah di taman terasa lembap saat disentuh.<br>(4) Taman ini adalah taman paling indah di dunia.<br>(5) Beberapa kupu-kupu hinggap di bunga mawar.</p>') +
+      "<p>a. Tuliskan nomor kalimat yang tidak sesuai dengan laporan pengamatan beserta alasannya!<br>b. Ubahlah kalimat tersebut menjadi kalimat yang sesuai dengan laporan pengamatan!<br>c. Tuliskan ide pokok teks tersebut!</p>"),
+    essay("B6-ES3", "<p>Sekolahmu akan memperingati Hari Pahlawan. Kamu terpilih menjadi petugas pidato di depan teman-teman satu sekolah.</p>" +
+      "<p>Tuliskan bagian isi pidatomu sebanyak 5 kalimat yang mengajak teman-teman menumbuhkan cinta tanah air melalui tindakan nyata di sekolah! Sertakan satu kalimat ajakan dan gunakan bahasa baku!</p>"),
+    essay("B6-ES4", "<p>Dani tidak dapat masuk sekolah besok karena sakit. Ia menulis surat izin kepada wali kelasnya, Bu Rina, seperti berikut.</p>" +
+      bacaan("<p>“Hai Bu Rina, aku besok nggak masuk ya. Lagi sakit nih. Makasih. Dani”</p>") +
+      "<p>a. Sebutkan dua bagian surat yang belum ada pada surat Dani (selain isi surat)!<br>b. Tulis ulang surat izin tersebut dengan bahasa baku, sopan, dan bagian surat yang lengkap!</p>"),
+    essay("B6-ES5", bacaan("<p>Di kelas 6 ada siswa dari berbagai daerah. Akhir-akhir ini, sebagian siswa sering mengejek logat bicara teman yang berasal dari Papua dan Sunda. Teman-teman yang diejek menjadi malas bermain bersama dan kelas sering terbagi menjadi kelompok-kelompok kecil.</p>") +
+      "<p>a. Tuliskan 3 sikap yang bertentangan dengan sila ketiga dari cerita tersebut beserta alasannya!<br>b. Tuliskan dua tindakan nyata yang dapat dilakukan kelasmu untuk menumbuhkan persatuan!</p>")
+  ];
+
   window.BANK_SOAL = {
     mapel: [
       { id: "bind5", tingkat: ["5"], nama: "Bahasa Indonesia Kelas 5", singkat: "B. Indonesia", ikon: "book", durasi: 90, soal: soalBI5 },
       { id: "mtk5",  tingkat: ["5"], nama: "Matematika Kelas 5",       singkat: "Matematika",   ikon: "calc", durasi: 90, soal: soalMTK("M5") },
-      { id: "bind6", tingkat: ["6"], nama: "Bahasa Indonesia Kelas 6", singkat: "B. Indonesia", ikon: "book", durasi: 90, soal: soalBI("B6") },
+      { id: "bind6", tingkat: ["6"], nama: "Bahasa Indonesia Kelas 6", singkat: "B. Indonesia", ikon: "book", durasi: 90, soal: soalBI6 },
       { id: "mtk6",  tingkat: ["6"], nama: "Matematika Kelas 6",       singkat: "Matematika",   ikon: "calc", durasi: 90, soal: soalMTK("M6") }
     ]
   };

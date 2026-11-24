@@ -19,10 +19,10 @@
     return S[tipe].maks;
   }
 
-  // Skor maksimal satu soal: uraian boleh punya "maks" sendiri di KUNCI (mis. 5 atau 4)
+  // Skor maksimal satu soal: uraian dan PG kompleks boleh punya "maks" sendiri di KUNCI
   function maksSoal(soal) {
     const k = (window.KUNCI || {})[soal.id] || {};
-    if (soal.tipe === "essay" && k.maks != null) return Number(k.maks);
+    if ((soal.tipe === "essay" || soal.tipe === "pgk") && k.maks != null) return Number(k.maks);
     return maksItem(soal.tipe);
   }
   // Panduan skor uraian per soal (KUNCI.skor), atau rubrik umum di config
@@ -66,7 +66,12 @@
       const pilih = Array.isArray(jwb.p) ? jwb.p : [];
       const benar = pilih.filter(i => kunci.includes(i)).length;
       const salah = pilih.filter(i => !kunci.includes(i)).length;
-      if (S.pgk.mode === "mutlak") {
+      const Kp = window.KUNCI[soal.id] || {};
+      if (Kp.maks != null) {
+        // Kriteria per soal: lengkap & tanpa pilihan salah = maks; sebagian tepat = 1; selain itu 0
+        const sebagian = Kp.sebagian != null ? Number(Kp.sebagian) : 1;
+        r.auto = (benar === kunci.length && salah === 0) ? Number(Kp.maks) : (benar - salah >= 1 ? sebagian : 0);
+      } else if (S.pgk.mode === "mutlak") {
         r.auto = (benar === kunci.length && salah === 0) ? S.pgk.maks : 0;
       } else {
         r.auto = Math.max(0, (benar - salah) / kunci.length) * S.pgk.maks;
