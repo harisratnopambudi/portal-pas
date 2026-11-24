@@ -6,7 +6,7 @@
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <meta name="robots" content="noindex">
 <title>Portal Penilaian PAS — Guru</title>
-<link rel="stylesheet" href="assets/style.css?v=20261124h">
+<link rel="stylesheet" href="assets/style.css?v=20261124i">
 <style>
   .pin-wrap{max-width:380px;margin:80px auto;padding:0 20px}
   .pin-wrap .card{padding:28px}
@@ -442,13 +442,13 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="config.js?v=20261124h"></script>
-<script src="soal.js?v=20261124h"></script>
-<script src="kunci.js?v=20261124h"></script>
-<script src="assets/icons.js?v=20261124h"></script>
-<script src="assets/db.js?v=20261124h"></script>
-<script src="assets/penilaian.js?v=20261124h"></script>
-<script src="assets/demo.js?v=20261124h"></script>
+<script src="config.js?v=20261124i"></script>
+<script src="soal.js?v=20261124i"></script>
+<script src="kunci.js?v=20261124i"></script>
+<script src="assets/icons.js?v=20261124i"></script>
+<script src="assets/db.js?v=20261124i"></script>
+<script src="assets/penilaian.js?v=20261124i"></script>
+<script src="assets/demo.js?v=20261124i"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 (function () {
@@ -466,11 +466,11 @@
   let hanyaPending = false;
 
   /* ---------- UI awal ---------- */
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124h" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124i" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandSub").textContent = C.NAMA_SEKOLAH + " · " + C.JUDUL_UJIAN + " " + C.TAHUN_AJARAN;
   $("modeChip").className = "chip " + (DB.mode === "firebase" ? "live" : "demo");
   $("modeChip").textContent = DB.mode === "firebase" ? "Online" : "Mode demo";
-  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124h" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
+  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124i" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
   $("btnKeluar").innerHTML = ico("logout") + " Keluar";
   $("btnMuat").innerHTML = ico("refresh") + " Muat ulang";
   $("btnExport").innerHTML = ico("download") + " Unduh Excel";
@@ -542,12 +542,20 @@
     }
     btn.disabled = false;
   };
-  $("btnKeluar").onclick = async () => { await DB.keluarGuru(); location.reload(); };
+  $("btnKeluar").onclick = async () => {
+    if (Object.keys(tertunda()).length && !confirm("Masih ada nilai yang belum tersimpan ke server. Tetap keluar?")) return;
+    await DB.keluarGuru(); location.reload();
+  };
+  let sudahDimuat = false;
   function masuk() {
     $("layarPin").classList.add("hidden"); $("layarUtama").classList.remove("hidden"); $("btnKeluar").classList.remove("hidden");
-    isiSelSoal(); muatRombel().then(muat);
+    if (sudahDimuat) { kirimTertunda(); return; }        // login ulang di tengah jalan: data di layar tetap
+    sudahDimuat = true;
+    isiSelSoal();
+    kirimTertunda().then(() => muatRombel()).then(muat);  // kirim dulu nilai yang tertunda, baru muat data terbaru
   }
-  if (DB.paksaDemo) masuk();
+  DB.pantauLogin && DB.pantauLogin(ok => { if (!ok && sudahDimuat && !DB.paksaDemo) mintaLoginUlang(); });
+  if (DB.paksaDemo) setTimeout(masuk);
   else DB.sudahMasuk().then(ok => { if (ok) masuk(); });
   // Pantau otomatis (opsional, default mati): muat ulang data SATU kelas tiap 2 menit. Hemat kuota gratis.
   let pantauOtomatis = false;
@@ -604,6 +612,11 @@
 
   /* ---------- Simpan nilai manual ---------- */
   let antre = Promise.resolve(), jmlSimpan = 0;
+  /* Nilai yang belum terkirim disimpan dulu di browser (localStorage), lalu dikirim ulang otomatis
+     saat koneksi kembali atau setelah login ulang. Jadi koreksi guru tidak hilang. */
+  const KEY_TERTUNDA = "pas_nilai_tertunda";
+  function tertunda() { try { return JSON.parse(localStorage.getItem(KEY_TERTUNDA) || "{}"); } catch (e) { return {}; } }
+  function tertundaSet(o) { try { Object.keys(o).length ? localStorage.setItem(KEY_TERTUNDA, JSON.stringify(o)) : localStorage.removeItem(KEY_TERTUNDA); } catch (e) {} }
   function setNilai(rec, key, val) {
     rec.nilai_manual = Object.assign({}, rec.nilai_manual || {});
     if (val == null) delete rec.nilai_manual[key]; else rec.nilai_manual[key] = val;
@@ -613,17 +626,49 @@
       skor_otomatis: rec._h.otomatis, skor_manual: rec._h.manual,
       nilai_akhir: rec._h.nilai, status: rec._h.status, dinilai_at: new Date().toISOString()
     };
-    jmlSimpan++; indikator();
-    antre = antre.then(() => DB.perbarui(rec.id, patch)).then(() => {
-      jmlSimpan--; indikator();
-    }).catch(e => {
-      jmlSimpan--; indikator(true);
-      toast(ico("alert") + " Gagal menyimpan. Periksa koneksi.");
-    });
+    const t = tertunda(); t[rec.id] = patch; tertundaSet(t);
+    kirimTertunda();
+  }
+  let sedangKirim = false;
+  function kirimTertunda() {
+    if (sedangKirim) { jmlSimpan = Object.keys(tertunda()).length; indikator(); return antre; }
+    const t = tertunda(), ids = Object.keys(t);
+    if (!ids.length) { jmlSimpan = 0; indikator(); return Promise.resolve(); }
+    sedangKirim = true; jmlSimpan = ids.length; indikator();
+    antre = (async () => {
+      let gagal = null;
+      for (const id of ids) {
+        const patch = tertunda()[id]; if (!patch) continue;
+        try {
+          await DB.perbarui(id, patch);
+          const now = tertunda();
+          if (now[id] && now[id].dinilai_at === patch.dinilai_at) { delete now[id]; tertundaSet(now); }   // belum diubah lagi
+        } catch (e) { gagal = e; break; }
+      }
+      sedangKirim = false;
+      const sisa = Object.keys(tertunda()).length;
+      jmlSimpan = sisa;
+      if (gagal) {
+        indikator(true);
+        const kode = (gagal && gagal.code) || "";
+        if (/permission|unauthenticated/.test(kode)) mintaLoginUlang();
+        else toast(ico("alert") + " Belum tersimpan ke server. Nilai aman di browser ini dan dikirim ulang otomatis.");
+      } else if (sisa) kirimTertunda();
+      else indikator();
+    })();
+    return antre;
+  }
+  window.addEventListener("online", () => kirimTertunda());
+  setInterval(() => { if (Object.keys(tertunda()).length && !sedangKirim) kirimTertunda(); }, 30000);
+  window.addEventListener("beforeunload", e => { if (Object.keys(tertunda()).length) { e.preventDefault(); e.returnValue = ""; } });
+  function mintaLoginUlang() {
+    if (DB.mode !== "firebase" || !$("layarPin").classList.contains("hidden")) return;
+    $("pinDesc").textContent = "Sesi login berakhir. Masuk lagi untuk melanjutkan. Nilai yang sudah Anda isi tetap aman dan akan langsung tersimpan.";
+    $("layarUtama").classList.add("hidden"); $("layarPin").classList.remove("hidden");
   }
   function indikator(gagal) {
     const el = $("saveInfo");
-    if (gagal) { el.innerHTML = '<span style="color:var(--bad)">' + ico("alert") + " Gagal tersimpan</span>"; return; }
+    if (gagal) { el.innerHTML = '<span style="color:var(--bad)">' + ico("alert") + " " + jmlSimpan + " nilai belum tersimpan</span>"; return; }
     el.innerHTML = jmlSimpan > 0 ? ico("refresh") + " Menyimpan..." : ico("checkCircle") + " Tersimpan";
   }
 

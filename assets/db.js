@@ -11,7 +11,11 @@
     fs = firebase.firestore();
     // Catatan: cache multi-tab Firestore (enablePersistence) sengaja TIDAK dipakai karena membuat penulisan
     // menggantung bila halaman siswa & guru terbuka bersamaan. Simpanan offline ditangani sendiri (localStorage).
-    if (firebase.auth) auth = firebase.auth();
+    if (firebase.auth) {
+      auth = firebase.auth();
+      // Login guru disimpan permanen di browser ini sampai menekan Keluar (tidak hilang saat refresh/ditutup)
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
+    }
   }
   const KOL = C.KOLEKSI || "pas_jawaban";
   const LKEY = "pas_db_demo";
@@ -220,16 +224,18 @@
     /* ---------- login guru ---------- */
     async masukGuru(email, sandi) {
       if (auth) { await auth.signInWithEmailAndPassword(email, sandi); return true; }
-      if (sandi === String(C.PIN_GURU)) { sessionStorage.setItem("pas_guru", "1"); return true; }
+      if (sandi === String(C.PIN_GURU)) { localStorage.setItem("pas_guru", "1"); return true; }
       throw new Error("PIN salah.");
     },
     async keluarGuru() {
       if (auth) await auth.signOut();
-      sessionStorage.removeItem("pas_guru");
+      localStorage.removeItem("pas_guru");
     },
     sudahMasuk() {
       if (auth) return new Promise(res => { const off = auth.onAuthStateChanged(u => { off(); res(!!u); }); });
-      return Promise.resolve(sessionStorage.getItem("pas_guru") === "1");
-    }
+      return Promise.resolve(localStorage.getItem("pas_guru") === "1");
+    },
+    // Dipanggil bila status login berubah (mis. sesi berakhir di tengah jalan)
+    pantauLogin(cb) { if (auth) auth.onAuthStateChanged(u => cb(!!u)); }
   };
 })();
