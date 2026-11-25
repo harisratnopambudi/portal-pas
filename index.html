@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <title>Portal Ujian PAS — Siswa</title>
-<link rel="stylesheet" href="assets/style.css?v=20261125b">
+<link rel="stylesheet" href="assets/style.css?v=20261125c">
 <style>
   /* =================== MASUK & PETUNJUK =================== */
   .login-wrap{max-width:1120px;margin:0 auto;padding:36px 22px 60px}
@@ -29,6 +29,10 @@
   .mapel-card.sel{border-color:var(--primary);background:var(--primary-50);box-shadow:inset 0 0 0 1px var(--primary)}
   .mapel-card.sel .mapel-ic{background:var(--graphite);border-color:var(--graphite);color:#fff}
   .mapel-card.done{cursor:not-allowed;background:var(--surface-2)}
+  .mapel-card:disabled{cursor:not-allowed;opacity:.45;background:var(--surface-2)}
+  .mapel-card:disabled:hover{border-color:var(--line-2)}
+  .mapel-kunci{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:10px 12px;border-radius:8px;background:var(--stabilo-50);color:#6B5400;font-size:14px;font-weight:600}
+  .mapel-kunci .icon{width:16px;height:16px;flex:none}
   .mapel-card.done:hover{border-color:var(--line-2)}
   .mapel-card.done .mapel-ic{border-color:var(--ok);color:var(--ok)}
   .mapel-name{font-weight:800;font-size:15px;line-height:1.3}
@@ -240,7 +244,7 @@
 <section id="layarPeran" class="login-wrap">
   <div class="card peran-card">
     <div class="peran-head">
-      <img src="assets/logo-sekolah.png?v=20261125b" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
+      <img src="assets/logo-sekolah.png?v=20261125c" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
       <div>
         <h1 id="peranJudul">Penilaian Akhir Semester Ganjil</h1>
         <p id="peranSub"></p>
@@ -269,7 +273,7 @@
     <div class="login-left">
       <div>
         <button class="kembali-peran" type="button" id="btnKembaliPeran"><span data-ico="left"></span> Ganti peran</button>
-        <img class="login-logo" src="assets/logo-sekolah.png?v=20261125b" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
+        <img class="login-logo" src="assets/logo-sekolah.png?v=20261125c" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
         <h1>Ujian Penilaian Akhir Semester</h1>
         <p class="lead">Pilih kelas dan namamu, pilih mata pelajaran, lalu masukkan token dari pengawas.</p>
       </div>
@@ -291,6 +295,7 @@
     </div>
     <div class="login-right">
       <div class="mapel-head"><h2>Mata pelajaran</h2><span class="small muted">Pilih satu</span></div>
+      <div class="mapel-kunci" id="mapelKunci"><span data-ico="lock"></span><span>Isi kelas dan namamu dulu, baru pilih mata pelajaran.</span></div>
       <div class="mapel-grid" id="mapelGrid"></div>
     </div>
   </form>
@@ -390,11 +395,11 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="config.js?v=20261125b"></script>
-<script src="soal.js?v=20261125b"></script>
-<script src="assets/icons.js?v=20261125b"></script>
-<script src="assets/db.js?v=20261125b"></script>
-<script src="assets/demo.js?v=20261125b"></script>
+<script src="config.js?v=20261125c"></script>
+<script src="soal.js?v=20261125c"></script>
+<script src="assets/icons.js?v=20261125c"></script>
+<script src="assets/db.js?v=20261125c"></script>
+<script src="assets/demo.js?v=20261125c"></script>
 <script>
 (function () {
   const C = CONFIG, B = BANK_SOAL, T = TIPE_INFO;
@@ -416,7 +421,7 @@
   $("btnKembaliPeran").onclick = () => { tampil("layarPeran"); history.replaceState(null, "", location.pathname + location.search); };
   if (location.hash === "#siswa") tampil("layarMasuk");   // tautan langsung untuk siswa: .../portal-pas/#siswa
 
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125b" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125c" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandTitle").textContent = C.JUDUL_UJIAN + " · " + C.TAHUN_AJARAN;
   $("brandSub").textContent = C.NAMA_SEKOLAH;
   $("modeChip").className = "chip " + (DB.mode === "firebase" ? "live" : "demo");
@@ -475,7 +480,14 @@
       } catch (e) { st.innerHTML = ""; }
     }));
   }
-  $("inNama").onchange = () => { errMasuk(""); muatStatusMapel().then(aturToken); };
+  // Kartu mapel baru bisa diklik setelah kelas dan nama dipilih
+  function aturKunciMapel() {
+    const terkunci = !$("inKelas").value || !$("inNama").value;
+    document.querySelectorAll(".mapel-card").forEach(b => { b.disabled = terkunci; if (terkunci) b.classList.remove("sel"); });
+    if (terkunci) mapelPilih = null;
+    $("mapelKunci").classList.toggle("hidden", !terkunci);
+  }
+  $("inNama").onchange = () => { errMasuk(""); aturKunciMapel(); muatStatusMapel().then(aturToken); };
   // Token hanya diminta untuk mulai baru; melanjutkan (sudah ada simpanan) tidak perlu token lagi.
   function aturToken() {
     const st = mapelPilih ? statusMapel[mapelPilih] : null;
@@ -497,6 +509,7 @@
       b.classList.toggle("hidden", !boleh);
       if (!boleh && mapelPilih === m.id) { mapelPilih = null; b.classList.remove("sel"); }
     });
+    aturKunciMapel();
     muatStatusMapel().then(aturToken);
   };
 
@@ -532,6 +545,7 @@
     };
     $("mapelGrid").appendChild(b);
   });
+  aturKunciMapel();
 
   function errMasuk(msg) {
     const e = $("errMasuk");
