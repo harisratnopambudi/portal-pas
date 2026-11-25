@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <title>Portal Ujian PAS — Siswa</title>
-<link rel="stylesheet" href="assets/style.css?v=20261125e">
+<link rel="stylesheet" href="assets/style.css?v=20261125f">
 <style>
   /* =================== MASUK & PETUNJUK =================== */
   .login-wrap{max-width:1120px;margin:0 auto;padding:36px 22px 60px}
@@ -244,7 +244,7 @@
 <section id="layarPeran" class="login-wrap">
   <div class="card peran-card">
     <div class="peran-head">
-      <img src="assets/logo-sekolah.png?v=20261125e" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
+      <img src="assets/logo-sekolah.png?v=20261125f" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
       <div>
         <h1 id="peranJudul">Penilaian Akhir Semester Ganjil</h1>
         <p id="peranSub"></p>
@@ -273,7 +273,7 @@
     <div class="login-left">
       <div>
         <button class="kembali-peran" type="button" id="btnKembaliPeran"><span data-ico="left"></span> Ganti peran</button>
-        <img class="login-logo" src="assets/logo-sekolah.png?v=20261125e" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
+        <img class="login-logo" src="assets/logo-sekolah.png?v=20261125f" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
         <h1>Ujian Penilaian Akhir Semester</h1>
         <p class="lead">Pilih kelas dan namamu, pilih mata pelajaran, lalu masukkan token dari pengawas.</p>
       </div>
@@ -395,11 +395,11 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="config.js?v=20261125e"></script>
-<script src="soal.js?v=20261125e"></script>
-<script src="assets/icons.js?v=20261125e"></script>
-<script src="assets/db.js?v=20261125e"></script>
-<script src="assets/demo.js?v=20261125e"></script>
+<script src="config.js?v=20261125f"></script>
+<script src="soal.js?v=20261125f"></script>
+<script src="assets/icons.js?v=20261125f"></script>
+<script src="assets/db.js?v=20261125f"></script>
+<script src="assets/demo.js?v=20261125f"></script>
 <script>
 (function () {
   const C = CONFIG, B = BANK_SOAL, T = TIPE_INFO;
@@ -421,7 +421,7 @@
   $("btnKembaliPeran").onclick = () => { tampil("layarPeran"); history.replaceState(null, "", location.pathname + location.search); };
   if (location.hash === "#siswa") tampil("layarMasuk");   // tautan langsung untuk siswa: .../portal-pas/#siswa
 
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125e" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125f" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandTitle").textContent = C.JUDUL_UJIAN + " · " + C.TAHUN_AJARAN;
   $("brandSub").textContent = C.NAMA_SEKOLAH;
   $("modeChip").className = "chip " + (DB.mode === "firebase" ? "live" : "demo");
