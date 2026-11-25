@@ -12,8 +12,8 @@ window.CONFIG = {
   // Kunci "anon" memang untuk dipasang di halaman web; keamanan dijaga aturan di supabase/schema.sql.
   // Biarkan url kosong untuk MODE DEMO (data tersimpan di browser ini saja).
   SUPABASE: {
-    url: "",
-    anonKey: ""
+    url: "https://bzmitgxslpbukhulbpfu.supabase.co",
+    anonKey: "sb_publishable_hnoF1dfG-jPoL-C24TW2VA_6APCgiTA"
   },
 
   // PIN guru — HANYA dipakai di mode demo. Di mode online, guru masuk dengan email & password
