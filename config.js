@@ -36,7 +36,7 @@ window.CONFIG = {
 
   // Jawaban selalu tersimpan seketika di perangkat siswa. Cadangan ke server dikirim tiap sekian detik
   // (dan saat siswa keluar halaman / mulai / kirim). Makin besar makin hemat kuota Firebase gratis.
-  SIMPAN_SERVER_DETIK: 120,
+  SIMPAN_SERVER_DETIK: 180,
 
   // Pengamanan ujian (halaman siswa)
   ANTI_CURANG: {
