@@ -8,21 +8,16 @@ window.CONFIG = {
   JUDUL_UJIAN: "Penilaian Akhir Semester Ganjil",
   TAHUN_AJARAN: "2026/2027",
 
-  // Firebase — salin dari Firebase Console > Project settings > Your apps (Web app).
-  // Biarkan apiKey kosong untuk MODE DEMO (data tersimpan di browser ini saja).
-  FIREBASE: {
-    apiKey: "AIzaSyAXwFSN6synzrgOFrUtVnY7u9HTqEl6C50",
-    authDomain: "portal-pas-c0016.firebaseapp.com",
-    projectId: "portal-pas-c0016",
-    storageBucket: "portal-pas-c0016.firebasestorage.app",
-    messagingSenderId: "129169412765",
-    appId: "1:129169412765:web:4acce3a073a40aca11fa74"
+  // Supabase — salin dari Supabase Dashboard > Project Settings > API (Project URL dan anon/publishable key).
+  // Kunci "anon" memang untuk dipasang di halaman web; keamanan dijaga aturan di supabase/schema.sql.
+  // Biarkan url kosong untuk MODE DEMO (data tersimpan di browser ini saja).
+  SUPABASE: {
+    url: "",
+    anonKey: ""
   },
-  KOLEKSI: "pas_jawaban",
-  KOLEKSI_SISWA: "pas_siswa",   // daftar siswa per rombel (diimport guru dari file Dapodik)
 
-  // PIN guru — HANYA dipakai di mode demo. Di mode Firebase, guru masuk dengan
-  // email & password yang dibuat di Firebase Console > Authentication.
+  // PIN guru — HANYA dipakai di mode demo. Di mode online, guru masuk dengan email & password
+  // yang dibuat di Supabase > Authentication > Users dan didaftarkan di tabel pas_guru.
   PIN_GURU: "123456",
 
   // Token ujian diatur guru di guru.html > tab "Token ujian" (tidak disimpan di file ini).
@@ -35,7 +30,7 @@ window.CONFIG = {
   BATAS_TUNTAS: 0,              // nilai di bawah angka ini ditandai merah di Excel. 0 = tidak ditandai
 
   // Jawaban selalu tersimpan seketika di perangkat siswa. Cadangan ke server dikirim tiap sekian detik
-  // (dan saat siswa keluar halaman / mulai / kirim). Makin besar makin hemat kuota Firebase gratis.
+  // (dan saat siswa keluar halaman / mulai / kirim). Makin besar makin ringan beban server.
   SIMPAN_SERVER_DETIK: 180,
 
   // Pengamanan ujian (halaman siswa)

@@ -1,7 +1,7 @@
 /* =========================================================
    MODE DEMO (buka halaman dengan ?demo)
    Mengisi data FIKTIF ke penyimpanan browser ini saja.
-   Tidak menyentuh Firebase / data asli sekolah.
+   Tidak menyentuh server / data asli sekolah.
    ========================================================= */
 (function () {
   if (!window.DB || DB.mode !== "demo" || !DB.paksaDemo) return;

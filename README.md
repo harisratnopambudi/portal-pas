@@ -10,10 +10,10 @@ Ada 4 paket soal, masing-masing dengan token sendiri: `bind5`, `mtk5`, `bind6`, 
 |---|---|
 | `index.html` | Halaman siswa (login, mengerjakan, kirim) |
 | `guru.html` | Halaman guru (pantauan, token, nilai per soal/siswa, rekap, unduh Excel per kelas) |
-| `config.js` | Pengaturan: nama sekolah, kelas, token, Firebase, bobot skor, rubrik |
+| `config.js` | Pengaturan: nama sekolah, Supabase, bobot skor, rubrik |
 | `soal.js` | Bank soal (tanpa kunci) — dimuat halaman siswa |
 | `kunci.js` | Kunci jawaban, acuan alasan, rubrik uraian — hanya dimuat halaman guru |
-| `firestore.rules` | Aturan keamanan Firestore (tempel di Firebase Console) |
+| `supabase/schema.sql` | Tabel, aturan keamanan, dan fungsi server (jalankan sekali di Supabase SQL Editor) |
 | `assets/` | CSS, ikon, lapisan database, mesin penskoran |
 
 ## Cara mencoba (mode demo)
@@ -23,15 +23,18 @@ Ada 4 paket soal, masing-masing dengan token sendiri: `bind5`, `mtk5`, `bind6`, 
 
 Mode demo menyimpan data di browser tersebut saja (localStorage), jadi hanya untuk uji coba.
 
-## Memakai untuk ujian sungguhan (Firebase)
-1. Firebase Console → **Firestore Database** → Create database (lokasi `asia-southeast2`, Production mode).
-2. Tab **Rules** → tempel isi `firestore.rules` → **Publish**.
-3. **Authentication** → aktifkan Email/Password → **Users → Add user** untuk tiap guru penilai.
-4. **Project settings → Your apps → Web** → salin `firebaseConfig` ke `config.js` bagian `FIREBASE`.
-5. Bila perlu isi `TOKEN` per mapel, lalu deploy (GitHub Pages). Label pojok kanan atas berubah menjadi **Online**.
-6. Masuk `guru.html` → tab **Data siswa** → pilih file `daftar_pd-....xlsx` dari Dapodik → centang tingkat (default kelas 5 dan 6) → **Simpan ke database**.
+## Memakai untuk ujian sungguhan (Supabase)
+1. Buat proyek di supabase.com (region **Southeast Asia (Singapore)**). Simpan password database-nya.
+2. **SQL Editor → New query** → tempel seluruh isi `supabase/schema.sql` → **Run**.
+3. **Authentication → Sign In / Providers**: matikan **Allow new users to sign up** (agar orang lain tidak bisa membuat akun sendiri). Email provider tetap aktif.
+4. **Authentication → Users → Add user → Create new user** untuk tiap guru (email + password, centang *Auto Confirm User*).
+5. Daftarkan email guru: di SQL Editor jalankan
+   `insert into pas_guru (email) values ('guru1@...'), ('guru2@...');`
+6. **Project Settings → API** → salin **Project URL** dan kunci **anon / publishable** ke `config.js` bagian `SUPABASE`, lalu deploy (GitHub Pages). Label pojok kanan atas berubah menjadi **Online**.
+7. Masuk `guru.html` → tab **Data siswa** → pilih file `daftar_pd-....xlsx` dari Dapodik → centang kelas 5 dan 6 → **Simpan ke database**.
+8. Proyek Supabase gratis **dijeda setelah 7 hari tidak dipakai**. Buka portal (atau dashboard Supabase) minimal seminggu sekali, dan cek dashboard sehari sebelum ujian.
 
-Siswa masuk dengan memilih **kelas** lalu **nama** dari daftar. Nomor siswa = urutan nama (A–Z) di rombelnya, jadi **jangan import ulang saat ujian sedang berjalan**. Daftar nama disimpan di Firestore, bukan di repo, agar tidak terbuka di GitHub.
+Siswa masuk dengan memilih **kelas** lalu **nama** dari daftar. Nomor siswa = urutan nama (A–Z) di rombelnya, jadi **jangan import ulang saat ujian sedang berjalan**. Daftar nama disimpan di database Supabase, bukan di repo, agar tidak terbuka di GitHub.
 
 
 ## Penskoran (bisa diubah di `config.js` → `SKOR`)
@@ -64,7 +67,8 @@ Edit `soal.js` (teks & opsi) dan `kunci.js` (kunci dengan ID yang sama). Format 
 Untuk PG, gunakan huruf `"A"`–`"E"`; untuk B/S gunakan `"B"` atau `"S"`; untuk PG kompleks gabungan huruf, mis. `"ACD"`.
 
 ## Catatan keamanan
-- Aturan Firestore: siswa hanya bisa mengirim sekali dan tidak bisa menyertakan nilai; daftar jawaban, penilaian, dan penghapusan hanya untuk guru yang login.
-- `apiKey` Firebase memang terbuka di kode web; keamanannya dijaga oleh rules.
+- Siswa tidak membaca/menulis tabel secara langsung; semua lewat fungsi server di `schema.sql` yang memeriksa token, mengunci waktu mulai, dan menolak kiriman kedua. Siswa tidak bisa menyertakan nilai.
+- Daftar jawaban, penilaian, token, dan penghapusan hanya untuk akun yang emailnya ada di tabel `pas_guru`.
+- Kunci `anon` Supabase memang terbuka di kode web; keamanannya dijaga Row Level Security dan fungsi server.
 - `kunci.js` tidak dimuat halaman siswa, tetapi tetap bisa dibuka bila alamatnya diketik. Untuk soal asli, unggah `kunci.js` setelah ujian selesai.
 - Satu kombinasi mapel + kelas + absen hanya bisa mengirim sekali. Guru dapat menghapus jawaban agar siswa bisa mengulang.
