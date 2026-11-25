@@ -6,7 +6,7 @@
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <meta name="robots" content="noindex">
 <title>Portal Penilaian PAS — Guru</title>
-<link rel="stylesheet" href="assets/style.css?v=20261125k">
+<link rel="stylesheet" href="assets/style.css?v=20261125l">
 <style>
   .pin-wrap{max-width:380px;margin:80px auto;padding:0 20px}
   .pin-wrap .card{padding:28px}
@@ -107,8 +107,25 @@
   @media (max-width:980px){.pt-stats{grid-template-columns:repeat(2,1fr)}}
 
   /* token */
-  .token-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-  .tk-card{padding:20px}
+  .token-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .tk-card{padding:20px;display:flex;flex-direction:column;gap:14px;border-top:4px solid var(--line-2)}
+  .tk-card.on{border-top-color:var(--ok)}
+  .tk-head{display:grid;grid-template-columns:40px 1fr;align-items:center;gap:12px}
+  .tk-ic{width:40px;height:40px;border-radius:50%;border:2px solid var(--ljk);color:var(--ljk);display:grid;place-items:center}
+  .tk-ic .icon{width:19px;height:19px}
+  .tk-nama{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+  .tk-nama b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tk-nama span{font-size:13px;color:var(--muted);font-weight:600}
+  .tk-head .badge{align-self:center;white-space:nowrap}
+  .tk-cells{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+  .tk-cells i{font-style:normal;min-width:0;height:clamp(40px,4vw,56px);display:grid;place-items:center;border:2px solid var(--ljk-line);border-radius:9px;font-size:clamp(18px,1.8vw,28px);font-weight:800;color:var(--primary);background:#fff}
+  .tk-card.on .tk-cells i{border-color:var(--primary);background:var(--primary-50)}
+  .tk-cells.off i{color:var(--faint);background:var(--surface-2)}
+  .tk-cells.kosong i{border-style:dashed;background:var(--surface-2)}
+  .tk-meta{font-size:12.5px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:-2px;min-height:24px}
+  .tk-act{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
+  .tk-act .btn{justify-content:center;padding-left:8px;padding-right:8px}
+  .tk-act .tk-main{grid-column:1 / -1}
   .tk-code{font-size:40px;font-weight:800;letter-spacing:.18em;font-variant-numeric:tabular-nums;margin:12px 0 4px;font-family:ui-monospace,"SF Mono",Consolas,monospace}
   .tk-code.off{color:var(--faint);text-decoration:line-through}
   .tk-big{position:fixed;inset:0;background:#0f1b2d;color:#fff;z-index:95;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px}
@@ -278,7 +295,7 @@
   body.fit #tabPantau .tbl-wrap,body.fit #tabRekap .tbl-wrap{flex:1 1 auto;min-height:120px;overflow:auto}
   body.fit #tabRekap .stats{flex:none}
   body.fit #belumKirim{flex:none;max-height:28%;overflow:auto}
-  body.fit .token-grid{grid-template-columns:repeat(auto-fill,minmax(270px,1fr));flex:1;min-height:0;overflow:auto;align-content:start}
+  body.fit .token-grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));flex:1;min-height:0;overflow:auto;align-content:start}
   body.fit #tabToken>.card{flex:none}
   body.fit #tabData>.card:first-child{flex:none;max-height:55%;overflow:auto}
   body.fit #tabData>.card:last-child{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -481,13 +498,13 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"></script>
-<script src="config.js?v=20261125k"></script>
-<script src="soal.js?v=20261125k"></script>
-<script src="kunci.js?v=20261125k"></script>
-<script src="assets/icons.js?v=20261125k"></script>
-<script src="assets/db.js?v=20261125k"></script>
-<script src="assets/penilaian.js?v=20261125k"></script>
-<script src="assets/demo.js?v=20261125k"></script>
+<script src="config.js?v=20261125l"></script>
+<script src="soal.js?v=20261125l"></script>
+<script src="kunci.js?v=20261125l"></script>
+<script src="assets/icons.js?v=20261125l"></script>
+<script src="assets/db.js?v=20261125l"></script>
+<script src="assets/penilaian.js?v=20261125l"></script>
+<script src="assets/demo.js?v=20261125l"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 (function () {
@@ -505,11 +522,11 @@
   let hanyaPending = false;
 
   /* ---------- UI awal ---------- */
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125k" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125l" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandSub").textContent = C.NAMA_SEKOLAH + " · " + C.JUDUL_UJIAN + " " + C.TAHUN_AJARAN;
   $("modeChip").className = "chip " + (DB.mode === "online" ? "live" : "demo");
   $("modeChip").textContent = DB.mode === "online" ? "Online" : "Mode demo";
-  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125k" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
+  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125l" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
   $("btnKeluar").innerHTML = ico("logout") + " Keluar";
   $("btnMuat").innerHTML = ico("refresh") + " Muat ulang";
   $("btnExport").innerHTML = ico("download") + " Unduh Excel";
@@ -1583,17 +1600,18 @@
     $("tokenGrid").innerHTML = B.mapel.map(m => {
       const t = TOKENS[m.id] || {};
       const aktif = !!(t.token && t.aktif);
-      return '<div class="card tk-card"><div class="row" style="justify-content:space-between;gap:10px"><div class="row" style="gap:10px"><div class="mapel-ic" style="width:38px;height:38px;border-radius:50%;border:2px solid var(--ljk);color:var(--ljk);display:grid;place-items:center">' + ico(m.ikon) +
-        "</div><b>" + esc(m.nama) + "</b></div>" +
-        (aktif ? '<span class="badge ok">' + ico("check") + " Aktif</span>" : '<span class="badge neutral">' + ico("lock") + " Nonaktif</span>") + "</div>" +
-        (t.token ? '<div class="tk-code' + (aktif ? "" : " off") + '">' + esc(t.token) + "</div>"
-                 : '<div class="tk-code" style="font-size:18px;letter-spacing:0;color:var(--faint);font-weight:600;padding:12px 0 6px">Belum dibuat</div>') +
-        '<div class="small muted">' + (t.diubah_at ? "Diubah " + waktu(new Date(t.diubah_at).toISOString()) : "Klik Buat & aktifkan saat ujian dimulai") + "</div>" +
-        '<div class="row" style="gap:8px;margin-top:14px;flex-wrap:wrap">' +
-        (aktif ? '<button class="btn danger" data-off="' + m.id + '">' + ico("lock") + " Nonaktifkan</button>"
-               : '<button class="btn primary" data-on="' + m.id + '">' + ico("key") + (t.token ? " Aktifkan" : " Buat & aktifkan") + "</button>") +
+      const kelasTk = (m.tingkat || []).join(" & ");
+      const kotak = t.token ? String(t.token).split("") : Array(6).fill("");
+      return '<div class="card tk-card' + (aktif ? " on" : "") + '">' +
+        '<div class="tk-head"><span class="tk-ic">' + ico(m.ikon) + '</span><div class="tk-nama"><b>' + esc(m.nama.replace(/\s+Kelas\s+.*$/i, "")) + "</b><span>Kelas " + esc(kelasTk) + "</span></div></div>" +
+        '<div class="tk-cells' + (t.token ? (aktif ? "" : " off") : " kosong") + '">' + kotak.map(c => "<i>" + esc(c) + "</i>").join("") + "</div>" +
+        '<div class="tk-meta">' + (aktif ? '<span class="badge ok">' + ico("check") + " Aktif</span>" : '<span class="badge neutral">' + ico("lock") + " Nonaktif</span>") +
+        "<span>" + (t.token ? "diubah " + waktu(new Date(t.diubah_at).toISOString()) : "token belum dibuat") + "</span></div>" +
+        '<div class="tk-act">' +
+        (aktif ? '<button class="btn danger tk-main" data-off="' + m.id + '">' + ico("lock") + " Nonaktifkan</button>"
+               : '<button class="btn primary tk-main" data-on="' + m.id + '">' + ico("key") + (t.token ? " Aktifkan" : " Buat & aktifkan") + "</button>") +
         '<button class="btn" data-baru="' + m.id + '">' + ico("refresh") + " Token baru</button>" +
-        (aktif ? '<button class="btn" data-layar="' + m.id + '">' + ico("grid") + " Tampilkan besar</button>" : "") +
+        '<button class="btn" data-layar="' + m.id + '"' + (aktif ? "" : " disabled") + ">" + ico("grid") + " Tampilkan</button>" +
         "</div></div>";
     }).join("");
     const simpanTk = async (id, data, pesan, btn) => {
