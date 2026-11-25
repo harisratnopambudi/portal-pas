@@ -6,7 +6,7 @@
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <meta name="robots" content="noindex">
 <title>Portal Penilaian PAS — Guru</title>
-<link rel="stylesheet" href="assets/style.css?v=20261125i">
+<link rel="stylesheet" href="assets/style.css?v=20261125j">
 <style>
   .pin-wrap{max-width:380px;margin:80px auto;padding:0 20px}
   .pin-wrap .card{padding:28px}
@@ -136,6 +136,10 @@
   .pin-wrap{max-width:none;margin:0;min-height:calc(100vh - 60px);min-height:calc(100dvh - 60px);padding:16px 20px;box-sizing:border-box;display:flex;align-items:center;justify-content:center}
   .pin-wrap.hidden{display:none}
   .pin-wrap>.pin-card{width:100%;max-width:420px}
+  .peran-chip{display:inline-flex;flex-direction:column;align-items:flex-end;line-height:1.2;font-size:12px;color:rgba(255,255,255,.75);max-width:240px}
+  .peran-chip b{color:#fff;font-size:12.5px;letter-spacing:.02em}
+  .peran-chip span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
+  body.peran-guru [data-admin]{display:none!important}
   .kembali-peran{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13.5px;font-weight:600;text-decoration:none;margin-bottom:10px}
   .kembali-peran:hover{color:var(--primary)}
   .kembali-peran .icon{width:15px;height:15px}
@@ -335,6 +339,7 @@
   </div>
   <div class="spacer"></div>
   <span id="saveInfo" class="saving"></span>
+  <span id="peranChip" class="peran-chip hidden"></span>
   <span id="modeChip" class="chip"></span>
   <button class="btn sm ghost hidden" id="btnKeluar"></button>
 </header>
@@ -360,15 +365,15 @@
 <!-- UTAMA -->
 <section id="layarUtama" class="g-shell hidden">
   <nav class="g-side" aria-label="Menu guru">
-    <div class="g-grp">Saat ujian</div>
-    <button class="tab on" data-tab="pantau"></button>
-    <button class="tab" data-tab="token"></button>
+    <div class="g-grp" data-admin>Saat ujian</div>
+    <button class="tab on" data-tab="pantau" data-admin></button>
+    <button class="tab" data-tab="token" data-admin></button>
     <div class="g-grp">Penilaian</div>
     <button class="tab" data-tab="soal"></button>
     <button class="tab" data-tab="siswa"></button>
     <button class="tab" data-tab="rekap"></button>
-    <div class="g-grp">Persiapan</div>
-    <button class="tab" data-tab="data"></button>
+    <div class="g-grp" data-admin>Persiapan</div>
+    <button class="tab" data-tab="data" data-admin></button>
     <div class="g-side-foot">
       <button class="btn block hidden" id="btnContoh"></button>
     </div>
@@ -476,13 +481,13 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"></script>
-<script src="config.js?v=20261125i"></script>
-<script src="soal.js?v=20261125i"></script>
-<script src="kunci.js?v=20261125i"></script>
-<script src="assets/icons.js?v=20261125i"></script>
-<script src="assets/db.js?v=20261125i"></script>
-<script src="assets/penilaian.js?v=20261125i"></script>
-<script src="assets/demo.js?v=20261125i"></script>
+<script src="config.js?v=20261125j"></script>
+<script src="soal.js?v=20261125j"></script>
+<script src="kunci.js?v=20261125j"></script>
+<script src="assets/icons.js?v=20261125j"></script>
+<script src="assets/db.js?v=20261125j"></script>
+<script src="assets/penilaian.js?v=20261125j"></script>
+<script src="assets/demo.js?v=20261125j"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 (function () {
@@ -500,11 +505,11 @@
   let hanyaPending = false;
 
   /* ---------- UI awal ---------- */
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125i" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125j" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandSub").textContent = C.NAMA_SEKOLAH + " · " + C.JUDUL_UJIAN + " " + C.TAHUN_AJARAN;
   $("modeChip").className = "chip " + (DB.mode === "online" ? "live" : "demo");
   $("modeChip").textContent = DB.mode === "online" ? "Online" : "Mode demo";
-  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125i" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
+  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125j" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
   $("btnKeluar").innerHTML = ico("logout") + " Keluar";
   $("btnMuat").innerHTML = ico("refresh") + " Muat ulang";
   $("btnExport").innerHTML = ico("download") + " Unduh Excel";
@@ -583,10 +588,24 @@
     await DB.keluarGuru(); location.reload();
   };
   let sudahDimuat = false;
+  /* Peran: admin = akses penuh; guru = hanya Nilai per soal, Nilai per siswa, Rekap nilai (+ unduh Excel) */
+  let PERAN = "admin";
+  async function terapkanPeran() {
+    try { PERAN = (await DB.peran()) || "guru"; } catch (e) { PERAN = "guru"; }
+    document.body.classList.toggle("peran-guru", PERAN !== "admin");
+    if (DB.mode === "online") {
+      let email = ""; try { email = await DB.emailGuru(); } catch (e) {}
+      $("peranChip").innerHTML = "<b>" + (PERAN === "admin" ? "Admin" : "Guru") + "</b><span>" + esc(email) + "</span>";
+      $("peranChip").classList.remove("hidden");
+    }
+    if (PERAN !== "admin" && ["pantau", "token", "data"].includes(tab)) pindahTab("soal");
+    else renderSemua();
+  }
   function masuk() {
     $("layarPin").classList.add("hidden"); $("layarUtama").classList.remove("hidden"); $("btnKeluar").classList.remove("hidden");
     if (sudahDimuat) { kirimTertunda(); return; }        // login ulang di tengah jalan: data di layar tetap
     sudahDimuat = true;
+    terapkanPeran();
     isiSelSoal();
     kirimTertunda().then(() => muatRombel()).then(muat);  // kirim dulu nilai yang tertunda, baru muat data terbaru
   }
@@ -854,7 +873,7 @@
         tipeAda.map(t => '<td class="num">' + fmt(x.perTipe[t].skor) + '<span class="muted small">/' + x.perTipe[t].maks + "</span></td>").join("") +
         '<td class="num">' + fmt(x.total) + '<span class="muted small">/' + x.maks + '</span></td><td class="num nilai">' + x.nilai + "</td><td>" + badgeStatus(x) + "</td>" +
         '<td><div class="row" style="gap:6px;justify-content:flex-end"><button class="btn sm" data-nilai="' + r.id + '">' + ico("edit") + ' Nilai</button>' +
-        '<button class="btn sm" data-reset="' + r.id + '" title="Izinkan siswa mengerjakan lagi">' + ico("refresh") + " Buka</button></div></td></tr>";
+        (PERAN === "admin" ? '<button class="btn sm" data-reset="' + r.id + '" title="Izinkan siswa mengerjakan lagi">' + ico("refresh") + " Buka</button>" : "") + "</div></td></tr>";
     });
     h += "</tbody></table>";
     $("rekapTabel").innerHTML = h;

@@ -28,8 +28,10 @@ Mode demo menyimpan data di browser tersebut saja (localStorage), jadi hanya unt
 2. **SQL Editor → New query** → tempel seluruh isi `supabase/schema.sql` → **Run**.
 3. **Authentication → Sign In / Providers**: matikan **Allow new users to sign up** (agar orang lain tidak bisa membuat akun sendiri). Email provider tetap aktif.
 4. **Authentication → Users → Add user → Create new user** untuk tiap guru (email + password, centang *Auto Confirm User*).
-5. Daftarkan email guru: di SQL Editor jalankan
-   `insert into pas_guru (email) values ('guru1@...'), ('guru2@...');`
+5. Daftarkan akun dan perannya di SQL Editor:
+   `insert into pas_guru (email, peran) values ('admin@...', 'admin'), ('guru1@...', 'guru') on conflict (email) do update set peran = excluded.peran;`
+   - **admin**: akses penuh (Pantauan, Token, Data siswa, Buka kembali, koreksi, rekap).
+   - **guru**: hanya Nilai per soal, Nilai per siswa, dan Rekap nilai (termasuk unduh Excel).
 6. **Project Settings → API** → salin **Project URL** dan kunci **anon / publishable** ke `config.js` bagian `SUPABASE`, lalu deploy (GitHub Pages). Label pojok kanan atas berubah menjadi **Online**.
 7. Masuk `guru.html` → tab **Data siswa** → pilih file `daftar_pd-....xlsx` dari Dapodik → centang kelas 5 dan 6 → **Simpan ke database**.
 8. Proyek Supabase gratis **dijeda setelah 7 hari tidak dipakai**. Buka portal (atau dashboard Supabase) minimal seminggu sekali, dan cek dashboard sehari sebelum ujian.

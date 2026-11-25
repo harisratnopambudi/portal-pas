@@ -46,6 +46,10 @@ create table if not exists public.pas_siswa (
 create table if not exists public.pas_guru (
   email text primary key
 );
+-- peran: 'admin' = akses penuh, 'guru' = hanya mengoreksi & melihat rekap
+alter table public.pas_guru add column if not exists peran text not null default 'guru';
+alter table public.pas_guru drop constraint if exists pas_guru_peran_cek;
+alter table public.pas_guru add constraint pas_guru_peran_cek check (peran in ('admin', 'guru'));
 
 create index if not exists pas_jawaban_mk on public.pas_jawaban (mapel, kelas);
 create index if not exists pas_draft_mk   on public.pas_draft (mapel, kelas);
@@ -56,6 +60,19 @@ create or replace function public.pas_is_guru() returns boolean
 language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.pas_guru g
                  where lower(g.email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+$$;
+
+create or replace function public.pas_is_admin() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.pas_guru g
+                 where lower(g.email) = lower(coalesce(auth.jwt() ->> 'email', '')) and g.peran = 'admin');
+$$;
+
+-- peran akun yang sedang login: 'admin', 'guru', atau null
+create or replace function public.pas_peran() returns text
+language sql stable security definer set search_path = public as $$
+  select g.peran from public.pas_guru g
+  where lower(g.email) = lower(coalesce(auth.jwt() ->> 'email', '')) limit 1;
 $$;
 
 -- id dokumen = mapel_kelas_absen, karakter selain huruf/angka/_/- diganti "-"
@@ -72,20 +89,33 @@ alter table public.pas_token   enable row level security;
 alter table public.pas_siswa   enable row level security;
 alter table public.pas_guru    enable row level security;
 
+-- jawaban: guru & admin boleh melihat; ubah nilai lewat pas_patch_jawaban; hapus/buka kembali hanya admin
 drop policy if exists guru_semua on public.pas_jawaban;
-create policy guru_semua on public.pas_jawaban for all to authenticated using (public.pas_is_guru()) with check (public.pas_is_guru());
+drop policy if exists lihat on public.pas_jawaban;
+create policy lihat on public.pas_jawaban for select to authenticated using (public.pas_is_guru());
+drop policy if exists admin_tulis on public.pas_jawaban;
+create policy admin_tulis on public.pas_jawaban for all to authenticated using (public.pas_is_admin()) with check (public.pas_is_admin());
+-- progres, masuk, token: hanya admin
 drop policy if exists guru_semua on public.pas_draft;
-create policy guru_semua on public.pas_draft for all to authenticated using (public.pas_is_guru()) with check (public.pas_is_guru());
+drop policy if exists admin_semua on public.pas_draft;
+create policy admin_semua on public.pas_draft for all to authenticated using (public.pas_is_admin()) with check (public.pas_is_admin());
 drop policy if exists guru_semua on public.pas_masuk;
-create policy guru_semua on public.pas_masuk for all to authenticated using (public.pas_is_guru()) with check (public.pas_is_guru());
+drop policy if exists admin_semua on public.pas_masuk;
+create policy admin_semua on public.pas_masuk for all to authenticated using (public.pas_is_admin()) with check (public.pas_is_admin());
 drop policy if exists guru_semua on public.pas_token;
-create policy guru_semua on public.pas_token for all to authenticated using (public.pas_is_guru()) with check (public.pas_is_guru());
+drop policy if exists admin_semua on public.pas_token;
+create policy admin_semua on public.pas_token for all to authenticated using (public.pas_is_admin()) with check (public.pas_is_admin());
+-- daftar siswa: semua boleh membaca, hanya admin menulis
 drop policy if exists guru_tulis on public.pas_siswa;
-create policy guru_tulis on public.pas_siswa for all to authenticated using (public.pas_is_guru()) with check (public.pas_is_guru());
+drop policy if exists admin_tulis on public.pas_siswa;
+create policy admin_tulis on public.pas_siswa for all to authenticated using (public.pas_is_admin()) with check (public.pas_is_admin());
 drop policy if exists semua_baca on public.pas_siswa;
 create policy semua_baca on public.pas_siswa for select to anon, authenticated using (true);
+-- daftar akun guru: admin mengelola, guru hanya melihat dirinya
 drop policy if exists guru_lihat on public.pas_guru;
-create policy guru_lihat on public.pas_guru for select to authenticated using (public.pas_is_guru());
+create policy guru_lihat on public.pas_guru for select to authenticated using (public.pas_is_admin() or lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+drop policy if exists admin_kelola on public.pas_guru;
+create policy admin_kelola on public.pas_guru for all to authenticated using (public.pas_is_admin()) with check (public.pas_is_admin());
 
 -- ---------- Fungsi untuk siswa (diperiksa di server) ----------
 
@@ -181,8 +211,13 @@ end $$;
 
 -- Guru: gabungkan perubahan nilai ke data jawaban (RLS tetap berlaku)
 create or replace function public.pas_patch_jawaban(p_id text, p_patch jsonb)
-returns boolean language plpgsql security invoker set search_path = public as $$
+returns boolean language plpgsql security definer set search_path = public as $$
+declare boleh text[] := array['nilai_manual','skor_otomatis','skor_manual','nilai_akhir','status','dinilai_at'];
 begin
+  if not public.pas_is_guru() then raise exception 'BUKAN_GURU' using errcode = '42501'; end if;
+  if not public.pas_is_admin() and exists (select 1 from jsonb_object_keys(p_patch) k where k <> all (boleh)) then
+    raise exception 'HANYA_NILAI' using errcode = '42501';
+  end if;
   update public.pas_jawaban set data = data || p_patch, diubah_at = now() where id = p_id;
   if not found then raise exception 'TIDAK_ADA' using errcode = 'P0001'; end if;
   return true;
@@ -200,17 +235,23 @@ grant execute on function public.pas_simpan_draft(jsonb) to anon, authenticated;
 grant execute on function public.pas_kirim(jsonb) to anon, authenticated;
 grant execute on function public.pas_patch_jawaban(text, jsonb) to authenticated;
 grant execute on function public.pas_is_guru() to anon, authenticated;
+grant execute on function public.pas_is_admin() to anon, authenticated;
+grant execute on function public.pas_peran() to anon, authenticated;
 grant execute on function public.pas_docid(text, text, int) to anon, authenticated;
 
 -- Tabel: akses lewat RLS di atas
 grant select, insert, update, delete on public.pas_jawaban, public.pas_draft, public.pas_masuk, public.pas_token, public.pas_siswa to authenticated;
-grant select on public.pas_guru to authenticated;
+grant select, insert, update, delete on public.pas_guru to authenticated;
 grant select on public.pas_siswa to anon;
 revoke insert, update, delete on public.pas_jawaban, public.pas_draft, public.pas_masuk, public.pas_token, public.pas_siswa, public.pas_guru from anon;
 revoke select on public.pas_jawaban, public.pas_draft, public.pas_masuk, public.pas_token, public.pas_guru from anon;
 
 -- =====================================================================
---  DAFTARKAN EMAIL GURU (ganti dengan email akun guru yang sudah dibuat
---  di Authentication > Users). Satu baris per guru.
+--  DAFTARKAN AKUN (email harus sudah dibuat di Authentication > Users)
+--    admin = akses penuh (pantauan, token, data siswa, buka kembali, koreksi)
+--    guru  = hanya mengoreksi jawaban dan melihat/mengunduh rekap
 -- =====================================================================
--- insert into public.pas_guru (email) values ('guru1@contoh.com'), ('guru2@contoh.com') on conflict do nothing;
+-- insert into public.pas_guru (email, peran) values ('admin@contoh.com', 'admin')
+--   on conflict (email) do update set peran = excluded.peran;
+-- insert into public.pas_guru (email, peran) values ('guru1@contoh.com', 'guru'), ('guru2@contoh.com', 'guru')
+--   on conflict (email) do update set peran = excluded.peran;

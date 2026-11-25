@@ -209,13 +209,24 @@
       if (sb) {
         const { data, error } = await batasWaktu(sb.auth.signInWithPassword({ email, password: sandi }), 15000);
         if (error) throw Object.assign(new Error(error.message), { code: /fetch|network/i.test(error.message) ? "network" : "auth/invalid" });
-        // pastikan akun ini terdaftar sebagai guru
-        const guru = await jalan(sb.rpc("pas_is_guru"));
-        if (!guru) { await sb.auth.signOut(); throw Object.assign(new Error("BUKAN_GURU"), { code: "auth/bukan-guru" }); }
+        // pastikan akun ini terdaftar (admin atau guru)
+        const peran = await jalan(sb.rpc("pas_peran"));
+        if (!peran) { await sb.auth.signOut(); throw Object.assign(new Error("BUKAN_GURU"), { code: "auth/bukan-guru" }); }
         return !!data;
       }
       if (sandi === String(C.PIN_GURU)) { localStorage.setItem("pas_guru", "1"); return true; }
       throw new Error("PIN salah.");
+    },
+    // Peran akun yang login: "admin" (akses penuh) atau "guru" (hanya koreksi & rekap)
+    async peran() {
+      if (!sb) return "admin";
+      const p = await jalan(sb.rpc("pas_peran"), 12000);
+      return p || null;
+    },
+    async emailGuru() {
+      if (!sb) return "";
+      const { data } = await sb.auth.getSession();
+      return (data && data.session && data.session.user && data.session.user.email) || "";
     },
     async keluarGuru() {
       if (sb) await sb.auth.signOut();
