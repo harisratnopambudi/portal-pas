@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <title>Portal Ujian PAS — Siswa</title>
-<link rel="stylesheet" href="assets/style.css?v=20261124i">
+<link rel="stylesheet" href="assets/style.css?v=20261125a">
 <style>
   /* =================== MASUK & PETUNJUK =================== */
   .login-wrap{max-width:1120px;margin:0 auto;padding:36px 22px 60px}
@@ -144,13 +144,34 @@
   .guard-box p{margin:0;color:var(--muted);font-size:14.5px}
   .guard-count{display:inline-block;margin-top:12px;font-weight:800;font-size:13px;padding:4px 12px;border-radius:99px;background:var(--bad-50);color:var(--bad)}
 
+  /* =================== PILIH PERAN =================== */
+  .peran-card{max-width:880px;margin:0 auto;width:100%;padding:0;overflow:hidden;border-top:5px double var(--ljk)}
+  .peran-head{display:flex;align-items:center;gap:18px;padding:28px 32px 22px;border-bottom:1px solid var(--line)}
+  .peran-head img{width:72px;height:72px;object-fit:contain;flex:none}
+  .peran-head h1{font-size:26px;line-height:1.2;margin:0}
+  .peran-head p{margin:6px 0 0;color:var(--muted);font-size:15px}
+  .peran-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:26px 32px 30px;background:var(--surface-2)}
+  .peran{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:24px;border:1.5px solid var(--line-2);border-radius:var(--radius);background:#fff;cursor:pointer;text-align:left;text-decoration:none;color:var(--text);font:inherit;transition:border-color .12s,box-shadow .12s}
+  .peran:hover,.peran:focus-visible{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-50);outline:none}
+  .peran .pi{width:56px;height:56px;border-radius:50%;border:2px solid var(--ljk-line);color:var(--ljk);display:grid;place-items:center}
+  .peran.guru .pi{border-color:var(--primary-100);color:var(--primary)}
+  .peran .pi .icon{width:26px;height:26px}
+  .peran b{font-size:21px}
+  .peran span.d{color:var(--muted);font-size:14.5px;line-height:1.5}
+  .peran .go{margin-top:auto;padding-top:6px;display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--primary);font-size:14.5px}
+  .peran .go .icon{width:16px;height:16px}
+  .kembali-peran{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:0;color:var(--muted);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;margin-bottom:10px}
+  .kembali-peran:hover{color:var(--primary)}
+  .kembali-peran .icon{width:15px;height:15px}
+  @media (max-width:700px){.peran-grid{grid-template-columns:1fr;padding:20px}.peran-head{padding:22px 20px}}
+
   /* =================== 16:9, SATU LAYAR =================== */
   @media (min-width:901px) and (min-height:540px){
     html,body{height:100%;overflow:hidden}
     body{display:flex;flex-direction:column}
     .topbar{flex:none;height:58px}
     #topTimer{display:none!important}
-    #layarMasuk,#layarInfo,#layarUjian,#layarSelesai{flex:1;min-height:0}
+    #layarPeran,#layarMasuk,#layarInfo,#layarUjian,#layarSelesai{flex:1;min-height:0}
     .login-wrap{width:100%;padding:2.5vh 24px;display:flex;flex-direction:column;justify-content:center}
     .login-card,.info-card{max-height:100%;min-height:min(560px,100%)}
     .login-right,.info-left,.info-right{overflow:auto}
@@ -215,12 +236,40 @@
   <span id="modeChip" class="chip"></span>
 </header>
 
+<!-- ============ LAYAR PILIH PERAN ============ -->
+<section id="layarPeran" class="login-wrap">
+  <div class="card peran-card">
+    <div class="peran-head">
+      <img src="assets/logo-sekolah.png?v=20261125a" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
+      <div>
+        <h1 id="peranJudul">Penilaian Akhir Semester Ganjil</h1>
+        <p id="peranSub"></p>
+      </div>
+    </div>
+    <div class="peran-grid">
+      <button class="peran siswa" type="button" id="btnPeranSiswa">
+        <span class="pi" data-ico="edit"></span>
+        <b>Masuk sebagai Siswa</b>
+        <span class="d">Kerjakan ujian. Pilih kelas dan nama, lalu masukkan token dari pengawas.</span>
+        <span class="go">Mulai <span data-ico="right"></span></span>
+      </button>
+      <a class="peran guru" id="lnkPeranGuru" href="guru.html">
+        <span class="pi" data-ico="list"></span>
+        <b>Masuk sebagai Guru</b>
+        <span class="d">Pantau ujian, atur token, koreksi jawaban, dan unduh rekap nilai.</span>
+        <span class="go">Masuk <span data-ico="right"></span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- ============ LAYAR MASUK ============ -->
-<section id="layarMasuk" class="login-wrap">
+<section id="layarMasuk" class="login-wrap hidden">
   <form class="card login-card" id="formMasuk" autocomplete="off">
     <div class="login-left">
       <div>
-        <img class="login-logo" src="assets/logo-sekolah.png?v=20261124i" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
+        <button class="kembali-peran" type="button" id="btnKembaliPeran"><span data-ico="left"></span> Ganti peran</button>
+        <img class="login-logo" src="assets/logo-sekolah.png?v=20261125a" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
         <h1>Ujian Penilaian Akhir Semester</h1>
         <p class="lead">Pilih kelas dan namamu, pilih mata pelajaran, lalu masukkan token dari pengawas.</p>
       </div>
@@ -341,11 +390,11 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="config.js?v=20261124i"></script>
-<script src="soal.js?v=20261124i"></script>
-<script src="assets/icons.js?v=20261124i"></script>
-<script src="assets/db.js?v=20261124i"></script>
-<script src="assets/demo.js?v=20261124i"></script>
+<script src="config.js?v=20261125a"></script>
+<script src="soal.js?v=20261125a"></script>
+<script src="assets/icons.js?v=20261125a"></script>
+<script src="assets/db.js?v=20261125a"></script>
+<script src="assets/demo.js?v=20261125a"></script>
 <script>
 (function () {
   const C = CONFIG, B = BANK_SOAL, T = TIPE_INFO;
@@ -358,7 +407,16 @@
   const MIN_ALASAN = C.ALASAN_MIN_KARAKTER || 10;
 
   /* ---------- Header & teks tombol ---------- */
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261124i" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  /* ---------- Pilih peran: siswa atau guru ---------- */
+  document.querySelectorAll("[data-ico]").forEach(el => el.innerHTML = ico(el.dataset.ico));
+  $("peranJudul").textContent = C.JUDUL_UJIAN;
+  $("peranSub").textContent = C.NAMA_SEKOLAH + " · Tahun Ajaran " + C.TAHUN_AJARAN;
+  if (DB.paksaDemo) $("lnkPeranGuru").href = "guru.html?demo";
+  $("btnPeranSiswa").onclick = () => { tampil("layarMasuk"); history.replaceState(null, "", location.pathname + location.search + "#siswa"); };
+  $("btnKembaliPeran").onclick = () => { tampil("layarPeran"); history.replaceState(null, "", location.pathname + location.search); };
+  if (location.hash === "#siswa") tampil("layarMasuk");   // tautan langsung untuk siswa: .../portal-pas/#siswa
+
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125a" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandTitle").textContent = C.JUDUL_UJIAN + " · " + C.TAHUN_AJARAN;
   $("brandSub").textContent = C.NAMA_SEKOLAH;
   $("modeChip").className = "chip " + (DB.mode === "firebase" ? "live" : "demo");
@@ -447,7 +505,7 @@
     clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2400);
   }
   function tampil(id) {
-    ["layarMasuk", "layarInfo", "layarUjian", "layarSelesai"].forEach(x => $(x).classList.toggle("hidden", x !== id));
+    ["layarPeran", "layarMasuk", "layarInfo", "layarUjian", "layarSelesai"].forEach(x => $(x).classList.toggle("hidden", x !== id));
     const ujian = id === "layarUjian";
     $("topTimer").classList.toggle("hidden", !ujian);
     $("syncChip").classList.toggle("hidden", !ujian);
