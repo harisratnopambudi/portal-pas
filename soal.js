@@ -24,6 +24,23 @@ window.TIPE_INFO = {
   essay: { kode: "E", nama: "Uraian", petunjuk: "Jawablah pertanyaan berikut dengan jelas dan lengkap." }
 };
 window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
+/* Urutan bagian bisa berbeda per paket (m.urutan). Huruf bagian (A, B, C, ...) mengikuti urutan itu. */
+/* Paket boleh dibatasi per rombel: kelas: ["5 Cordoba"] (hanya rombel itu) atau kecualiKelas: ["5 Cordoba"].
+   Dipakai untuk paket berbahasa Inggris di kelas bahasa. */
+window.MAPEL_COCOK = (m, rb) => {
+  if (!rb) return true;
+  const kls = String(rb.kelas || ""), tk = String(rb.tingkat || "");
+  if (m.tingkat && !m.tingkat.map(String).includes(tk)) return false;
+  if (m.kelas && !m.kelas.includes(kls)) return false;
+  if (m.kecualiKelas && m.kecualiKelas.includes(kls)) return false;
+  return true;
+};
+window.URUTAN_MAPEL = m => (m && m.urutan) || window.URUTAN_TIPE;
+window.KODE_TIPE = (m, t) => {
+  const ada = window.URUTAN_MAPEL(m).filter(x => !m || m.soal.some(s => s.tipe === x));
+  const i = ada.indexOf(t);
+  return i < 0 ? window.TIPE_INFO[t].kode : "ABCDEFG"[i];
+};
 
 (function () {
   const pg = (id, teks, opsi, gambar) => ({ id, tipe: "pg", teks, opsi, gambar });
@@ -212,10 +229,82 @@ window.URUTAN_TIPE = ["pg", "bs", "pgk", "isian", "essay"];
       "<p>a. Tuliskan 3 sikap yang bertentangan dengan sila ketiga dari cerita tersebut beserta alasannya!<br>b. Tuliskan dua tindakan nyata yang dapat dilakukan kelasmu untuk menumbuhkan persatuan!</p>")
   ];
 
+  /* ================= MATEMATIKA KELAS 5 (naskah asli SAS 1 2026/2027) ================= */
+  // pecahan bertumpuk: fr(3, 4) -> 3/4, fr(1, 2, 1) -> 1 1/2
+  const fr = (a, b, w) => (w ? w : "") + '<span class="fr"><sup>' + a + "</sup><sub>" + b + "</sub></span>";
+  const G = (f, alt) => ({ src: "assets/soal/" + f + ".jpg", alt });
+  const gHarga = G("mtk5-harga-alat-tulis", "Daftar harga alat tulis di koperasi sekolah: buku tulis Rp4.500, pensil Rp2.750, penghapus Rp1.500, penggaris Rp3.250");
+  const gPanen = G("mtk5-panen-sayur", "Tabel hasil panen sayur kebun sekolah (gram): bayam 24.350, kangkung 42.350, sawi 24.530, wortel 42.053, tomat 24.305, kentang 42.305");
+  const gMenu = G("mtk5-menu-warung", "Daftar menu Warung Nusantara: Nasi Goreng Spesial Rp18.000, Mie Ayam Bakso Rp15.000, Ayam Bakar Rp22.000, Sate Ayam Rp25.000, Es Teh Manis Rp5.000, Jus Alpukat Rp12.000, Es Jeruk Rp8.000, Kentang Goreng Rp10.000, Tahu Bakso Rp7.000");
+  const PITA = '<div class="bacaan"><p style="text-align:center"><b>Proyek Kerajinan Kelas 5</b></p><p>Pada pembelajaran Seni Budaya dan Prakarya (SBdP), siswa kelas 5 SD Nusantara mendapat tugas kelompok untuk membuat hiasan dinding dari pita warna-warni. Bu Guru menyiapkan beberapa gulungan pita dengan panjang yang berbeda-beda untuk setiap kelompok.</p>' +
+    '<table class="tbl-soal"><tr><th>Warna Pita</th><th>Panjang Pita</th></tr><tr><td>Merah</td><td>' + fr(1, 4, 2) + ' meter</td></tr><tr><td>Biru</td><td>' + fr(3, 4) + ' meter</td></tr><tr><td>Hijau</td><td>' + fr(1, 2, 1) + ' meter</td></tr><tr><td>Kuning</td><td>' + fr(5, 8) + ' meter</td></tr></table>' +
+    "<p>Setiap kelompok diminta menghitung, memotong, dan menggabungkan pita tersebut sesuai kebutuhan proyek mereka.</p></div>";
+  const bsPita = t => PITA + "<p>" + t + "</p>";
+  const LOMBA = '<div class="bacaan"><p style="text-align:center"><b>Persiapan Lomba di SD Cendekia</b></p><p>SD Cendekia akan mengadakan pekan lomba dalam rangka memperingati Hari Pendidikan Nasional. Panitia sedang mempersiapkan dua hal penting, yaitu jadwal latihan rutin dan pembagian hadiah.</p>' +
+    "<p><b>Data 1: Jadwal Latihan</b><br>Kelompok paduan suara berlatih setiap 4 hari sekali. Kelompok tari berlatih setiap 6 hari sekali. Latihan pertama untuk kedua kelompok dimulai pada tanggal 1 Mei.</p>" +
+    "<p><b>Data 2: Hadiah Lomba</b><br>Panitia memiliki 24 buku tulis dan 36 pensil untuk dijadikan hadiah. Hadiah tersebut akan dimasukkan ke dalam kantong plastik dengan jumlah yang sama banyak untuk setiap jenisnya tanpa ada yang tersisa.</p></div>";
+  const WARUNG = "<p>Pada hari Minggu, Dika dan keluarganya pergi makan siang di Warung Nusantara. Sebelum memesan, mereka melihat brosur menu yang terpampang di meja makan. Perhatikan daftar harga menu pada gambar.</p>";
+
+  const soalMTK5 = [
+    pg("M5-PG1", "<p>Saat jam istirahat, Rina berkunjung ke Koperasi Sekolah untuk membeli perlengkapan belajar karena beberapa alat tulisnya sudah habis. Ia membeli 1 buku tulis, 2 pensil, dan 1 penghapus. Sesampainya di kasir, Rina menyerahkan uang Rp20.000 kepada petugas koperasi.</p><p>Berdasarkan daftar harga di koperasi sekolah, berapa uang kembalian yang harus diterima Rina?</p>",
+      ["Rp7.500", "Rp8.500", "Rp9.500", "Rp10.500"], gHarga),
+    pg("M5-PG2", "<p>Pihak Perpustakaan Daerah ingin memberikan penghargaan kepada petugas jaga di hari yang paling ramai dikunjungi. Berdasarkan infografis, pernyataan manakah yang benar mengenai data pengunjung tersebut?</p>",
+      ["Pengunjung Senin lebih banyak dari Rabu", "Pengunjung Kamis paling sedikit", "Pengunjung Rabu paling banyak dari hari Senin, Selasa, dan Kamis", "Pengunjung Selasa lebih banyak dari Senin"],
+      G("mtk5-pengunjung-perpus", "Data jumlah pengunjung Perpustakaan Daerah: Senin 12.450, Selasa 9.870, Rabu 15.300, Kamis 11.025")),
+    pg("M5-PG3", "<p>Sebuah taman berbentuk segitiga dengan ukuran seperti pada gambar. Di sekeliling taman tersebut akan dipasang lampu hias. Jika jarak antarlampu 3 m, berapa banyak lampu yang dibutuhkan?</p>",
+      ["10 lampu", "12 lampu", "14 lampu", "16 lampu"], G("mtk5-taman-segitiga", "Taman berbentuk segitiga dengan sisi 12 m, 15 m, dan 9 m")),
+    pg("M5-PG4", "<p>Ibu memiliki 24 kue bolu dan 36 kue lapis. Kue tersebut akan dimasukkan ke dalam kotak dengan jumlah sama banyak untuk setiap jenis. Berapa kotak terbanyak yang dapat dibuat?</p>",
+      ["6 kotak", "8 kotak", "12 kotak", "18 kotak"]),
+    pg("M5-PG5", "<p>Sekolah Dita memiliki lapangan sepak bola di halaman belakang seperti pada gambar. Pada jam olahraga, Pak Guru meminta seluruh siswa berlari mengelilingi lapangan tersebut tepat satu putaran. Berapa meter jarak yang ditempuh Dita untuk satu kali putaran?</p>",
+      ["32 m", "44 m", "64 m", "240 m"], G("mtk5-lapangan", "Lapangan sepak bola berbentuk persegi panjang dengan panjang 20 m dan lebar 12 m")),
+
+    pgk("M5-PGK1", '<p class="muted small">Perhatikan data pada gambar untuk mengerjakan soal nomor 6 dan 7.</p><p>Berdasarkan gambar hasil panen sayur kebun sekolah, pilihlah semua pernyataan yang benar tentang urutan hasil panen!</p>',
+      ["Urutan dari terkecil: tomat → bayam → sawi.", "Urutan dari terbesar: kangkung → kentang → wortel.", "Hasil panen sawi menempati urutan kedua terkecil di antara semua sayur.", "Hasil panen wortel lebih kecil daripada kentang."], gPanen),
+    pgk("M5-PGK2", "<p>Pak Rudi memanen sayur di kebun sekolah. Hasil panennya ditimbang dan dicatat seperti pada gambar. Pak Rudi hanya mau membawa sayur yang beratnya lebih dari 24.400 gram dan kurang dari 42.100 gram ke pasar. Pilihlah semua sayur yang boleh dibawa Pak Rudi ke pasar!</p>",
+      ["Bayam", "Sawi", "Wortel", "Tomat"], gPanen),
+    pgk("M5-PGK3", "<p>Pak Budi beternak ayam. Setiap hari ia mengumpulkan telur dan memasukkannya ke dalam keranjang. Setiap keranjang berisi 23 telur. Pak Budi ingin menghitung banyak telur jika keranjangnya lebih dari satu. Pilihlah semua jumlah telur yang merupakan kelipatan 23!</p>",
+      ["46 telur", "69 telur", "92 telur", "100 telur"]),
+    pgk("M5-PGK4", "<p>Pada peringatan Hari Kemerdekaan di SD Nusantara, panitia menyiapkan hadiah untuk lomba. Panitia memiliki 24 buku tulis dan 36 pensil. Kedua jenis hadiah tersebut akan dimasukkan ke dalam beberapa kantong plastik dengan jumlah yang sama banyak. Jumlah kantong plastik yang dapat dibuat harus merupakan faktor persekutuan dari 24 dan 36.</p><p>Pilihlah semua angka yang merupakan faktor persekutuan tersebut!</p>",
+      ["6", "12", "18", "2"]),
+    pgk("M5-PGK5", "<p>Saat pelajaran Matematika, Bu Rina menuliskan empat bilangan pecahan di papan tulis, yaitu: " + fr(3, 4) + ", " + fr(1, 2, 1) + ", " + fr(5, 8) + ", dan " + fr(1, 4, 1) + ".</p><p>Bu Rina meminta siswa untuk menganalisis urutan bilangan-bilangan tersebut dari yang terkecil ke yang terbesar. Pilihlah pernyataan yang benar berdasarkan bilangan pecahan di atas!</p>",
+      [fr(5, 8) + " merupakan bilangan pecahan terkecil di antara keempat bilangan tersebut.",
+       "Urutan pecahan dari yang terkecil ke terbesar adalah " + fr(5, 8) + ", " + fr(3, 4) + ", " + fr(1, 4, 1) + ", " + fr(1, 2, 1) + ".",
+       "Bilangan " + fr(1, 2, 1) + " lebih kecil nilainya dibandingkan dengan " + fr(1, 4, 1) + ".",
+       "Bilangan " + fr(1, 4, 1) + " nilainya lebih besar daripada " + fr(3, 4) + ", tetapi lebih kecil daripada " + fr(1, 2, 1) + "."]),
+
+    bs("M5-BS1", '<p class="muted small">Bacalah teks berikut untuk menjawab soal nomor 11 sampai 15!</p>' + bsPita("Panjang pita merah (" + fr(1, 4, 2) + " meter) memiliki nilai yang sama dengan " + fr(9, 4) + " meter.")),
+    bs("M5-BS2", bsPita("Jika kelompok 1 menggabungkan pita biru dan pita kuning, maka total panjang pita yang mereka miliki adalah " + fr(3, 8, 1) + " meter.")),
+    bs("M5-BS3", bsPita("Selisih panjang antara pita merah dan pita hijau adalah " + fr(5, 4) + " meter.")),
+    bs("M5-BS4", bsPita("Urutan panjang pita dari yang paling pendek ke yang paling panjang adalah pita biru, pita kuning, pita hijau, lalu pita merah.")),
+    bs("M5-BS5", bsPita("Pita hijau (" + fr(1, 2, 1) + " meter) lebih panjang dibandingkan dengan pita merah (" + fr(1, 4, 2) + " meter).")),
+
+    isian("M5-IS1", '<p class="muted small">Bacalah teks berikut untuk menjawab soal nomor 16 sampai 19!</p>' + LOMBA + "<p>Berdasarkan jadwal latihan tersebut, sebutkan 2 angka pertama yang merupakan kelipatan persekutuan dari 4 dan 6!</p>"),
+    isian("M5-IS2", LOMBA + "<p>Jika latihan pertama dilaksanakan tanggal 1 Mei, pada tanggal berapa kelompok paduan suara dan kelompok tari akan berlatih bersama untuk yang kedua kalinya?</p>"),
+    isian("M5-IS3", LOMBA + "<p>Berdasarkan hadiah lomba tersebut, sebutkan 3 angka pertama yang merupakan faktor persekutuan dari 24 dan 36 sehingga buku dan pensil habis terbagi rata!</p>"),
+    isian("M5-IS4", LOMBA + "<p>Berapa jumlah kantong plastik terbanyak yang dapat dibuat oleh panitia agar setiap kantong berisi buku dan pensil dengan jumlah yang sama banyak?</p>"),
+    isian("M5-IS5", "<p>Diketahui keliling sebuah segitiga adalah 96 cm. Berapakah panjang sisi yang belum diketahui (sisi BC) pada gambar segitiga?</p>",
+      G("mtk5-segitiga-keliling", "Segitiga ABC dengan sisi AB 24 cm, sisi AC 32 cm, dan sisi BC belum diketahui")),
+    isian("M5-IS6", '<p class="muted small">Perhatikan gambar menu untuk menjawab soal nomor 21 sampai 25!</p>' + WARUNG + "<p>Dika memesan 2 porsi Nasi Goreng Spesial dan 3 gelas Es Teh Manis. Jika ia membayar dengan uang Rp60.000, berapakah uang kembalian yang diterima Dika?</p>", gMenu),
+    isian("M5-IS7", WARUNG + "<p>Ayah memesan 1 porsi Ayam Bakar dan 1 porsi Sate Ayam. Jika Ayah membayar dengan uang Rp50.000, berapakah uang kembalian yang diterima Ayah?</p>", gMenu),
+    isian("M5-IS8", WARUNG + "<p>Ibu memesan 2 porsi Mie Ayam Bakso dan 1 gelas Jus Alpukat. Berapakah total belanjaan Ibu?</p>", gMenu),
+    isian("M5-IS9", WARUNG + "<p>Kakak ingin membeli 1 porsi Kentang Goreng dan 1 porsi Tahu Bakso. Ia membayar dengan uang Rp20.000. Berapakah sisa uang Kakak setelah membayar pesanannya?</p>", gMenu),
+    isian("M5-IS10", WARUNG + "<p>Keluarga Dika memesan 1 porsi Nasi Goreng Spesial, 1 porsi Mie Ayam Bakso, dan 3 gelas Es Jeruk. Jika mereka membayar dengan uang Rp100.000, berapakah uang kembalian yang mereka terima?</p>", gMenu),
+
+    essay("M5-ES1", "<p>Di SD Harapan Bangsa, tim piket kelas 5A bertugas membersihkan kelas setiap <b>6 hari</b> sekali, sedangkan tim piket kelas 5B bertugas setiap <b>8 hari</b> sekali. Pada tanggal 2 Oktober 2026, kedua tim piket bertugas bersama untuk pertama kalinya.</p><p>Pada tanggal berapa mereka akan bertugas bersama untuk yang kedua kalinya? Jelaskan langkah-langkah yang kamu gunakan untuk menemukan jawabannya!</p>"),
+    essay("M5-ES2", "<p>Panitia kegiatan bakti sosial memiliki 18 bungkus mi instan dan 24 botol air mineral. Keduanya akan dimasukkan ke dalam kantong bantuan dengan jumlah yang sama banyak untuk setiap jenisnya tanpa ada yang tersisa.</p><p>Berapa jumlah kantong bantuan terbanyak yang dapat dibuat oleh panitia? Tuliskan cara penyelesaiannya!</p>"),
+    essay("M5-ES3", "<p>Ibu memiliki persediaan gula pasir sebanyak " + fr(1, 4, 2) + " kg. Untuk membuat kue, Ibu menggunakan " + fr(3, 4) + " kg gula pasir. Karena adonan kue masih kurang manis, Ibu menambahkan lagi " + fr(1, 2) + " kg gula pasir ke dalam adonan.</p><p>Berapa kg sisa gula pasir yang dimiliki Ibu sekarang? Tuliskan proses perhitungannya secara lengkap dan jelaskan alasanmu!</p>"),
+    essay("M5-ES4", "<p>Andi membuat sebuah hiasan dinding berbentuk segitiga dari kain flanel. Keliling hiasan segitiga tersebut adalah <b>54 cm</b>. Dua sisi hiasan tersebut masing-masing panjangnya 16 cm dan 20 cm.</p><p>Berapakah panjang sisi ketiga dari hiasan segitiga yang dibuat Andi? Jelaskan alasanmu!</p>"),
+    essay("M5-ES5", "<p>Ibu sedang membaca resep kue baru. Resep tersebut menyebutkan bahwa untuk membuat 1 loyang kue, dibutuhkan " + fr(2, 5, 1) + " kg mentega, " + fr(3, 10, 1) + " kg cokelat bubuk, dan " + fr(4, 5) + " kg gula pasir.</p><p>Berapakah jumlah seluruh berat bahan-bahan untuk membuat kue? Uraikan cara menghitungnya!</p>")
+  ];
+
   window.BANK_SOAL = {
     mapel: [
       { id: "bind5", tingkat: ["5"], nama: "Bahasa Indonesia Kelas 5", singkat: "B. Indonesia", ikon: "book", durasi: 90, soal: soalBI5 },
-      { id: "mtk5",  tingkat: ["5"], nama: "Matematika Kelas 5",       singkat: "Matematika",   ikon: "calc", durasi: 90, soal: soalMTK("M5") },
+      { id: "mtk5",  tingkat: ["5"], nama: "Matematika Kelas 5",       singkat: "Matematika",   ikon: "calc", durasi: 90, soal: soalMTK5,
+        // urutan bagian sesuai naskah: PG, PG kompleks, Benar/Salah, Isian, Uraian
+        urutan: ["pg", "pgk", "bs", "isian", "essay"],
+        // sesuai kunci: PG dan B/S bernilai 1 (pilihan), alasan tetap ditulis tetapi tidak diberi skor terpisah
+        skor: { pg: { jawaban: 1, alasanMaks: 0 }, bs: { jawaban: 1, alasanMaks: 0 } } },
       { id: "bind6", tingkat: ["6"], nama: "Bahasa Indonesia Kelas 6", singkat: "B. Indonesia", ikon: "book", durasi: 90, soal: soalBI6 },
       { id: "mtk6",  tingkat: ["6"], nama: "Matematika Kelas 6",       singkat: "Matematika",   ikon: "calc", durasi: 90, soal: soalMTK("M6") }
     ]

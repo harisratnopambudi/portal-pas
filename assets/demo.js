@@ -109,7 +109,7 @@
           } else if (status === "kerja" || status === "kunci") {
             const sampai = 3 + Math.floor(rnd() * 24);
             const jw = buatJawaban(m, kemampuan, sampai);
-            const urutan = []; window.URUTAN_TIPE.forEach(t => m.soal.filter(s => s.tipe === t).forEach(s => urutan.push(s.id)));
+            const urutan = []; window.URUTAN_MAPEL(m).forEach(t => m.soal.filter(s => s.tipe === t).forEach(s => urutan.push(s.id)));
             const lama = status === "kerja" && i === 19 ? 9 : Math.floor(rnd() * 3);
             draft[id] = { mapel: m.id, kelas: rb.kelas, absen, nama, mulai: now - (25 + Math.floor(rnd() * 40)) * 60000,
               jawaban: jw, ragu: {}, idx: Math.min(sampai, urutan.length - 1), urutan, terjawab: Object.keys(jw).length, total: urutan.length,
@@ -123,7 +123,7 @@
 
   window.DEMO = { TOKEN: TOKEN_DEMO, isiDasar, isiSemua, adaJawaban: () => !!localStorage.getItem("pas_db_demo") };
   isiDasar(false);
-  const VERSI = "mapel-56";   // naikkan bila aturan skor berubah agar data contoh dibuat ulang
+  const VERSI = "mtk5-asli";   // naikkan bila aturan skor berubah agar data contoh dibuat ulang
   if (window.KUNCI && (!localStorage.getItem("pas_db_demo") || localStorage.getItem("pas_demo_versi") !== VERSI)) {
     isiSemua(); localStorage.setItem("pas_demo_versi", VERSI);
   }

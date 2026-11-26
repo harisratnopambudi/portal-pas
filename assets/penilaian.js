@@ -6,6 +6,8 @@
   function norm(s) {
     let t = String(s == null ? "" : s).toLowerCase().trim();
     t = t.replace(/[×*·]/g, "x").replace(/[“”"']/g, "").replace(/\s+/g, "");
+    t = t.replace(/^rp\.?/, "").replace(/[,.]-$/, "");            // "Rp9.000,-" -> "9.000"
+    t = t.replace(/(\d)\.(?=\d{3}(?!\d))/g, "$1");               // pemisah ribuan: 9.000 -> 9000
     if (/[a-z]/.test(t)) t = t.replace(/\./g, "");      // titik dibuang hanya bila ada huruf (agar 0.5 aman)
     t = t.replace(/^nabi/, "");
     t = t.replace(/[.,;:]+$/, "");
@@ -14,16 +16,31 @@
 
   function mapelById(id) { return window.BANK_SOAL.mapel.find(m => m.id === id); }
 
-  function maksItem(tipe) {
-    if (tipe === "pg" || tipe === "bs") return S[tipe].jawaban + S[tipe].alasanMaks;
-    return S[tipe].maks;
+  // Aturan skor per paket: CONFIG.SKOR ditimpa oleh mapel.skor (mis. PG tanpa skor alasan)
+  let idxSoal = null;
+  function mapelSoal(soal) {
+    if (!idxSoal) { idxSoal = {}; window.BANK_SOAL.mapel.forEach(m => m.soal.forEach(q => idxSoal[q.id] = m)); }
+    return idxSoal[soal.id];
+  }
+  function skorSoal(soal) {
+    const m = soal && mapelSoal(soal);
+    if (!m || !m.skor) return S;
+    const o = {};
+    Object.keys(S).forEach(k => o[k] = Object.assign({}, S[k], m.skor[k] || {}));
+    return o;
+  }
+
+  function maksItem(tipe, soal) {
+    const Sx = skorSoal(soal);
+    if (tipe === "pg" || tipe === "bs") return Sx[tipe].jawaban + Sx[tipe].alasanMaks;
+    return Sx[tipe].maks;
   }
 
   // Skor maksimal satu soal: uraian dan PG kompleks boleh punya "maks" sendiri di KUNCI
   function maksSoal(soal) {
     const k = (window.KUNCI || {})[soal.id] || {};
     if ((soal.tipe === "essay" || soal.tipe === "pgk") && k.maks != null) return Number(k.maks);
-    return maksItem(soal.tipe);
+    return maksItem(soal.tipe, soal);
   }
   // Panduan skor uraian per soal (KUNCI.skor), atau rubrik umum di config
   function rubrikEssay(soal) {
@@ -43,6 +60,7 @@
     jwb = jwb || {};
     nm = nm || {};
     const r = { id: soal.id, tipe: soal.tipe, maks: maksSoal(soal), auto: 0, manual: 0, pending: false, info: {} };
+    const S = skorSoal(soal);
 
     if (soal.tipe === "pg" || soal.tipe === "bs") {
       const ki = kunciIndex(soal);
@@ -54,7 +72,8 @@
       r.info.alasanKosong = !alasan;
       const key = soal.id + "|alasan";
       r.info.alasanDiabaikan = !!window.CONFIG.ALASAN_HANYA_JIKA_JAWABAN_BENAR && !benar;
-      if (!alasan || r.info.alasanDiabaikan) { r.manual = 0; }
+      r.info.alasanTanpaSkor = !S[soal.tipe].alasanMaks;      // paket yang skornya hanya dari pilihan
+      if (!alasan || r.info.alasanDiabaikan || r.info.alasanTanpaSkor) { r.manual = 0; }
       else if (nm[key] != null) { r.manual = Math.min(Number(nm[key]), S[soal.tipe].alasanMaks); r.info.dinilai = true; }
       else { r.pending = true; }
       r.info.manualKey = key;
@@ -67,7 +86,11 @@
       const benar = pilih.filter(i => kunci.includes(i)).length;
       const salah = pilih.filter(i => !kunci.includes(i)).length;
       const Kp = window.KUNCI[soal.id] || {};
-      if (Kp.maks != null) {
+      if (Kp.aturan === "tanpa_salah") {
+        // Ada pilihan salah = 0; semua kunci = maks; sebagian (tanpa salah) = jumlah benar + 1 (maks - 1)
+        const n = kunci.length;
+        r.auto = salah > 0 || benar === 0 ? 0 : benar === n ? Number(Kp.maks) : Math.min(Number(Kp.maks) - 1, benar + 1);
+      } else if (Kp.maks != null) {
         // Kriteria per soal: lengkap & tanpa pilihan salah = maks; sebagian tepat = 1; selain itu 0
         const sebagian = Kp.sebagian != null ? Number(Kp.sebagian) : 1;
         r.auto = (benar === kunci.length && salah === 0) ? Number(Kp.maks) : (benar - salah >= 1 ? sebagian : 0);
@@ -117,7 +140,7 @@
     const adaManual = Object.keys(nm).length > 0;
     const total = otomatis + manual;
     const perTipe = {};
-    window.URUTAN_TIPE.forEach(t => {
+    window.URUTAN_MAPEL(m).forEach(t => {
       const xs = rincian.filter(r => r.tipe === t);
       perTipe[t] = { skor: xs.reduce((a, r) => a + r.auto + r.manual, 0), maks: xs.reduce((a, r) => a + r.maks, 0) };
     });
@@ -132,5 +155,5 @@
 
   function bulat(x) { return Math.round(x * 100) / 100; }
 
-  window.PENILAIAN = { norm, mapelById, maksItem, maksSoal, rubrikEssay, kunciIndex, nilaiItem, nilaiRekaman, HURUF };
+  window.PENILAIAN = { norm, mapelById, skorSoal, maksItem, maksSoal, rubrikEssay, kunciIndex, nilaiItem, nilaiRekaman, HURUF };
 })();

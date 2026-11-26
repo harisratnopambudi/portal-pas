@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <title>Portal Ujian PAS — Siswa</title>
-<link rel="stylesheet" href="assets/style.css?v=20261125m">
+<link rel="stylesheet" href="assets/style.css?v=20261126a">
 <style>
   /* =================== MASUK & PETUNJUK =================== */
   .login-wrap{max-width:1120px;margin:0 auto;padding:36px 22px 60px}
@@ -244,7 +244,7 @@
 <section id="layarPeran" class="login-wrap">
   <div class="card peran-card">
     <div class="peran-head">
-      <img src="assets/logo-sekolah.png?v=20261125m" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
+      <img src="assets/logo-sekolah.png?v=20261126a" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
       <div>
         <h1 id="peranJudul">Penilaian Akhir Semester Ganjil</h1>
         <p id="peranSub"></p>
@@ -273,7 +273,7 @@
     <div class="login-left">
       <div>
         <button class="kembali-peran" type="button" id="btnKembaliPeran"><span data-ico="left"></span> Ganti peran</button>
-        <img class="login-logo" src="assets/logo-sekolah.png?v=20261125m" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
+        <img class="login-logo" src="assets/logo-sekolah.png?v=20261126a" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
         <h1>Ujian Penilaian Akhir Semester</h1>
         <p class="lead">Pilih kelas dan namamu, pilih mata pelajaran, lalu masukkan token dari pengawas.</p>
       </div>
@@ -394,11 +394,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"></script>
-<script src="config.js?v=20261125m"></script>
-<script src="soal.js?v=20261125m"></script>
-<script src="assets/icons.js?v=20261125m"></script>
-<script src="assets/db.js?v=20261125m"></script>
-<script src="assets/demo.js?v=20261125m"></script>
+<script src="config.js?v=20261126a"></script>
+<script src="soal.js?v=20261126a"></script>
+<script src="assets/icons.js?v=20261126a"></script>
+<script src="assets/db.js?v=20261126a"></script>
+<script src="assets/demo.js?v=20261126a"></script>
 <script>
 (function () {
   const C = CONFIG, B = BANK_SOAL, T = TIPE_INFO;
@@ -420,7 +420,7 @@
   $("btnKembaliPeran").onclick = () => { tampil("layarPeran"); history.replaceState(null, "", location.pathname + location.search); };
   if (location.hash === "#siswa") tampil("layarMasuk");   // tautan langsung untuk siswa: .../portal-pas/#siswa
 
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125m" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261126a" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandTitle").textContent = C.JUDUL_UJIAN + " · " + C.TAHUN_AJARAN;
   $("brandSub").textContent = C.NAMA_SEKOLAH;
   $("modeChip").className = "chip " + (DB.mode === "online" ? "live" : "demo");
@@ -501,10 +501,9 @@
       ? '<option value="">Pilih namamu</option>' + r.nama.map((n, i) => '<option value="' + (i + 1) + '">' + esc(n) + "</option>").join("")
       : '<option value="">Pilih kelas dulu</option>';
     // tampilkan hanya mapel untuk tingkat kelas ini
-    const tk = r ? String(r.tingkat) : null;
     document.querySelectorAll(".mapel-card").forEach(b => {
       const m = B.mapel.find(x => x.id === b.dataset.id);
-      const boleh = !tk || !m.tingkat || m.tingkat.map(String).includes(tk);
+      const boleh = MAPEL_COCOK(m, r);
       b.classList.toggle("hidden", !boleh);
       if (!boleh && mapelPilih === m.id) { mapelPilih = null; b.classList.remove("sel"); }
     });
@@ -633,14 +632,14 @@
       "<div><span>Jumlah soal</span><b>" + m.soal.length + "</b></div>" +
       "<div><span>Durasi</span><b>" + m.durasi + " menit</b></div>";
     const n = hitungTipe(m);
-    $("infoTabel").innerHTML = URUTAN_TIPE.filter(t => n[t]).map(t =>
-      "<tr><td><b>" + T[t].kode + "</b></td><td>" + T[t].nama + '</td><td style="text-align:right">' + n[t] + "</td></tr>").join("");
+    $("infoTabel").innerHTML = URUTAN_MAPEL(m).filter(t => n[t]).map(t =>
+      "<tr><td><b>" + KODE_TIPE(m, t) + "</b></td><td>" + T[t].nama + '</td><td style="text-align:right">' + n[t] + "</td></tr>").join("");
     tampil("layarInfo");
   }
   $("btnBatal").onclick = () => { sesi = null; tampil("layarMasuk"); };
   function buatUrutan(m) {
     let urut = [];
-    URUTAN_TIPE.forEach(t => {
+    URUTAN_MAPEL(m).forEach(t => {
       let ids = m.soal.filter(s => s.tipe === t).map(s => s.id);
       if (C.ACAK_URUTAN_SOAL) ids = acak(ids);
       urut = urut.concat(ids);
@@ -760,10 +759,12 @@
   function buatNav() {
     let html = "", no = 0;
     const singkat = { pg: "PG", bs: "B/S", pgk: "PGK", isian: "Isian", essay: "Uraian" };
-    URUTAN_TIPE.forEach(t => {
+    const mA = mapelAktif();
+    URUTAN_MAPEL(mA).forEach(t => {
       const ids = sesi.urutan.filter(id => soalMap[id].tipe === t);
       if (!ids.length) return;
-      html += '<div class="nav-row"><div class="nav-sec" title="' + T[t].kode + ". " + T[t].nama + '">' + T[t].kode + '</div><div class="nav-grid">';
+      const kd = KODE_TIPE(mA, t);
+      html += '<div class="nav-row"><div class="nav-sec" title="' + kd + ". " + T[t].nama + '">' + kd + '</div><div class="nav-grid">';
       ids.forEach(id => { no++; html += '<button class="nb" data-id="' + id + '">' + no + "</button>"; });
       html += "</div></div>";
     });
@@ -795,7 +796,7 @@
     const tot = sesi.urutan.length;
     $("qNo").textContent = sesi.idx + 1;
     $("qNum").textContent = mapelAktif().nama + ", soal " + (sesi.idx + 1) + " dari " + tot;
-    $("qSec").textContent = T[s.tipe].kode + ". " + T[s.tipe].nama;
+    $("qSec").textContent = KODE_TIPE(mapelAktif(), s.tipe) + ". " + T[s.tipe].nama;
 
     let kiri = '<div class="q-hint">' + ico("info") + "<span>" + T[s.tipe].petunjuk + "</span></div>";
     kiri += '<div class="q-text">' + (s.teks.trim().startsWith("<") ? s.teks : "<p>" + s.teks + "</p>") + "</div>";

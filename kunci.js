@@ -46,10 +46,10 @@ window.KUNCI = {
   "MT-ES5": { rubrik: "Diskon = 25% × 20.000 = 5.000. Harga bayar = 20.000 − 5.000 = Rp15.000,00." }
 };
 
-/* Kunci dummy untuk paket yang belum ada soal aslinya: MT-* ke M5-* dan M6-*.
+/* Kunci dummy untuk paket yang belum ada soal aslinya: MT-* ke M6-*.
    Hapus awalan dari peta setelah kunci asli paket itu diisi. */
 (function () {
-  const peta = { MT: ["M5", "M6"] };
+  const peta = { MT: ["M6"] };
   Object.keys(KUNCI).forEach(id => {
     const [awal, sisa] = [id.split("-")[0], id.slice(id.indexOf("-"))];
     if (!peta[awal]) return;
@@ -159,4 +159,54 @@ Object.assign(window.KUNCI, {
   "B6-ES5": { maks: 5,
     rubrik: "Jawaban disesuaikan dengan pemikiran siswa. a. Sikap bertentangan: mengejek logat teman, membeda-bedakan/tidak mau bermain bersama, membentuk kelompok-kelompok kecil (beserta alasannya). b. Contoh tindakan: berkenalan dan bermain bersama tanpa membedakan daerah, membuat kelompok belajar campuran, menampilkan budaya tiap daerah.",
     skor: { 5: "3 sikap dan 2 tindakan tepat dan jelas", 4: "3 sikap dan 2 tindakan, kurang tepat dan jelas", 3: "2 sikap dan 2 tindakan tepat dan jelas", 2: "2 sikap dan 2 tindakan kurang tepat dan jelas", 1: "1 sikap dan 1 tindakan tidak tepat dan jelas", 0: "Tidak menjawab" } }
+});
+
+/* ===== Matematika Kelas 5 — kunci dari KISI_KUNJAW_matematika_kelas_5 =====
+   Skor maksimal 60: PG 5×1, PGK 5×4, B/S 5×1, Isian 10×1, Uraian 5×4.
+   PGK: ada pilihan salah = 0; semua kunci = 4; sebagian tanpa salah = jumlah benar + 1. */
+Object.assign(window.KUNCI, {
+  "M5-PG1": { k: "B", alasan: "Belanja: 4.500 + 2 × 2.750 + 1.500 = 11.500. Kembalian: 20.000 − 11.500 = Rp8.500." },
+  "M5-PG2": { k: "C", alasan: "Rabu 15.300 lebih banyak dari Senin 12.450, Selasa 9.870, dan Kamis 11.025." },
+  "M5-PG3": { k: "B", alasan: "Keliling = 12 + 15 + 9 = 36 m; 36 ÷ 3 = 12 lampu." },
+  "M5-PG4": { k: "C", alasan: "FPB dari 24 dan 36 adalah 12." },
+  "M5-PG5": { k: "C", alasan: "Keliling persegi panjang = 2 × (20 + 12) = 64 m." },
+
+  "M5-PGK1": { k: "ABD", maks: 4, aturan: "tanpa_salah" },
+  "M5-PGK2": { k: "BC",  maks: 4, aturan: "tanpa_salah" },
+  "M5-PGK3": { k: "ABC", maks: 4, aturan: "tanpa_salah" },
+  "M5-PGK4": { k: "ABD", maks: 4, aturan: "tanpa_salah" },
+  "M5-PGK5": { k: "ABD", maks: 4, aturan: "tanpa_salah" },
+
+  "M5-BS1": { k: "B", alasan: "2 1/4 = (2 × 4 + 1)/4 = 9/4." },
+  "M5-BS2": { k: "B", alasan: "3/4 + 5/8 = 6/8 + 5/8 = 11/8 = 1 3/8 meter." },
+  "M5-BS3": { k: "S", alasan: "9/4 − 6/4 = 3/4 meter, bukan 5/4 meter." },
+  "M5-BS4": { k: "S", alasan: "Urutan yang benar dari terpendek: kuning (5/8), biru (3/4), hijau (1 1/2), merah (2 1/4)." },
+  "M5-BS5": { k: "S", alasan: "1 1/2 < 2 1/4, jadi pita hijau lebih pendek." },
+
+  "M5-IS1":  { k: ["12 dan 24", "12, 24", "12,24", "12 24", "12 & 24", "12 dan 24 hari", "12;24"] },
+  "M5-IS2":  { k: ["13 Mei", "tanggal 13 Mei", "13 mei", "13-5", "13/5", "13 Mei 2027", "13 Mei 2026"] },
+  "M5-IS3":  { k: ["1, 2, 3", "1,2,3", "1, 2, dan 3", "1,2 dan 3", "1 2 3", "1, 2 dan 3", "1;2;3"] },
+  "M5-IS4":  { k: ["12", "12 kantong", "12 kantong plastik"] },
+  "M5-IS5":  { k: ["40", "40 cm", "40cm", "BC = 40 cm", "BC=40", "BC = 40"] },
+  "M5-IS6":  { k: ["9.000", "Rp9.000", "9000", "Rp 9.000", "Rp9.000,00"] },
+  "M5-IS7":  { k: ["3.000", "Rp3.000", "3000", "Rp 3.000", "Rp3.000,00"] },
+  "M5-IS8":  { k: ["42.000", "Rp42.000", "42000", "Rp 42.000", "Rp42.000,00"] },
+  "M5-IS9":  { k: ["3.000", "Rp3.000", "3000", "Rp 3.000", "Rp3.000,00"] },
+  "M5-IS10": { k: ["43.000", "Rp43.000", "43000", "Rp 43.000", "Rp43.000,00"] },
+
+  "M5-ES1": { maks: 4,
+    rubrik: "KPK dari 6 dan 8 adalah 24 (misalnya dengan faktorisasi prima: 6 = 2 × 3, 8 = 2³, KPK = 2³ × 3 = 24). 2 Oktober 2026 + 24 hari = 26 Oktober 2026.",
+    skor: { 4: "KPK benar (24), tanggal benar (26 Oktober 2026), dan langkah pengerjaan ditulis runtut", 3: "KPK dan tanggal benar, tetapi langkah pengerjaan kurang lengkap/kurang runtut", 2: "KPK benar (24), tetapi tanggal akhir salah (misal lupa menambahkan tanggal awal)", 1: "Hanya menuliskan jawaban akhir tanpa proses, atau KPK dan tanggal salah", 0: "Tidak menjawab atau jawaban tidak berkaitan" } },
+  "M5-ES2": { maks: 4,
+    rubrik: "FPB dari 18 dan 24 adalah 6 (faktorisasi prima: 18 = 2 × 3², 24 = 2³ × 3, FPB = 2 × 3 = 6). Jadi 6 kantong.",
+    skor: { 4: "Menjawab 6 kantong dengan benar dan menuliskan cara penyelesaian secara runtut", 3: "Menjawab 6 kantong dengan benar, tetapi cara penyelesaian kurang lengkap/kurang runtut", 2: "Cara penyelesaian (FPB) benar, tetapi hasil akhir salah (misal salah hitung)", 1: "Hanya menuliskan jawaban akhir tanpa cara, atau cara dan jawaban salah", 0: "Tidak menjawab atau jawaban tidak berkaitan" } },
+  "M5-ES3": { maks: 4,
+    rubrik: "Gula yang dipakai: 3/4 + 1/2 = 5/4 kg. Sisa: 9/4 − 5/4 = 4/4 = 1 kg.",
+    skor: { 4: "Menjawab 1 kg dengan benar dan menuliskan proses perhitungan secara lengkap", 3: "Menjawab 1 kg dan proses lengkap, tetapi alasan kurang jelas/kurang tepat", 2: "Proses perhitungan benar (menjumlahkan lalu mengurangkan), tetapi hasil akhir salah hitung", 1: "Hanya menuliskan jawaban akhir tanpa proses, atau proses dan jawaban salah", 0: "Tidak menjawab atau jawaban tidak berkaitan" } },
+  "M5-ES4": { maks: 4,
+    rubrik: "16 cm + 20 cm = 36 cm. Sisi ketiga = 54 cm − 36 cm = 18 cm.",
+    skor: { 4: "Menjawab 18 cm dengan benar dan menuliskan proses perhitungan lengkap", 3: "Menjawab 18 cm dan proses lengkap, tetapi alasan kurang tepat/kurang jelas", 2: "Proses benar (keliling dikurangi jumlah dua sisi), tetapi hasil akhir salah hitung", 1: "Hanya menuliskan jawaban akhir tanpa proses dan alasan, atau proses dan jawaban salah", 0: "Tidak menjawab atau jawaban tidak berkaitan" } },
+  "M5-ES5": { maks: 4,
+    rubrik: "7/5 + 13/10 + 4/5 = 14/10 + 13/10 + 8/10 = 35/10 = 7/2 = 3 1/2 kg.",
+    skor: { 4: "Jawaban benar dan lengkap", 3: "Jawaban benar, langkah kurang lengkap", 2: "Sebagian langkah benar", 1: "Langkah awal benar", 0: "Tidak ada jawaban benar" } }
 });

@@ -6,7 +6,7 @@
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <meta name="robots" content="noindex">
 <title>Portal Penilaian PAS — Guru</title>
-<link rel="stylesheet" href="assets/style.css?v=20261125m">
+<link rel="stylesheet" href="assets/style.css?v=20261126a">
 <style>
   .pin-wrap{max-width:380px;margin:80px auto;padding:0 20px}
   .pin-wrap .card{padding:28px}
@@ -498,13 +498,13 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"></script>
-<script src="config.js?v=20261125m"></script>
-<script src="soal.js?v=20261125m"></script>
-<script src="kunci.js?v=20261125m"></script>
-<script src="assets/icons.js?v=20261125m"></script>
-<script src="assets/db.js?v=20261125m"></script>
-<script src="assets/penilaian.js?v=20261125m"></script>
-<script src="assets/demo.js?v=20261125m"></script>
+<script src="config.js?v=20261126a"></script>
+<script src="soal.js?v=20261126a"></script>
+<script src="kunci.js?v=20261126a"></script>
+<script src="assets/icons.js?v=20261126a"></script>
+<script src="assets/db.js?v=20261126a"></script>
+<script src="assets/penilaian.js?v=20261126a"></script>
+<script src="assets/demo.js?v=20261126a"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 (function () {
@@ -522,11 +522,11 @@
   let hanyaPending = false;
 
   /* ---------- UI awal ---------- */
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125m" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261126a" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandSub").textContent = C.NAMA_SEKOLAH + " · " + C.JUDUL_UJIAN + " " + C.TAHUN_AJARAN;
   $("modeChip").className = "chip " + (DB.mode === "online" ? "live" : "demo");
   $("modeChip").textContent = DB.mode === "online" ? "Online" : "Mode demo";
-  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261125m" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
+  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261126a" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
   $("btnKeluar").innerHTML = ico("logout") + " Keluar";
   $("btnMuat").innerHTML = ico("refresh") + " Muat ulang";
   $("btnExport").innerHTML = ico("download") + " Unduh Excel";
@@ -760,7 +760,7 @@
   /* ---------- PANTAUAN UJIAN ---------- */
   function renderPantau() {
     const el = $("pantauWrap"), k = $("selKelas").value, m = mapel();
-    const rbs = ROMBEL.filter(r => !m.tingkat || m.tingkat.map(String).includes(String(r.tingkat)));
+    const rbs = ROMBEL.filter(r => MAPEL_COCOK(m, r));
     if (!k) {
       el.innerHTML = '<div class="card card-pad"><h3>Pilih kelas yang ingin dipantau</h3><p class="muted small" style="margin:4px 0 0">Mapel: <b>' + esc(m.nama) +
         "</b>. Pantauan ditampilkan per kelas.</p>" +
@@ -771,7 +771,7 @@
     }
     const rb = ROMBEL.find(r => r.kelas === k);
     if (!rb) { el.innerHTML = '<div class="card empty">Data siswa kelas ini tidak ditemukan.</div>'; return; }
-    if (m.tingkat && !m.tingkat.map(String).includes(String(rb.tingkat))) {
+    if (!MAPEL_COCOK(m, rb)) {
       el.innerHTML = '<div class="card empty">' + esc(m.nama) + " tidak diujikan untuk kelas " + esc(k) + ".</div>"; return;
     }
     const kirim = {}, dr = {}, ms = {};
@@ -835,7 +835,7 @@
     const rb = ROMBEL.find(r => r.kelas === k);
     if (!rb) { el.classList.add("hidden"); return; }
     const m = mapel();
-    if (m.tingkat && !m.tingkat.map(String).includes(String(rb.tingkat))) { el.classList.add("hidden"); return; }
+    if (!MAPEL_COCOK(m, rb)) { el.classList.add("hidden"); return; }
     const sudah = new Set(data.filter(r => r.kelas === k).map(r => r.absen));
     const dr = {}; drafts.filter(d => d.kelas === k).forEach(d => dr[d.absen] = d);
     const proses = [], belum = [];
@@ -879,9 +879,9 @@
       return;
     }
     const m = mapel();
-    const tipeAda = URUTAN_TIPE.filter(t => m.soal.some(s => s.tipe === t));
+    const tipeAda = URUTAN_MAPEL(m).filter(t => m.soal.some(s => s.tipe === t));
     let h = '<table class="tbl"><thead><tr><th>Kelas</th><th class="num">No</th><th>Nama</th><th>Dikirim</th>' +
-      tipeAda.map(t => '<th class="num" title="' + T[t].nama + '">' + T[t].kode + " " + ({ pg: "PG", bs: "B/S", pgk: "PGK", isian: "Isian", essay: "Uraian" })[t] + "</th>").join("") +
+      tipeAda.map(t => '<th class="num" title="' + T[t].nama + '">' + KODE_TIPE(m, t) + " " + ({ pg: "PG", bs: "B/S", pgk: "PGK", isian: "Isian", essay: "Uraian" })[t] + "</th>").join("") +
       '<th class="num">Total</th><th class="num">Nilai</th><th>Status</th><th></th></tr></thead><tbody>';
     rows.forEach(r => {
       const x = r._h;
@@ -918,7 +918,7 @@
     };
     $("mLanjut").onclick = async () => {
       const urutan = [];
-      URUTAN_TIPE.forEach(t => m.soal.filter(s => s.tipe === t).forEach(s => urutan.push(s.id)));
+      URUTAN_MAPEL(m).forEach(t => m.soal.filter(s => s.tipe === t).forEach(s => urutan.push(s.id)));
       const draft = {
         mapel: r.mapel, kelas: r.kelas, absen: r.absen, nama: r.nama,
         mulai: Date.now() - pakai, jawaban: r.jawaban || {}, ragu: {}, idx: 0, urutan,
@@ -980,7 +980,7 @@
   // Panel kiri: soal, kunci, acuan, panduan skor. jw = jawaban siswa (untuk menandai pilihan) atau {}
   function panelSoal(m, s, jw, ekstra) {
     const K = KUNCI[s.id] || {};
-    let h = '<div class="hd"><div class="qi-head" style="margin:0"><span class="qi-no">Soal ' + nomorSoal(m, s) + '</span><span class="badge info">' + T[s.tipe].kode + " · " + T[s.tipe].nama + "</span></div>" + (ekstra || "") + "</div>";
+    let h = '<div class="hd"><div class="qi-head" style="margin:0"><span class="qi-no">Soal ' + nomorSoal(m, s) + '</span><span class="badge info">' + KODE_TIPE(m, s.tipe) + " · " + T[s.tipe].nama + "</span></div>" + (ekstra || "") + "</div>";
     h += '<div class="bd"><div class="qi-text">' + teksSoal(s) + "</div>";
     if (s.tipe === "pg" || s.tipe === "pgk") h += opsiList(s, jw || {});
     if (s.tipe === "bs") h += '<div style="margin-top:8px"><span class="badge neutral">Kunci: ' + (K.k === "B" ? "Benar" : "Salah") + "</span></div>";
@@ -1002,13 +1002,14 @@
     if (s.tipe === "pg" || s.tipe === "bs") {
       if (denganPilihan) {
         const pj = jw.p == null ? "Tidak dijawab" : s.tipe === "bs" ? (jw.p === 0 ? "Benar" : "Salah") : H[jw.p] + ". " + OPSI_TEKS(s.opsi[jw.p]);
-        body += '<span class="badge ' + (it.info.benar ? "ok" : "bad") + '">Pilihan: ' + esc(pj) + (it.info.benar ? " (+" + C.SKOR[s.tipe].jawaban + ")" : " (0)") + "</span>";
+        body += '<span class="badge ' + (it.info.benar ? "ok" : "bad") + '">Pilihan: ' + esc(pj) + (it.info.benar ? " (+" + P.skorSoal(s)[s.tipe].jawaban + ")" : " (0)") + "</span>";
       } else {
-        body += '<span class="badge ' + (it.info.benar ? "ok" : "bad") + '">Pilihan ' + (it.info.benar ? "benar (+" + C.SKOR[s.tipe].jawaban + ")" : "salah (0)") + "</span>";
+        body += '<span class="badge ' + (it.info.benar ? "ok" : "bad") + '">Pilihan ' + (it.info.benar ? "benar (+" + P.skorSoal(s)[s.tipe].jawaban + ")" : "salah (0)") + "</span>";
       }
       body += '<div class="lbl-mini">' + ico("edit") + " Alasan siswa</div>";
       body += '<div class="ans big' + (jw.a ? "" : " kosong") + '">' + (jw.a ? esc(jw.a) : "Alasan tidak diisi, otomatis 0") + "</div>";
-      if (jw.a && it.info.alasanDiabaikan) skor = '<div class="small muted">Pilihan jawaban salah, alasan otomatis 0.</div>';
+      if (it.info.alasanTanpaSkor) skor = '<div class="small muted">Pada paket ini skor hanya dari pilihan jawaban (otomatis). Alasan siswa ditampilkan sebagai bahan pertimbangan.</div>';
+      else if (jw.a && it.info.alasanDiabaikan) skor = '<div class="small muted">Pilihan jawaban salah, alasan otomatis 0.</div>';
       else if (jw.a) {
         const cur = nm[it.info.manualKey] != null ? Number(nm[it.info.manualKey]) : null;
         skor = '<div class="lbl-sk">Skor alasan</div>' + tombolSkor(r, it.info.manualKey, it.info.manualMaks, cur, C.RUBRIK_ALASAN);
@@ -1090,10 +1091,10 @@
 
     // deret nomor soal untuk siswa ini
     let strip = "", no = 0;
-    URUTAN_TIPE.forEach(t => {
+    URUTAN_MAPEL(m).forEach(t => {
       const items = m.soal.filter(q => q.tipe === t);
       if (!items.length) return;
-      strip += '<span class="sec">' + T[t].kode + "</span>";
+      strip += '<span class="sec">' + KODE_TIPE(m, t) + "</span>";
       items.forEach(q => {
         no++;
         const iq = x.rincian.find(z => z.id === q.id);
@@ -1132,10 +1133,11 @@
   function isiSelSoal() {
     const m = mapel();
     let h = "", no = 0;
-    URUTAN_TIPE.forEach(t => {
+    URUTAN_MAPEL(m).forEach(t => {
       const items = m.soal.filter(s => s.tipe === t);
       if (!items.length) return;
-      h += '<optgroup label="' + T[t].kode + ". " + T[t].nama + (t === "pgk" ? " (otomatis)" : "") + '">';
+      const otomatis = t === "pgk" || ((t === "pg" || t === "bs") && !P.skorSoal(items[0])[t].alasanMaks);
+      h += '<optgroup label="' + KODE_TIPE(m, t) + ". " + T[t].nama + (otomatis ? " (otomatis)" : "") + '">';
       items.forEach(s => {
         no++;
         const plain = s.teks.replace(/<div class="bacaan">[\s\S]*?<\/div>/, "[bacaan] ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -1144,7 +1146,8 @@
       h += "</optgroup>";
     });
     $("selSoal").innerHTML = h;
-    const first = m.soal.find(s => s.tipe === "pg" || s.tipe === "bs" || s.tipe === "essay");
+    const perluGuru = s => s.tipe === "essay" || ((s.tipe === "pg" || s.tipe === "bs") && P.skorSoal(s)[s.tipe].alasanMaks > 0);
+    const first = m.soal.find(perluGuru) || m.soal.find(s => s.tipe === "isian") || m.soal.find(s => s.tipe !== "pgk");
     $("selSoal").value = first ? first.id : "";
   }
   $("selSoal").onchange = () => { psCur = null; renderPerSoal(); };
@@ -1298,7 +1301,7 @@
     let k = n, i = 2; while (dipakai.has(k)) k = n.slice(0, 28) + " " + i++;
     dipakai.add(k); return k;
   }
-  function rombelUntuk(m) { return ROMBEL.filter(r => !m.tingkat || m.tingkat.map(String).includes(String(r.tingkat))); }
+  function rombelUntuk(m) { return ROMBEL.filter(r => MAPEL_COCOK(m, r)); }
   function sheetBaru(wb, nama, beku) {
     return wb.addWorksheet(nama, {
       views: [{ state: "frozen", xSplit: beku.x, ySplit: beku.y, showGridLines: false }],
@@ -1371,7 +1374,7 @@
 
   // Rincian satu mapel untuk satu rombel
   function sheetRekapMapel(wb, m, rb, recs, nama) {
-    const tipeAda = URUTAN_TIPE.filter(t => m.soal.some(s => s.tipe === t));
+    const tipeAda = URUTAN_MAPEL(m).filter(t => m.soal.some(s => s.tipe === t));
     const singkat = { pg: "PG Beralasan", bs: "Benar/Salah", pgk: "PG Kompleks", isian: "Isian", essay: "Uraian" };
     const maksTipe = {}; tipeAda.forEach(t => maksTipe[t] = m.soal.filter(s => s.tipe === t).reduce((a, s) => a + P.maksSoal(s), 0));
     const maks = Object.values(maksTipe).reduce((a, b) => a + b, 0);
@@ -1384,14 +1387,14 @@
       ws.mergeCells(5, c, 6, c); gayaHeader(sel(ws, 5, c, t), true);
     });
     // skor per bagian: setiap judul setinggi 2 baris, warna sesuai bagian
-    tipeAda.forEach((t, i) => { ws.mergeCells(5, cT + i, 6, cT + i); gayaHeader(sel(ws, 5, cT + i, T[t].kode + ". " + singkat[t] + "\n(" + maksTipe[t] + ")"), false, WARNA_TIPE[t]); });
+    tipeAda.forEach((t, i) => { ws.mergeCells(5, cT + i, 6, cT + i); gayaHeader(sel(ws, 5, cT + i, KODE_TIPE(m, t) + ". " + singkat[t] + "\n(" + maksTipe[t] + ")"), false, WARNA_TIPE[t]); });
     // judul kelompok per bagian di atas nomor soal, berwarna sesuai bagian
     let awal = 0;
     while (awal < nS) {
       const t = m.soal[awal].tipe; let akhir = awal;
       while (akhir + 1 < nS && m.soal[akhir + 1].tipe === t) akhir++;
       if (akhir > awal) ws.mergeCells(5, cS + awal, 5, cS + akhir);
-      gayaHeader(sel(ws, 5, cS + awal, T[t].kode + ". " + singkat[t]), false, WARNA_TIPE[t]);
+      gayaHeader(sel(ws, 5, cS + awal, KODE_TIPE(m, t) + ". " + singkat[t]), false, WARNA_TIPE[t]);
       for (let k = awal; k <= akhir; k++) gayaHeader(sel(ws, 6, cS + k, k + 1), false, WARNA_TIPE[t]);
       awal = akhir + 1;
     }
@@ -1473,7 +1476,7 @@
 
   // Nilai akhir semua mapel untuk satu rombel
   function sheetNilaiAkhir(wb, rb, perMapel, nama) {
-    const mps = B.mapel.filter(m => !m.tingkat || m.tingkat.map(String).includes(String(rb.tingkat)));
+    const mps = B.mapel.filter(m => MAPEL_COCOK(m, rb));
     const nCol = 2 + mps.length + 1;
     const ws = sheetBaru(wb, nama, { x: 2, y: 5 });
     ws.pageSetup.orientation = "portrait";
@@ -1546,7 +1549,7 @@
         const rbs = jenis === "kelasSemuaMapel" ? ROMBEL.filter(r => r.kelas === kls) : ROMBEL;
         const perMapel = {};
         for (const mp of B.mapel) perMapel[mp.id] = await DB.daftar(mp.id, jenis === "kelasSemuaMapel" ? kls : undefined);
-        rbs.forEach(rb => B.mapel.filter(mp => !mp.tingkat || mp.tingkat.map(String).includes(String(rb.tingkat))).forEach(mp => {
+        rbs.forEach(rb => B.mapel.filter(mp => MAPEL_COCOK(mp, rb)).forEach(mp => {
           const nm = (mp.singkat || mp.nama) + (jenis === "semuaRinci" ? " " + rb.kelas : "");
           sheetRekapMapel(wb, mp, rb, perMapel[mp.id].filter(r => r.kelas === rb.kelas), namaSheet(nm, dipakai));
         }));
@@ -1763,7 +1766,7 @@
         Object.keys(jw[s.id]).forEach(k => { if (jw[s.id][k] === "") delete jw[s.id][k]; });
       });
       try {
-        const rb = ROMBEL.find(r => !m.tingkat || m.tingkat.map(String).includes(String(r.tingkat)));
+        const rb = ROMBEL.find(r => MAPEL_COCOK(m, r));
         const kls = rb ? rb.kelas : "5 Contoh", no = rb ? i + 1 : 20 + i, nm = rb && rb.nama[i] ? rb.nama[i] : nama[i];
         await DB.kirim({ mapel: m.id, kelas: kls, absen: no, nama: nm, jawaban: jw, mulai_at: new Date(Date.now() - 3600e3).toISOString(), dikirim_at: new Date(Date.now() - (8 - i) * 60e3).toISOString() });
         n++;
