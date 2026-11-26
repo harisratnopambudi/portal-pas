@@ -6,7 +6,7 @@
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <meta name="robots" content="noindex">
 <title>Portal Penilaian PAS — Guru</title>
-<link rel="stylesheet" href="assets/style.css?v=20261126a">
+<link rel="stylesheet" href="assets/style.css?v=20261126b">
 <style>
   .pin-wrap{max-width:380px;margin:80px auto;padding:0 20px}
   .pin-wrap .card{padding:28px}
@@ -124,7 +124,8 @@
   .tk-cells.kosong i{border-style:dashed;background:var(--surface-2)}
   .tk-meta{font-size:12.5px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:-2px;min-height:24px}
   .tk-act{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
-  .tk-act .btn{justify-content:center;padding-left:8px;padding-right:8px}
+  .tk-card{min-width:0}
+  .tk-act .btn{justify-content:center;padding-left:6px;padding-right:6px;min-width:0;gap:6px;font-size:13px;white-space:nowrap;overflow:hidden}
   .tk-act .tk-main{grid-column:1 / -1}
   .tk-code{font-size:40px;font-weight:800;letter-spacing:.18em;font-variant-numeric:tabular-nums;margin:12px 0 4px;font-family:ui-monospace,"SF Mono",Consolas,monospace}
   .tk-code.off{color:var(--faint);text-decoration:line-through}
@@ -498,13 +499,13 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"></script>
-<script src="config.js?v=20261126a"></script>
-<script src="soal.js?v=20261126a"></script>
-<script src="kunci.js?v=20261126a"></script>
-<script src="assets/icons.js?v=20261126a"></script>
-<script src="assets/db.js?v=20261126a"></script>
-<script src="assets/penilaian.js?v=20261126a"></script>
-<script src="assets/demo.js?v=20261126a"></script>
+<script src="config.js?v=20261126b"></script>
+<script src="soal.js?v=20261126b"></script>
+<script src="kunci.js?v=20261126b"></script>
+<script src="assets/icons.js?v=20261126b"></script>
+<script src="assets/db.js?v=20261126b"></script>
+<script src="assets/penilaian.js?v=20261126b"></script>
+<script src="assets/demo.js?v=20261126b"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 (function () {
@@ -522,11 +523,11 @@
   let hanyaPending = false;
 
   /* ---------- UI awal ---------- */
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261126a" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261126b" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandSub").textContent = C.NAMA_SEKOLAH + " · " + C.JUDUL_UJIAN + " " + C.TAHUN_AJARAN;
   $("modeChip").className = "chip " + (DB.mode === "online" ? "live" : "demo");
   $("modeChip").textContent = DB.mode === "online" ? "Online" : "Mode demo";
-  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261126a" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
+  $("pinIc").innerHTML = '<img src="assets/logo-sekolah.png?v=20261126b" alt="Logo SD Plus 2 Al-Muhajirin" width="76" height="76" style="width:76px;height:76px;object-fit:contain" draggable="false">';
   $("btnKeluar").innerHTML = ico("logout") + " Keluar";
   $("btnMuat").innerHTML = ico("refresh") + " Muat ulang";
   $("btnExport").innerHTML = ico("download") + " Unduh Excel";
@@ -1602,10 +1603,10 @@
     $("tokenGrid").innerHTML = B.mapel.map(m => {
       const t = TOKENS[m.id] || {};
       const aktif = !!(t.token && t.aktif);
-      const kelasTk = (m.tingkat || []).join(" & ");
+      const kelasTk = m.kelas ? m.kelas.join(", ") : "Kelas " + (m.tingkat || []).join(" & ");
       const kotak = t.token ? String(t.token).split("") : Array(6).fill("");
       return '<div class="card tk-card' + (aktif ? " on" : "") + '">' +
-        '<div class="tk-head"><span class="tk-ic">' + ico(m.ikon) + '</span><div class="tk-nama"><b>' + esc(m.nama.replace(/\s+Kelas\s+.*$/i, "")) + "</b><span>Kelas " + esc(kelasTk) + "</span></div></div>" +
+        '<div class="tk-head"><span class="tk-ic">' + ico(m.ikon) + '</span><div class="tk-nama"><b>' + esc(m.nama.replace(/\s+Kelas\s+\d+/i, "")) + "</b><span>" + esc(kelasTk) + "</span></div></div>" +
         '<div class="tk-cells' + (t.token ? (aktif ? "" : " off") : " kosong") + '">' + kotak.map(c => "<i>" + esc(c) + "</i>").join("") + "</div>" +
         '<div class="tk-meta">' + (aktif ? '<span class="badge ok">' + ico("check") + " Aktif</span>" : '<span class="badge neutral">' + ico("lock") + " Nonaktif</span>") +
         "<span>" + (t.token ? "diubah " + waktu(new Date(t.diubah_at).toISOString()) : "token belum dibuat") + "</span></div>" +

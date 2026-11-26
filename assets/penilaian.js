@@ -8,6 +8,7 @@
     t = t.replace(/[×*·]/g, "x").replace(/[“”"']/g, "").replace(/\s+/g, "");
     t = t.replace(/^rp\.?/, "").replace(/[,.]-$/, "");            // "Rp9.000,-" -> "9.000"
     t = t.replace(/(\d)\.(?=\d{3}(?!\d))/g, "$1");               // pemisah ribuan: 9.000 -> 9000
+    t = t.replace(/(\d),(?=\d{3}(?!\d))/g, "$1");                // gaya Inggris: 9,000 -> 9000
     if (/[a-z]/.test(t)) t = t.replace(/\./g, "");      // titik dibuang hanya bila ada huruf (agar 0.5 aman)
     t = t.replace(/^nabi/, "");
     t = t.replace(/[.,;:]+$/, "");
