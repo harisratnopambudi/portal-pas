@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/png" href="assets/logo-sekolah.png">
 <title>Portal Ujian PAS — Siswa</title>
-<link rel="stylesheet" href="assets/style.css?v=20261126b">
+<link rel="stylesheet" href="assets/style.css?v=20261126c">
 <style>
   /* =================== MASUK & PETUNJUK =================== */
   .login-wrap{max-width:1120px;margin:0 auto;padding:36px 22px 60px}
@@ -244,7 +244,7 @@
 <section id="layarPeran" class="login-wrap">
   <div class="card peran-card">
     <div class="peran-head">
-      <img src="assets/logo-sekolah.png?v=20261126b" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
+      <img src="assets/logo-sekolah.png?v=20261126c" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
       <div>
         <h1 id="peranJudul">Penilaian Akhir Semester Ganjil</h1>
         <p id="peranSub"></p>
@@ -273,7 +273,7 @@
     <div class="login-left">
       <div>
         <button class="kembali-peran" type="button" id="btnKembaliPeran"><span data-ico="left"></span> Ganti peran</button>
-        <img class="login-logo" src="assets/logo-sekolah.png?v=20261126b" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
+        <img class="login-logo" src="assets/logo-sekolah.png?v=20261126c" alt="Logo SD Plus 2 Al-Muhajirin" width="72" height="72" draggable="false">
         <h1>Ujian Penilaian Akhir Semester</h1>
         <p class="lead">Pilih kelas dan namamu, pilih mata pelajaran, lalu masukkan token dari pengawas.</p>
       </div>
@@ -394,11 +394,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"></script>
-<script src="config.js?v=20261126b"></script>
-<script src="soal.js?v=20261126b"></script>
-<script src="assets/icons.js?v=20261126b"></script>
-<script src="assets/db.js?v=20261126b"></script>
-<script src="assets/demo.js?v=20261126b"></script>
+<script src="config.js?v=20261126c"></script>
+<script src="soal.js?v=20261126c"></script>
+<script src="assets/icons.js?v=20261126c"></script>
+<script src="assets/db.js?v=20261126c"></script>
+<script src="assets/demo.js?v=20261126c"></script>
 <script>
 (function () {
   const C = CONFIG, B = BANK_SOAL, T = TIPE_INFO;
@@ -420,7 +420,7 @@
   $("btnKembaliPeran").onclick = () => { tampil("layarPeran"); history.replaceState(null, "", location.pathname + location.search); };
   if (location.hash === "#siswa") tampil("layarMasuk");   // tautan langsung untuk siswa: .../portal-pas/#siswa
 
-  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261126b" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
+  $("brandMark").innerHTML = '<img src="assets/logo-sekolah.png?v=20261126c" alt="Logo SD Plus 2 Al-Muhajirin" width="38" height="38" style="width:38px;height:38px;object-fit:contain" draggable="false">';
   $("brandTitle").textContent = C.JUDUL_UJIAN + " · " + C.TAHUN_AJARAN;
   $("brandSub").textContent = C.NAMA_SEKOLAH;
   $("modeChip").className = "chip " + (DB.mode === "online" ? "live" : "demo");
@@ -504,6 +504,7 @@
     document.querySelectorAll(".mapel-card").forEach(b => {
       const m = B.mapel.find(x => x.id === b.dataset.id);
       const boleh = MAPEL_COCOK(m, r);
+      b.querySelector(".mapel-name").textContent = VARIAN_MAPEL(m, r && r.kelas).nama;
       b.classList.toggle("hidden", !boleh);
       if (!boleh && mapelPilih === m.id) { mapelPilih = null; b.classList.remove("sel"); }
     });
@@ -623,7 +624,7 @@
   };
 
   function tampilInfo() {
-    const m = B.mapel.find(x => x.id === sesi.mapel);
+    const m = mapelAktif();
     $("infoJudul").textContent = m.nama;
     $("infoSub").textContent = C.JUDUL_UJIAN + " · Tahun Ajaran " + C.TAHUN_AJARAN;
     $("infoKv").innerHTML =
@@ -647,7 +648,7 @@
     return urut;
   }
   $("btnMulai").onclick = () => {
-    const m = B.mapel.find(x => x.id === sesi.mapel);
+    const m = mapelAktif();
     sesi.urutan = buatUrutan(m);
     sesi.mulai = Date.now();
     simpan(true);
@@ -656,7 +657,7 @@
 
   /* ---------- Ujian ---------- */
   let soalMap = {};
-  function mapelAktif() { return B.mapel.find(x => x.id === sesi.mapel); }
+  function mapelAktif() { return VARIAN_MAPEL(B.mapel.find(x => x.id === sesi.mapel), sesi.kelas); }
 
   function mulaiUjian() {
     const m = mapelAktif();

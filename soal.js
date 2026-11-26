@@ -44,6 +44,9 @@ window.MAPEL_COCOK = (m, rb) => {
   if (m.kecualiKelas && m.kecualiKelas.includes(kls)) return false;
   return true;
 };
+/* Varian bahasa Inggris untuk kelas bahasa: id soal, kunci, skor, dan token sama dengan paket aslinya. */
+window.VARIAN_MAPEL = (m, kelas) =>
+  m && m.inggris && m.inggris.kelas.includes(String(kelas || "")) ? Object.assign({}, m, m.inggris.ubah, { bahasa: "en" }) : m;
 window.URUTAN_MAPEL = m => (m && m.urutan) || window.URUTAN_TIPE;
 window.KODE_TIPE = (m, t) => {
   const ada = window.URUTAN_MAPEL(m).filter(x => !m || m.soal.some(s => s.tipe === x));
@@ -320,55 +323,55 @@ window.KODE_TIPE = (m, t) => {
   const RESTAURANT = "<p>On Sunday, Dika and his family went to Warung Nusantara for lunch. Before ordering, they looked at the menu on the table. Look at the menu prices in the picture.</p>";
 
   const soalMTK5EN = [
-    pg("M5E-PG1", "<p>During break time, Rina went to the School Cooperative to buy school supplies because some of her stationery had run out. She bought 1 notebook, 2 pencils, and 1 eraser. At the cashier, Rina gave Rp20,000 to the cooperative staff.</p><p>Based on the price list at the school cooperative, how much change should Rina receive?</p>",
+    pg("M5-PG1", "<p>During break time, Rina went to the School Cooperative to buy school supplies because some of her stationery had run out. She bought 1 notebook, 2 pencils, and 1 eraser. At the cashier, Rina gave Rp20,000 to the cooperative staff.</p><p>Based on the price list at the school cooperative, how much change should Rina receive?</p>",
       ["Rp7,500", "Rp8,500", "Rp9,500", "Rp10,500"], gHargaEN),
-    pg("M5E-PG2", "<p>The Regional Library wants to give an award to the staff on duty on the busiest day. Based on the infographic, which statement about the number of visitors is correct?</p>",
+    pg("M5-PG2", "<p>The Regional Library wants to give an award to the staff on duty on the busiest day. Based on the infographic, which statement about the number of visitors is correct?</p>",
       ["There were more visitors on Monday than on Wednesday", "Thursday had the fewest visitors", "Wednesday had more visitors than Monday, Tuesday, and Thursday", "There were more visitors on Tuesday than on Monday"],
       G("mtk5-pengunjung-perpus", "Regional Library visitors: Monday 12,450, Tuesday 9,870, Wednesday 15,300, Thursday 11,025")),
-    pg("M5E-PG3", "<p>A park is shaped like a triangle with the measurements shown in the picture. Decorative lamps will be placed around the park. If the distance between lamps is 3 m, how many lamps are needed?</p>",
+    pg("M5-PG3", "<p>A park is shaped like a triangle with the measurements shown in the picture. Decorative lamps will be placed around the park. If the distance between lamps is 3 m, how many lamps are needed?</p>",
       ["10 lamps", "12 lamps", "14 lamps", "16 lamps"], G("mtk5-taman-segitiga", "Triangular park with sides 12 m, 15 m, and 9 m")),
-    pg("M5E-PG4", "<p>Mother has 24 sponge cakes and 36 layer cakes. The cakes will be put into boxes so that every box has the same number of each kind of cake. What is the greatest number of boxes that can be made?</p>",
+    pg("M5-PG4", "<p>Mother has 24 sponge cakes and 36 layer cakes. The cakes will be put into boxes so that every box has the same number of each kind of cake. What is the greatest number of boxes that can be made?</p>",
       ["6 boxes", "8 boxes", "12 boxes", "18 boxes"]),
-    pg("M5E-PG5", "<p>Dita's school has a football field in the backyard, as shown in the picture. During PE, the teacher asks all students to run around the field exactly once. How many metres does Dita run in one lap?</p>",
+    pg("M5-PG5", "<p>Dita's school has a football field in the backyard, as shown in the picture. During PE, the teacher asks all students to run around the field exactly once. How many metres does Dita run in one lap?</p>",
       ["32 m", "44 m", "64 m", "240 m"], G("mtk5-lapangan", "Rectangular football field 20 m long and 12 m wide")),
 
-    pgk("M5E-PGK1", '<p class="muted small">Look at the data in the picture to answer questions 6 and 7.</p><p>Based on the school garden harvest picture, choose all the correct statements about the order of the harvest!</p>',
+    pgk("M5-PGK1", '<p class="muted small">Look at the data in the picture to answer questions 6 and 7.</p><p>Based on the school garden harvest picture, choose all the correct statements about the order of the harvest!</p>',
       ["From smallest: tomato → spinach → mustard greens.", "From largest: water spinach → potato → carrot.", "The mustard greens harvest is the second smallest of all the vegetables.", "The carrot harvest is smaller than the potato harvest."], gPanenEN),
-    pgk("M5E-PGK2", "<p>Mr. Rudi harvested vegetables from the school garden. The harvest was weighed and recorded as shown in the picture. Mr. Rudi only wants to take vegetables that weigh more than 24,400 grams and less than 42,100 grams to the market. Choose all the vegetables that Mr. Rudi can take to the market!</p>",
+    pgk("M5-PGK2", "<p>Mr. Rudi harvested vegetables from the school garden. The harvest was weighed and recorded as shown in the picture. Mr. Rudi only wants to take vegetables that weigh more than 24,400 grams and less than 42,100 grams to the market. Choose all the vegetables that Mr. Rudi can take to the market!</p>",
       ["Spinach", "Mustard greens", "Carrot", "Tomato"], gPanenEN),
-    pgk("M5E-PGK3", "<p>Mr. Budi raises chickens. Every day he collects eggs and puts them into baskets. Each basket holds 23 eggs. Mr. Budi wants to count the eggs when there is more than one basket. Choose all the numbers of eggs that are multiples of 23!</p>",
+    pgk("M5-PGK3", "<p>Mr. Budi raises chickens. Every day he collects eggs and puts them into baskets. Each basket holds 23 eggs. Mr. Budi wants to count the eggs when there is more than one basket. Choose all the numbers of eggs that are multiples of 23!</p>",
       ["46 eggs", "69 eggs", "92 eggs", "100 eggs"]),
-    pgk("M5E-PGK4", "<p>For Independence Day at SD Nusantara, the committee prepared prizes for the competitions. The committee has 24 notebooks and 36 pencils. Both kinds of prizes will be put into several plastic bags with the same number in each bag. The number of bags must be a common factor of 24 and 36.</p><p>Choose all the numbers that are common factors of 24 and 36!</p>",
+    pgk("M5-PGK4", "<p>For Independence Day at SD Nusantara, the committee prepared prizes for the competitions. The committee has 24 notebooks and 36 pencils. Both kinds of prizes will be put into several plastic bags with the same number in each bag. The number of bags must be a common factor of 24 and 36.</p><p>Choose all the numbers that are common factors of 24 and 36!</p>",
       ["6", "12", "18", "2"]),
-    pgk("M5E-PGK5", "<p>In a Mathematics lesson, Mrs. Rina wrote four fractions on the board: " + fr(3, 4) + ", " + fr(1, 2, 1) + ", " + fr(5, 8) + ", and " + fr(1, 4, 1) + ".</p><p>Mrs. Rina asked the students to analyse the order of these numbers from the smallest to the largest. Choose the correct statements about the fractions above!</p>",
+    pgk("M5-PGK5", "<p>In a Mathematics lesson, Mrs. Rina wrote four fractions on the board: " + fr(3, 4) + ", " + fr(1, 2, 1) + ", " + fr(5, 8) + ", and " + fr(1, 4, 1) + ".</p><p>Mrs. Rina asked the students to analyse the order of these numbers from the smallest to the largest. Choose the correct statements about the fractions above!</p>",
       [fr(5, 8) + " is the smallest of the four fractions.",
        "The order from smallest to largest is " + fr(5, 8) + ", " + fr(3, 4) + ", " + fr(1, 4, 1) + ", " + fr(1, 2, 1) + ".",
        fr(1, 2, 1) + " is smaller than " + fr(1, 4, 1) + ".",
        fr(1, 4, 1) + " is greater than " + fr(3, 4) + " but smaller than " + fr(1, 2, 1) + "."]),
 
-    bs("M5E-BS1", '<p class="muted small">Read the text below to answer questions 11 to 15!</p>' + tfRibbon("The length of the red ribbon (" + fr(1, 4, 2) + " metres) is equal to " + fr(9, 4) + " metres.")),
-    bs("M5E-BS2", tfRibbon("If group 1 joins the blue ribbon and the yellow ribbon, the total length of their ribbon is " + fr(3, 8, 1) + " metres.")),
-    bs("M5E-BS3", tfRibbon("The difference in length between the red ribbon and the green ribbon is " + fr(5, 4) + " metres.")),
-    bs("M5E-BS4", tfRibbon("The order of the ribbons from shortest to longest is blue, yellow, green, then red.")),
-    bs("M5E-BS5", tfRibbon("The green ribbon (" + fr(1, 2, 1) + " metres) is longer than the red ribbon (" + fr(1, 4, 2) + " metres).")),
+    bs("M5-BS1", '<p class="muted small">Read the text below to answer questions 11 to 15!</p>' + tfRibbon("The length of the red ribbon (" + fr(1, 4, 2) + " metres) is equal to " + fr(9, 4) + " metres.")),
+    bs("M5-BS2", tfRibbon("If group 1 joins the blue ribbon and the yellow ribbon, the total length of their ribbon is " + fr(3, 8, 1) + " metres.")),
+    bs("M5-BS3", tfRibbon("The difference in length between the red ribbon and the green ribbon is " + fr(5, 4) + " metres.")),
+    bs("M5-BS4", tfRibbon("The order of the ribbons from shortest to longest is blue, yellow, green, then red.")),
+    bs("M5-BS5", tfRibbon("The green ribbon (" + fr(1, 2, 1) + " metres) is longer than the red ribbon (" + fr(1, 4, 2) + " metres).")),
 
-    isian("M5E-IS1", '<p class="muted small">Read the text below to answer questions 16 to 19!</p>' + COMPETITION + "<p>Based on the practice schedule, write the first 2 common multiples of 4 and 6!</p>"),
-    isian("M5E-IS2", COMPETITION + "<p>If the first practice is on 1 May, on what date will the choir group and the dance group practise together for the second time?</p>"),
-    isian("M5E-IS3", COMPETITION + "<p>Based on the prizes, write the first 3 common factors of 24 and 36 so that the notebooks and pencils can be shared equally!</p>"),
-    isian("M5E-IS4", COMPETITION + "<p>What is the greatest number of plastic bags the committee can make so that every bag has the same number of notebooks and pencils?</p>"),
-    isian("M5E-IS5", "<p>The perimeter of a triangle is 96 cm. What is the length of the unknown side (side BC) in the triangle picture?</p>",
+    isian("M5-IS1", '<p class="muted small">Read the text below to answer questions 16 to 19!</p>' + COMPETITION + "<p>Based on the practice schedule, write the first 2 common multiples of 4 and 6!</p>"),
+    isian("M5-IS2", COMPETITION + "<p>If the first practice is on 1 May, on what date will the choir group and the dance group practise together for the second time?</p>"),
+    isian("M5-IS3", COMPETITION + "<p>Based on the prizes, write the first 3 common factors of 24 and 36 so that the notebooks and pencils can be shared equally!</p>"),
+    isian("M5-IS4", COMPETITION + "<p>What is the greatest number of plastic bags the committee can make so that every bag has the same number of notebooks and pencils?</p>"),
+    isian("M5-IS5", "<p>The perimeter of a triangle is 96 cm. What is the length of the unknown side (side BC) in the triangle picture?</p>",
       G("mtk5-segitiga-keliling", "Triangle ABC with side AB 24 cm, side AC 32 cm, and side BC unknown")),
-    isian("M5E-IS6", '<p class="muted small">Look at the menu picture to answer questions 21 to 25!</p>' + RESTAURANT + "<p>Dika orders 2 portions of Special Fried Rice and 3 glasses of Sweet Iced Tea. If he pays with Rp60,000, how much change does Dika receive?</p>", gMenuEN),
-    isian("M5E-IS7", RESTAURANT + "<p>Father orders 1 portion of Grilled Chicken and 1 portion of Chicken Satay. If Father pays with Rp50,000, how much change does Father receive?</p>", gMenuEN),
-    isian("M5E-IS8", RESTAURANT + "<p>Mother orders 2 portions of Chicken Noodles with Meatballs and 1 glass of Avocado Juice. What is the total cost of Mother's order?</p>", gMenuEN),
-    isian("M5E-IS9", RESTAURANT + "<p>Dika's sister wants to buy 1 portion of French Fries and 1 portion of Tofu Meatballs. She pays with Rp20,000. How much money does she have left after paying?</p>", gMenuEN),
-    isian("M5E-IS10", RESTAURANT + "<p>Dika's family orders 1 portion of Special Fried Rice, 1 portion of Chicken Noodles with Meatballs, and 3 glasses of Iced Orange. If they pay with Rp100,000, how much change do they receive?</p>", gMenuEN),
+    isian("M5-IS6", '<p class="muted small">Look at the menu picture to answer questions 21 to 25!</p>' + RESTAURANT + "<p>Dika orders 2 portions of Special Fried Rice and 3 glasses of Sweet Iced Tea. If he pays with Rp60,000, how much change does Dika receive?</p>", gMenuEN),
+    isian("M5-IS7", RESTAURANT + "<p>Father orders 1 portion of Grilled Chicken and 1 portion of Chicken Satay. If Father pays with Rp50,000, how much change does Father receive?</p>", gMenuEN),
+    isian("M5-IS8", RESTAURANT + "<p>Mother orders 2 portions of Chicken Noodles with Meatballs and 1 glass of Avocado Juice. What is the total cost of Mother's order?</p>", gMenuEN),
+    isian("M5-IS9", RESTAURANT + "<p>Dika's sister wants to buy 1 portion of French Fries and 1 portion of Tofu Meatballs. She pays with Rp20,000. How much money does she have left after paying?</p>", gMenuEN),
+    isian("M5-IS10", RESTAURANT + "<p>Dika's family orders 1 portion of Special Fried Rice, 1 portion of Chicken Noodles with Meatballs, and 3 glasses of Iced Orange. If they pay with Rp100,000, how much change do they receive?</p>", gMenuEN),
 
-    essay("M5E-ES1", "<p>At SD Harapan Bangsa, the class 5A cleaning team cleans the classroom every <b>6 days</b>, while the class 5B cleaning team cleans every <b>8 days</b>. On 2 October 2026, both teams were on duty together for the first time.</p><p>On what date will they be on duty together for the second time? Explain the steps you used to find the answer!</p>"),
-    essay("M5E-ES2", "<p>The committee of a charity event has 18 packs of instant noodles and 24 bottles of mineral water. They will be put into aid bags with the same number of each item in every bag, with nothing left over.</p><p>What is the greatest number of aid bags the committee can make? Write how you solved it!</p>"),
-    essay("M5E-ES3", "<p>Mother has " + fr(1, 4, 2) + " kg of sugar. To make a cake, Mother uses " + fr(3, 4) + " kg of sugar. Because the cake batter is not sweet enough, Mother adds another " + fr(1, 2) + " kg of sugar to the batter.</p><p>How many kilograms of sugar does Mother have left now? Write the complete calculation and explain your reasoning!</p>"),
-    essay("M5E-ES4", "<p>Andi made a triangle-shaped wall decoration from felt. The perimeter of the triangle is <b>54 cm</b>. Two of its sides are 16 cm and 20 cm long.</p><p>How long is the third side of Andi's triangle decoration? Explain your answer!</p>"),
-    essay("M5E-ES5", "<p>Mother is reading a new cake recipe. The recipe says that to make 1 cake tin you need " + fr(2, 5, 1) + " kg of butter, " + fr(3, 10, 1) + " kg of cocoa powder, and " + fr(4, 5) + " kg of sugar.</p><p>What is the total weight of all the ingredients? Show how you calculated it!</p>")
+    essay("M5-ES1", "<p>At SD Harapan Bangsa, the class 5A cleaning team cleans the classroom every <b>6 days</b>, while the class 5B cleaning team cleans every <b>8 days</b>. On 2 October 2026, both teams were on duty together for the first time.</p><p>On what date will they be on duty together for the second time? Explain the steps you used to find the answer!</p>"),
+    essay("M5-ES2", "<p>The committee of a charity event has 18 packs of instant noodles and 24 bottles of mineral water. They will be put into aid bags with the same number of each item in every bag, with nothing left over.</p><p>What is the greatest number of aid bags the committee can make? Write how you solved it!</p>"),
+    essay("M5-ES3", "<p>Mother has " + fr(1, 4, 2) + " kg of sugar. To make a cake, Mother uses " + fr(3, 4) + " kg of sugar. Because the cake batter is not sweet enough, Mother adds another " + fr(1, 2) + " kg of sugar to the batter.</p><p>How many kilograms of sugar does Mother have left now? Write the complete calculation and explain your reasoning!</p>"),
+    essay("M5-ES4", "<p>Andi made a triangle-shaped wall decoration from felt. The perimeter of the triangle is <b>54 cm</b>. Two of its sides are 16 cm and 20 cm long.</p><p>How long is the third side of Andi's triangle decoration? Explain your answer!</p>"),
+    essay("M5-ES5", "<p>Mother is reading a new cake recipe. The recipe says that to make 1 cake tin you need " + fr(2, 5, 1) + " kg of butter, " + fr(3, 10, 1) + " kg of cocoa powder, and " + fr(4, 5) + " kg of sugar.</p><p>What is the total weight of all the ingredients? Show how you calculated it!</p>")
   ];
 
   window.BANK_SOAL = {
@@ -379,11 +382,8 @@ window.KODE_TIPE = (m, t) => {
         urutan: ["pg", "pgk", "bs", "isian", "essay"],
         // sesuai kunci: PG dan B/S bernilai 1 (pilihan), alasan tetap ditulis tetapi tidak diberi skor terpisah
         skor: { pg: { jawaban: 1, alasanMaks: 0 }, bs: { jawaban: 1, alasanMaks: 0 } },
-        kecualiKelas: ["5 Cordoba"] },
-      // kelas bahasa: soal sama, berbahasa Inggris, token sendiri
-      { id: "mtk5en", tingkat: ["5"], kelas: ["5 Cordoba"], bahasa: "en", nama: "Mathematics Kelas 5", singkat: "Matematika", ikon: "calc", durasi: 90, soal: soalMTK5EN,
-        urutan: ["pg", "pgk", "bs", "isian", "essay"],
-        skor: { pg: { jawaban: 1, alasanMaks: 0 }, bs: { jawaban: 1, alasanMaks: 0 } } },
+        // kelas bahasa: paket & token sama, hanya teks soal berbahasa Inggris
+        inggris: { kelas: ["5 Cordoba"], ubah: { nama: "Mathematics Kelas 5", soal: soalMTK5EN } } },
       { id: "bind6", tingkat: ["6"], nama: "Bahasa Indonesia Kelas 6", singkat: "B. Indonesia", ikon: "book", durasi: 90, soal: soalBI6 },
       { id: "mtk6",  tingkat: ["6"], nama: "Matematika Kelas 6",       singkat: "Matematika",   ikon: "calc", durasi: 90, soal: soalMTK("M6") }
     ]

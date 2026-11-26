@@ -211,7 +211,7 @@ Object.assign(window.KUNCI, {
     skor: { 4: "Jawaban benar dan lengkap", 3: "Jawaban benar, langkah kurang lengkap", 2: "Sebagian langkah benar", 1: "Langkah awal benar", 0: "Tidak ada jawaban benar" } }
 });
 
-/* ===== Mathematics Grade 5 (kelas bahasa) — kunci sama dengan Matematika Kelas 5, jawaban isian bahasa Inggris ikut diterima ===== */
+/* ===== Mathematics Grade 5 (kelas bahasa) — soal sama (id M5-*), jawaban isian bahasa Inggris ikut diterima ===== */
 (function () {
   const tambahan = {
     "IS1": ["12 and 24", "12 & 24"],
@@ -221,10 +221,8 @@ Object.assign(window.KUNCI, {
     "IS6": ["Rp9,000", "9,000"], "IS7": ["Rp3,000", "3,000"], "IS8": ["Rp42,000", "42,000"],
     "IS9": ["Rp3,000", "3,000"], "IS10": ["Rp43,000", "43,000"]
   };
-  Object.keys(window.KUNCI).filter(id => id.startsWith("M5-")).forEach(id => {
-    const k = JSON.parse(JSON.stringify(window.KUNCI[id]));
-    const suf = id.slice(3);
-    if (tambahan[suf]) k.k = k.k.concat(tambahan[suf]);
-    window.KUNCI["M5E-" + suf] = k;
+  Object.keys(tambahan).forEach(suf => {
+    const k = window.KUNCI["M5-" + suf];
+    k.k = k.k.concat(tambahan[suf]);
   });
 })();
