@@ -49,7 +49,7 @@ window.KUNCI = {
 /* Kunci dummy untuk paket yang belum ada soal aslinya: MT-* ke M6-*.
    Hapus awalan dari peta setelah kunci asli paket itu diisi. */
 (function () {
-  const peta = { MT: ["M6"] };
+  const peta = {};
   Object.keys(KUNCI).forEach(id => {
     const [awal, sisa] = [id.split("-")[0], id.slice(id.indexOf("-"))];
     if (!peta[awal]) return;
@@ -226,3 +226,52 @@ Object.assign(window.KUNCI, {
     k.k = k.k.concat(tambahan[suf]);
   });
 })();
+
+/* ===== Matematika Kelas 6 (naskah asli SAS 1 2026/2027) — kunci dihitung dari soal, skor mengikuti pola Matematika Kelas 5 ===== */
+Object.assign(window.KUNCI, {
+  "M6-PG1": { k: "B", alasan: "78.500 − 34.250 = 44.250; 44.250 + 12.750 = 57.000 kg." },
+  "M6-PG2": { k: "C", alasan: "3/4 + 2/5 = 15/20 + 8/20 = 23/20 kg." },
+  "M6-PG3": { k: "B", alasan: "7/20 = 35/100 = 0,35." },
+  "M6-PG4": { k: "B", alasan: "Harga tas Rp150.000; diskon 20% = Rp30.000; dibayar 150.000 − 30.000 = Rp120.000." },
+  "M6-PG5": { k: "B", alasan: "3,5 + 18/10 = 3,5 + 1,8 = 5,3 m; 5,3 − 0,5 = 4,8 m." },
+
+  "M6-PGK1": { k: "ABC", maks: 4, aturan: "tanpa_salah" },
+  "M6-PGK2": { k: "ABD", maks: 4, aturan: "tanpa_salah" },
+  "M6-PGK3": { k: "ACD", maks: 4, aturan: "tanpa_salah" },
+  "M6-PGK4": { k: "ABC", maks: 4, aturan: "tanpa_salah" },
+  "M6-PGK5": { k: "CD",  maks: 4, aturan: "tanpa_salah" },
+
+  "M6-BS1": { k: "B", alasan: "Rp150.000 ÷ 10 = Rp15.000 per map." },
+  "M6-BS2": { k: "B", alasan: "1 rim HVS = 325.000 ÷ 5 = Rp65.000; 1 karton box = 250.000 ÷ 20 = Rp12.500; selisih Rp52.500." },
+  "M6-BS3": { k: "S", alasan: "4 botol tinta = Rp450.000, lebih mahal dari whiteboard Rp350.000." },
+  "M6-BS4": { k: "B", alasan: "Kursi Rp750.000 + 1 karton map Rp150.000 = Rp900.000, kurang dari Rp1.000.000." },
+  "M6-BS5": { k: "B", alasan: "2 × 750.000 + 350.000 = Rp1.850.000, sama dengan harga lemari arsip." },
+
+  "M6-IS1":  { k: ["1 1/4", "1 1/4 kg", "5/4", "5/4 kg", "1,25", "1,25 kg", "1.25", "1.25 kg"] },
+  "M6-IS2":  { k: ["1/6", "1/6 liter", "1/6 l", "2/12", "2/12 liter"] },
+  "M6-IS3":  { k: ["6", "6 potong", "6 potongan", "6 bagian", "6 pieces"] },
+  "M6-IS4":  { k: ["105", "105 buku", "105 buku cerita", "105 books", "105 storybooks"] },
+  "M6-IS5":  { k: ["16", "16 kue", "16 cakes"] },
+  "M6-IS6":  { k: ["60", "60 kg", "60kg"] },
+  "M6-IS7":  { k: ["36", "36 kg", "36kg"] },
+  "M6-IS8":  { k: ["60", "60 kg", "60kg"] },
+  "M6-IS9":  { k: ["4/3", "4/3 takaran saji", "4/3 gram"] },
+  "M6-IS10": { k: ["12,5 > 0,6", "12,5 gram > 0,6 gram", "0,6 < 12,5", "0,6 gram < 12,5 gram", "protein > karbohidrat", "karbohidrat < protein",
+                   "protein lebih besar", "protein", "12,5>0,6", "0,6<12,5", "12.5 > 0.6", "0.6 < 12.5", "12.5>0.6", "protein > carbohydrate", "protein is greater"] },
+
+  "M6-ES1": { maks: 4,
+    rubrik: "Pengunjung laki-laki = 12.226 + 1.525 = 13.751 orang. Jumlah pengunjung = 12.226 + 13.751 = 25.977 orang.",
+    skor: { 4: "Menjawab 25.977 orang dengan benar dan menuliskan langkah (menghitung laki-laki lalu menjumlahkan) secara runtut", 3: "Jawaban benar, tetapi langkah kurang lengkap/kurang runtut", 2: "Langkah benar, tetapi salah hitung; atau hanya menemukan banyak pengunjung laki-laki (13.751)", 1: "Hanya menuliskan jawaban akhir tanpa proses, atau proses dan jawaban salah", 0: "Tidak menjawab atau jawaban tidak berkaitan" } },
+  "M6-ES2": { maks: 4,
+    rubrik: "Jumlah perbandingan 7 + 4 = 11. Banyak ayam = 7/11 × 88 = 56 ekor.",
+    skor: { 4: "Menjawab 56 ekor dengan benar dan menuliskan langkah secara runtut", 3: "Jawaban benar, tetapi langkah kurang lengkap/kurang runtut", 2: "Langkah benar (7/11 × 88), tetapi salah hitung", 1: "Hanya menuliskan jawaban akhir tanpa proses, atau proses dan jawaban salah", 0: "Tidak menjawab atau jawaban tidak berkaitan" } },
+  "M6-ES3": { maks: 4,
+    rubrik: "Toko A: 20% × 200.000 = 40.000, bayar Rp160.000. Toko B: 30% × 200.000 = 60.000, bayar Rp140.000. Jadi lebih murah di Toko B dengan harga Rp140.000,00.",
+    skor: { 4: "Memilih Toko B, harga Rp140.000 benar, dan menunjukkan perhitungan kedua toko", 3: "Memilih Toko B dan harga benar, tetapi perhitungan kurang lengkap", 2: "Memilih Toko B tetapi harga salah hitung, atau perhitungan benar tanpa kesimpulan", 1: "Hanya menuliskan Toko B tanpa perhitungan, atau proses dan jawaban salah", 0: "Tidak menjawab atau jawaban tidak berkaitan" } },
+  "M6-ES4": { maks: 4,
+    rubrik: "Jumlah ayam = 8 × 25 = 200 ekor. Sisa = 200 − 60 = 140 ekor.",
+    skor: { 4: "Menjawab 140 ekor dengan benar dan menuliskan langkah secara runtut", 3: "Jawaban benar, tetapi langkah kurang lengkap/kurang runtut", 2: "Langkah benar (mengalikan lalu mengurangi), tetapi salah hitung", 1: "Hanya menuliskan jawaban akhir tanpa proses, atau proses dan jawaban salah", 0: "Tidak menjawab atau jawaban tidak berkaitan" } },
+  "M6-ES5": { maks: 4,
+    rubrik: "a. Satu bagian = 35 ÷ 5 = 7, umur Ayah = 7 × 7 = 49 tahun. b. Selisih = 49 − 35 = 14 tahun.",
+    skor: { 4: "Bagian a (49 tahun) dan b (14 tahun) benar dengan langkah yang runtut", 3: "Bagian a dan b benar, tetapi langkah kurang lengkap", 2: "Hanya satu bagian yang benar, atau langkah benar tetapi salah hitung", 1: "Hanya menuliskan jawaban akhir tanpa proses, atau proses dan jawaban salah", 0: "Tidak menjawab atau jawaban tidak berkaitan" } }
+});

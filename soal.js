@@ -374,6 +374,124 @@ window.KODE_TIPE = (m, t) => {
     essay("M5-ES5", "<p>Mother is reading a new cake recipe. The recipe says that to make 1 cake tin you need " + fr(2, 5, 1) + " kg of butter, " + fr(3, 10, 1) + " kg of cocoa powder, and " + fr(4, 5) + " kg of sugar.</p><p>What is the total weight of all the ingredients? Show how you calculated it!</p>")
   ];
 
+  /* ================= MATEMATIKA KELAS 6 (naskah asli SAS 1 2026/2027) ================= */
+  const gToko = G("mtk6-toko-cerdas-mandiri", "Toko Cerdas Mandiri, promo tahun ajaran baru diskon 20% semua item: tas sekolah Rp150.000, buku tulis Rp40.000, sepatu olahraga Rp200.000, alat tulis Rp50.000, pensil warna Rp60.000, penghapus Rp5.000, penggaris Rp10.000, jam tangan Rp120.000");
+  const gPita6 = G("mtk6-pita-hiasan", "Hiasan kelas: pita merah 3,5 meter dan pita biru 18/10 meter");
+  const gBandara = G("mtk6-bandara", "Bandara dengan penumpang terbanyak sepanjang 2025: 1. Soekarno-Hatta (Jakarta) 3,5 juta, 2. I Gusti Ngurah Rai (Bali) 1,4 juta, 3. Juanda (Surabaya) 0,863 juta, 4. Sultan Hasanuddin (Makassar) 0,603 juta, 5. Kualanamu (Medan) 0,486 juta penumpang");
+  const gDataSiswa = G("mtk6-data-siswa", "Tabel data siswa kelas VI SD Harapan Bangsa, rasio laki-laki : perempuan dan jumlah siswa: VI A 2:3, 30; VI B 3:4, 35; VI C 2:3, 40; VI D 3:4, 49");
+  const gPanenBuah = G("mtk6-panen-buah", "Panen buah di Koperasi Tani Desa Makmur. Tabel hasil panen bulan ini: mangga : jeruk = 5 : 3, selisih 24 kg; rambutan : mangga = 2 : 5, selisih 18 kg; jeruk : duku = 3 : 4, selisih 15 kg. Infografis: mangga dan jeruk dipanen paling banyak, duku dipanen paling sedikit, seluruh hasil panen dikemas dalam keranjang untuk dijual ke pasar");
+  const gBiskuit = G("mtk6-biskuit-gandum", "Informasi nilai gizi biskuit gandum per kemasan (takaran saji 4 keping 30 g, berat bersih 120 g): energi total 1 1/3 takaran saji, lemak total 1/5 gram, protein 12,5 gram, karbohidrat 0,6 gram, natrium 3/20 gram, serat pangan 25 gram");
+  const MAKMUR = '<div class="bacaan"><p style="text-align:center"><b>Peningkatan Penjualan Perlengkapan Kantor di Toko "Makmur"</b></p><p>Menjelang pergantian tahun, Toko Perlengkapan "Makmur" mencatat adanya peningkatan pembelian barang kebutuhan kantor dibandingkan bulan sebelumnya. Berikut daftar harga beberapa jenis barang yang paling banyak dipesan:</p>' +
+    '<table class="tbl-soal"><tr><th>Jenis Barang</th><th>Banyak Barang per Karton</th><th>Harga per Karton</th></tr><tr><td>Kertas HVS A4</td><td>5 rim</td><td>Rp325.000,00</td></tr><tr><td>Map Plastik</td><td>10 buah</td><td>Rp150.000,00</td></tr><tr><td>Tinta Printer</td><td>4 botol</td><td>Rp450.000,00</td></tr><tr><td>Karton Box Besar</td><td>20 buah</td><td>Rp250.000,00</td></tr></table>' +
+    "<p>Selain barang-barang di atas, terdapat beberapa perlengkapan lain yang juga mengalami peningkatan permintaan. Di antaranya, papan tulis <i>whiteboard</i> dengan harga Rp350.000,00/buah, kursi kantor dengan harga Rp750.000,00/buah, dan lemari arsip besi dengan harga Rp1.850.000,00/buah.</p></div>";
+  const bsMakmur = t => MAKMUR + "<p>" + t + "</p>";
+
+  const soalMTK6 = [
+    pg("M6-PG1", "<p>Pak Rudi adalah seorang pedagang beras. Ia memiliki persediaan 78.500 kg beras di gudang. Pada hari Senin, ia menjual 34.250 kg beras, lalu pada hari Selasa ia membeli lagi 12.750 kg beras dari petani. Persediaan beras Pak Rudi sekarang adalah ....</p>",
+      ["44.250 kg", "57.000 kg", "67.000 kg", "125.500 kg"]),
+    pg("M6-PG2", "<p>Ibu akan membuat dua jenis kue untuk acara syukuran di rumah. Resep kue bolu membutuhkan " + fr(3, 4) + " kg tepung terigu, sedangkan resep kue lapis membutuhkan " + fr(2, 5) + " kg tepung terigu. Ibu ingin membeli tepung terigu dalam satu kemasan besar yang cukup untuk kedua kue tersebut. Total tepung terigu yang harus dibeli Ibu adalah ....</p>",
+      [fr(5, 9) + " kg", fr(5, 20) + " kg", fr(23, 20) + " kg", fr(15, 20) + " kg"]),
+    pg("M6-PG3", "<p>Pada perayaan Hari Ulang Tahun sekolah, diadakan lomba lari estafet keliling kompleks sekolah. Rina mendapat giliran sebagai pelari pertama. Ia berhasil menyelesaikan " + fr(7, 20) + " dari total jarak lintasan yang harus ditempuh oleh timnya. Sisa jarak lintasan akan dilanjutkan oleh anggota tim lainnya.</p><p>Berdasarkan ilustrasi tersebut, bentuk desimal dari jarak yang berhasil ditempuh Rina adalah ....</p>",
+      ["0,25", "0,35", "0,45", "0,70"]),
+    pg("M6-PG4", "<p>Menjelang tahun ajaran baru, Toko \"Cerdas Mandiri\" mengadakan promo besar-besaran. Semua perlengkapan sekolah diberikan diskon 20%. Daftar harga perlengkapan sekolah di toko tersebut disajikan pada gambar.</p><p>Sinta ingin membeli tas sekolah karena tas lamanya sudah rusak. Ia mendatangi Toko \"Cerdas Mandiri\" dan mengambil tas sekolah yang harganya tertera pada gambar. Berdasarkan informasi dan gambar tersebut, harga tas sekolah yang harus dibayar Sinta setelah mendapat diskon 20% adalah ....</p>",
+      ["Rp30.000", "Rp120.000", "Rp130.000", "Rp180.000"], gToko),
+    pg("M6-PG5", "<p>Doni mendapat tugas dari gurunya untuk membuat hiasan kelas. Ia memiliki dua potong pita dengan warna dan ukuran yang berbeda seperti pada gambar. Doni menyambung kedua pita tersebut tanpa memotongnya sedikit pun. Setelah selesai, Doni memotong 0,5 meter dari sambungan pita tersebut karena bagian ujungnya rusak. Sisa pita yang digunakan Doni untuk hiasan pintu kelas adalah ....</p>",
+      ["4,3 meter", "4,8 meter", "5,3 meter", "5,8 meter"], gPita6),
+
+    pgk("M6-PGK1", "<p>Di kelas VI sedang diadakan pemilihan ketua kelas. Panitia mencatat bahwa perbandingan banyak siswa laki-laki dan siswa perempuan di kelas itu adalah 2 : 3. Diketahui banyak siswa perempuan 21 orang.</p><p>Berdasarkan data yang dicatat panitia, pernyataan yang benar adalah ....</p>",
+      ["Banyak siswa laki-laki adalah 14 orang.", "Jumlah seluruh siswa di kelas tersebut ada 35 orang.", "Selisih banyaknya siswa perempuan dan siswa laki-laki adalah 7 orang.", "Banyak siswa laki-laki adalah 21 orang."]),
+    pgk("M6-PGK2", "<p>Bu Rina adalah penjahit yang menerima pesanan seragam sekolah. Ia menyiapkan kain sepanjang " + fr(5, 25) + " meter untuk membuat satu kerah seragam. Agar mudah dicatat, Bu Rina ingin menuliskan panjang kain itu dalam bentuk lain.</p><p>Pernyataan yang menyatakan panjang kain setara dengan " + fr(5, 25) + " meter adalah ....</p>",
+      ["0,2 meter", fr(1, 5) + " meter", "0,25 meter", "20% meter"]),
+    pgk("M6-PGK3", "<p>Perhatikan gambar berikut!</p><p>Pernyataan yang benar pada informasi di atas adalah ....</p>",
+      ["Selisih banyak penumpang di Bandara Soekarno-Hatta dan Bandara I Gusti Ngurah Rai adalah 2,1 juta orang.", "Urutan banyak penumpang dari yang paling banyak hingga paling sedikit adalah 1,4 ; 3,5 ; 0,486 ; 0,603 ; 0,863", "Banyak penumpang di Bandara Kualanamu kurang dari 0,5 juta.", "Selisih penumpang Bandara Juanda dan Kualanamu adalah 0,377 juta."], gBandara),
+    pgk("M6-PGK4", "<p>Di perpustakaan sekolah terdapat beberapa kelompok buku dengan rasio:</p><ul><li>Rasio banyak buku cerita terhadap buku pelajaran 5 : 7,</li><li>Rasio banyak buku majalah terhadap buku komik 12 : 18,</li><li>Rasio banyak buku ensiklopedia terhadap buku atlas 8 : 15,</li><li>Rasio banyak buku novel terhadap buku puisi 20 : 25.</li></ul><p>Manakah rasio berikut yang sudah dalam bentuk paling sederhana?</p>",
+      ["Bentuk sederhana rasio banyak buku cerita terhadap buku pelajaran 5 : 7", "Bentuk sederhana rasio banyak buku majalah terhadap buku komik 2 : 3", "Bentuk sederhana rasio banyak buku ensiklopedia terhadap buku atlas 8 : 15", "Bentuk sederhana rasio banyak buku novel terhadap buku puisi 20 : 25"]),
+    pgk("M6-PGK5", "<p>SD Harapan Bangsa sedang merencanakan kegiatan bakti sosial. Panitia perlu mengetahui perbandingan dan jumlah siswa laki-laki serta perempuan di setiap kelas VI. Data tersebut disajikan pada tabel dalam gambar.</p><p>Berdasarkan data pada tabel tersebut, pernyataan manakah yang benar?</p>",
+      ["Banyak siswa perempuan di kelas VI B adalah 16 siswa.", "Banyak siswa laki-laki di kelas VI C adalah 12 siswa.", "Banyak siswa laki-laki di kelas VI D adalah 21 siswa.", "Banyak siswa perempuan di kelas VI D adalah 28 siswa."], gDataSiswa),
+
+    bs("M6-BS1", '<p class="muted small">Bacalah teks berikut dengan saksama untuk menjawab soal nomor 11 sampai 15!</p>' + bsMakmur("Jika Pak Budi membeli 1 karton Map Plastik, maka harga satu buah map tersebut adalah Rp15.000,00.")),
+    bs("M6-BS2", bsMakmur("Selisih harga 1 rim Kertas HVS A4 dengan 1 buah Karton Box Besar adalah Rp52.500,00.")),
+    bs("M6-BS3", bsMakmur("Harga 4 botol Tinta Printer lebih murah dibandingkan dengan harga 1 buah papan tulis <i>whiteboard</i>.")),
+    bs("M6-BS4", bsMakmur("Dengan membawa uang Rp1.000.000,00, Toko Makmur dapat membeli 1 buah kursi kantor dan 1 karton Map Plastik.")),
+    bs("M6-BS5", bsMakmur("Harga 1 buah lemari arsip besi setara dengan membeli 2 buah kursi kantor dan 1 buah papan tulis <i>whiteboard</i>.")),
+
+    isian("M6-IS1", "<p>Ibu memiliki persediaan gula pasir sebanyak " + fr(3, 4) + " kg. Untuk membuat kue, Ibu membeli lagi gula pasir sebanyak " + fr(1, 2) + " kg. Berapakah total persediaan gula pasir yang dimiliki Ibu sekarang?</p>"),
+    isian("M6-IS2", "<p>Sebuah botol berisi air minum sebanyak " + fr(2, 3) + " liter. Jika Doni meminum " + fr(1, 4) + " bagian dari isi botol tersebut, berapa liter air minum yang diminum oleh Doni?</p>"),
+    isian("M6-IS3", "<p>Bu Siti memiliki kain sepanjang " + fr(3, 4) + " meter. Kain tersebut akan dipotong menjadi beberapa bagian sama panjang, di mana setiap potongannya berukuran " + fr(1, 8) + " meter. Berapa banyak potongan kain yang akan didapatkan oleh Bu Siti?</p>"),
+    isian("M6-IS4", "<p>Di perpustakaan sekolah terdapat 120 buku cerita. Sebanyak 45 buku dipinjam oleh siswa. Kemudian, pihak sekolah menyumbang 30 buku cerita baru. Berapakah jumlah buku cerita di perpustakaan sekarang?</p>"),
+    isian("M6-IS5", "<p>Bu Siti membeli 8 kotak kue. Setiap kotak berisi 12 kue. Seluruh kue tersebut akan dibagikan sama banyak kepada 6 anak. Berapakah banyak kue yang diterima setiap anak?</p>"),
+    isian("M6-IS6", '<p class="muted small">Perhatikan data pada gambar untuk menjawab soal nomor 21 sampai 23!</p><p>Berdasarkan data panen mangga dan jeruk, berapa kg mangga yang berhasil dipanen anggota koperasi bulan ini?</p>', gPanenBuah),
+    isian("M6-IS7", "<p>Berdasarkan data panen mangga dan jeruk, berapa kg jeruk yang berhasil dipanen anggota koperasi?</p>", gPanenBuah),
+    isian("M6-IS8", "<p>Berdasarkan data perbandingan jeruk dan duku pada tabel, berapa kg duku yang dipanen anggota koperasi?</p>", gPanenBuah),
+    isian("M6-IS9", '<p class="muted small">Perhatikan data pada gambar untuk menjawab soal nomor 24 dan 25!</p><p>Rina membaca label pada kemasan biskuit gandum di kantin sekolah. Pada kemasan tertulis kandungan gizi seperti pada gambar.</p><p>Pada gambar, kandungan energi total tertulis ' + fr(1, 3, 1) + ". Nyatakan nilai tersebut dalam bentuk pecahan biasa!</p>", gBiskuit),
+    isian("M6-IS10", "<p>Rina ingin tahu mana yang lebih besar antara kandungan protein (tertulis 12,5 gram) dan karbohidrat (tertulis 0,6 gram). Manakah yang lebih besar? Tunjukkan perbandinganmu dengan menggunakan lambang perbandingan (&gt;, &lt;, atau =)!</p>", gBiskuit),
+
+    essay("M6-ES1", "<p>Dalam seminggu, jumlah pengunjung perempuan di suatu pameran sebanyak 12.226 orang. Pengunjung laki-laki sebanyak 1.525 orang lebih banyak dari pengunjung perempuan. Berapakah jumlah pengunjung pameran tersebut dalam seminggu?</p>"),
+    essay("M6-ES2", "<p>Pak Rudi baru saja mendata hewan ternaknya. Ia mencatat bahwa perbandingan banyak ayam dan bebek di peternakannya adalah 7 : 4. Jika jumlah seluruh ternak Pak Rudi ada 88 ekor, berapakah banyak ayam yang ia pelihara?</p>"),
+    essay("M6-ES3", "<p>Rina ingin membeli sebuah tas. Harga tas tersebut sama di dua toko, yaitu Rp200.000,00.</p><ul><li><b>Toko A</b> memberikan diskon 20%.</li><li><b>Toko B</b> memberikan diskon 30%.</li></ul><p>Di toko mana Rina sebaiknya membeli tas agar lebih murah? Berapa harga tas yang harus dibayar Rina di toko tersebut?</p>"),
+    essay("M6-ES4", "<p>Pak Budi memiliki 8 kandang ayam. Setiap kandang berisi 25 ekor ayam. Pada hari pertama, Pak Budi menjual 60 ekor ayam. Berapa ekor ayam yang masih dimiliki Pak Budi sekarang?</p>"),
+    essay("M6-ES5", "<p>Perbandingan umur Ayah dan Paman adalah 7 : 5. Saat ini, umur Paman adalah 35 tahun.</p><p>a. Berapakah umur Ayah saat ini?<br>b. Berapakah selisih umur Ayah dan Paman?</p>")
+  ];
+
+  /* ================= MATHEMATICS GRADE 6 — kelas bahasa (6 Almeria), terjemahan Matematika Kelas 6 ================= */
+  const gTokoEN = G("mtk6-toko-cerdas-mandiri", "Cerdas Mandiri store, new school year promo 20% off all items: school bag Rp150,000, notebooks Rp40,000, sports shoes Rp200,000, stationery Rp50,000, coloured pencils Rp60,000, eraser Rp5,000, ruler Rp10,000, watch Rp120,000");
+  const gPita6EN = G("mtk6-pita-hiasan", "Class decoration: red ribbon 3.5 metres and blue ribbon 18/10 metres");
+  const gBandaraEN = G("mtk6-bandara", "Airports with the most passengers in 2025: 1. Soekarno-Hatta (Jakarta) 3.5 million, 2. I Gusti Ngurah Rai (Bali) 1.4 million, 3. Juanda (Surabaya) 0.863 million, 4. Sultan Hasanuddin (Makassar) 0.603 million, 5. Kualanamu (Medan) 0.486 million passengers");
+  const gDataSiswaEN = G("mtk6-data-siswa", "Grade VI student data at SD Harapan Bangsa, ratio of boys : girls and number of students: VI A 2:3, 30; VI B 3:4, 35; VI C 2:3, 40; VI D 3:4, 49");
+  const gPanenBuahEN = G("mtk6-panen-buah", "Fruit harvest at Desa Makmur Farmers' Cooperative this month: mango : orange = 5 : 3, difference 24 kg; rambutan : mango = 2 : 5, difference 18 kg; orange : duku = 3 : 4, difference 15 kg. Infographic: mangoes and oranges were harvested the most, duku the least, all the harvest is packed in baskets to be sold at the market");
+  const gBiskuitEN = G("mtk6-biskuit-gandum", "Nutrition facts of wheat biscuits per pack (serving size 4 pieces 30 g, net weight 120 g): total energy 1 1/3 servings, total fat 1/5 gram, protein 12.5 grams, carbohydrate 0.6 gram, sodium 3/20 gram, dietary fibre 25 grams");
+  const MAKMUR_EN = '<div class="bacaan"><p style="text-align:center"><b>Increasing Sales of Office Supplies at "Makmur" Store</b></p><p>Near the end of the year, "Makmur" Supplies Store recorded more purchases of office supplies than in the previous month. Here is the price list of some of the most ordered items:</p>' +
+    '<table class="tbl-soal"><tr><th>Item</th><th>Number of Items per Carton</th><th>Price per Carton</th></tr><tr><td>A4 HVS Paper</td><td>5 reams</td><td>Rp325,000.00</td></tr><tr><td>Plastic Folder</td><td>10 pieces</td><td>Rp150,000.00</td></tr><tr><td>Printer Ink</td><td>4 bottles</td><td>Rp450,000.00</td></tr><tr><td>Large Cardboard Box</td><td>20 pieces</td><td>Rp250,000.00</td></tr></table>' +
+    "<p>Besides the items above, several other supplies are also in higher demand. Among them are a whiteboard for Rp350,000.00 each, an office chair for Rp750,000.00 each, and a steel filing cabinet for Rp1,850,000.00 each.</p></div>";
+  const bsMakmurEN = t => MAKMUR_EN + "<p>" + t + "</p>";
+
+  const soalMTK6EN = [
+    pg("M6-PG1", "<p>Mr. Rudi is a rice seller. He has 78,500 kg of rice in his warehouse. On Monday, he sold 34,250 kg of rice, and on Tuesday he bought another 12,750 kg of rice from farmers. Mr. Rudi's rice stock now is ....</p>",
+      ["44,250 kg", "57,000 kg", "67,000 kg", "125,500 kg"]),
+    pg("M6-PG2", "<p>Mother is going to make two kinds of cake for a thanksgiving event at home. The sponge cake recipe needs " + fr(3, 4) + " kg of wheat flour, while the layer cake recipe needs " + fr(2, 5) + " kg of wheat flour. Mother wants to buy one large pack of flour that is enough for both cakes. The total amount of flour Mother must buy is ....</p>",
+      [fr(5, 9) + " kg", fr(5, 20) + " kg", fr(23, 20) + " kg", fr(15, 20) + " kg"]),
+    pg("M6-PG3", "<p>To celebrate the school's anniversary, there is a relay race around the school area. Rina is the first runner. She completes " + fr(7, 20) + " of the total distance her team must run. The rest of the distance will be run by the other team members.</p><p>Based on this situation, the distance Rina ran written as a decimal is ....</p>",
+      ["0.25", "0.35", "0.45", "0.70"]),
+    pg("M6-PG4", "<p>Before the new school year, \"Cerdas Mandiri\" store holds a big promotion. All school supplies get a 20% discount. The price list of school supplies at the store is shown in the picture.</p><p>Sinta wants to buy a school bag because her old bag is broken. She goes to \"Cerdas Mandiri\" store and takes the school bag whose price is shown in the picture. Based on the information and the picture, the price Sinta must pay for the school bag after the 20% discount is ....</p>",
+      ["Rp30,000", "Rp120,000", "Rp130,000", "Rp180,000"], gTokoEN),
+    pg("M6-PG5", "<p>Doni's teacher asks him to make a class decoration. He has two pieces of ribbon of different colours and lengths, as shown in the picture. Doni joins the two ribbons without cutting them at all. After that, Doni cuts 0.5 metre from the joined ribbon because the end is damaged. The length of ribbon Doni uses to decorate the classroom door is ....</p>",
+      ["4.3 metres", "4.8 metres", "5.3 metres", "5.8 metres"], gPita6EN),
+
+    pgk("M6-PGK1", "<p>Grade VI is holding a class leader election. The committee records that the ratio of the number of boys to girls in the class is 2 : 3. It is known that there are 21 girls.</p><p>Based on the committee's data, the correct statements are ....</p>",
+      ["There are 14 boys.", "There are 35 students in the class altogether.", "The difference between the number of girls and boys is 7.", "There are 21 boys."]),
+    pgk("M6-PGK2", "<p>Mrs. Rina is a tailor who takes orders for school uniforms. She prepares a piece of cloth " + fr(5, 25) + " metre long to make one uniform collar. To make it easier to record, Mrs. Rina wants to write the length of the cloth in another form.</p><p>The statements that show a length equal to " + fr(5, 25) + " metre are ....</p>",
+      ["0.2 metre", fr(1, 5) + " metre", "0.25 metre", "20% metre"]),
+    pgk("M6-PGK3", "<p>Look at the picture below!</p><p>The correct statements based on the information above are ....</p>",
+      ["The difference in the number of passengers at Soekarno-Hatta Airport and I Gusti Ngurah Rai Airport is 2.1 million people.", "The order of the number of passengers from the most to the fewest is 1.4 ; 3.5 ; 0.486 ; 0.603 ; 0.863", "The number of passengers at Kualanamu Airport is less than 0.5 million.", "The difference in passengers between Juanda Airport and Kualanamu Airport is 0.377 million."], gBandaraEN),
+    pgk("M6-PGK4", "<p>The school library has several groups of books with these ratios:</p><ul><li>The ratio of storybooks to textbooks is 5 : 7,</li><li>The ratio of magazines to comics is 12 : 18,</li><li>The ratio of encyclopedias to atlases is 8 : 15,</li><li>The ratio of novels to poetry books is 20 : 25.</li></ul><p>Which of the following ratios are already in their simplest form?</p>",
+      ["The simplest form of the ratio of storybooks to textbooks is 5 : 7", "The simplest form of the ratio of magazines to comics is 2 : 3", "The simplest form of the ratio of encyclopedias to atlases is 8 : 15", "The simplest form of the ratio of novels to poetry books is 20 : 25"]),
+    pgk("M6-PGK5", "<p>SD Harapan Bangsa is planning a social service activity. The committee needs to know the ratio and number of boys and girls in each grade VI class. The data is shown in the table in the picture.</p><p>Based on the data in the table, which statements are correct?</p>",
+      ["There are 16 girls in class VI B.", "There are 12 boys in class VI C.", "There are 21 boys in class VI D.", "There are 28 girls in class VI D."], gDataSiswaEN),
+
+    bs("M6-BS1", '<p class="muted small">Read the text below carefully to answer questions 11 to 15!</p>' + bsMakmurEN("If Mr. Budi buys 1 carton of Plastic Folders, the price of one folder is Rp15,000.00.")),
+    bs("M6-BS2", bsMakmurEN("The difference in price between 1 ream of A4 HVS Paper and 1 Large Cardboard Box is Rp52,500.00.")),
+    bs("M6-BS3", bsMakmurEN("The price of 4 bottles of Printer Ink is cheaper than the price of 1 whiteboard.")),
+    bs("M6-BS4", bsMakmurEN("With Rp1,000,000.00, someone can buy 1 office chair and 1 carton of Plastic Folders at Makmur Store.")),
+    bs("M6-BS5", bsMakmurEN("The price of 1 steel filing cabinet is equal to the price of 2 office chairs and 1 whiteboard.")),
+
+    isian("M6-IS1", "<p>Mother has " + fr(3, 4) + " kg of sugar. To make a cake, Mother buys another " + fr(1, 2) + " kg of sugar. How much sugar does Mother have now in total?</p>"),
+    isian("M6-IS2", "<p>A bottle contains " + fr(2, 3) + " litre of drinking water. If Doni drinks " + fr(1, 4) + " of the water in the bottle, how many litres of water does Doni drink?</p>"),
+    isian("M6-IS3", "<p>Mrs. Siti has a piece of cloth " + fr(3, 4) + " metre long. The cloth will be cut into pieces of the same length, each " + fr(1, 8) + " metre long. How many pieces of cloth will Mrs. Siti get?</p>"),
+    isian("M6-IS4", "<p>The school library has 120 storybooks. Students borrow 45 of them. Then, the school donates 30 new storybooks. How many storybooks are in the library now?</p>"),
+    isian("M6-IS5", "<p>Mrs. Siti buys 8 boxes of cakes. Each box contains 12 cakes. All the cakes will be shared equally among 6 children. How many cakes does each child get?</p>"),
+    isian("M6-IS6", '<p class="muted small">Look at the data in the picture to answer questions 21 to 23!</p><p>Based on the mango and orange harvest data, how many kilograms of mangoes did the cooperative members harvest this month?</p>', gPanenBuahEN),
+    isian("M6-IS7", "<p>Based on the mango and orange harvest data, how many kilograms of oranges did the cooperative members harvest?</p>", gPanenBuahEN),
+    isian("M6-IS8", "<p>Based on the ratio of oranges to duku in the table, how many kilograms of duku did the cooperative members harvest?</p>", gPanenBuahEN),
+    isian("M6-IS9", '<p class="muted small">Look at the data in the picture to answer questions 24 and 25!</p><p>Rina reads the label on a pack of wheat biscuits in the school canteen. The nutrition facts on the pack are shown in the picture.</p><p>In the picture, the total energy is written as ' + fr(1, 3, 1) + ". Write this value as an improper fraction!</p>", gBiskuitEN),
+    isian("M6-IS10", "<p>Rina wants to know which is greater: the protein content (written as 12.5 grams) or the carbohydrate content (written as 0.6 gram). Which one is greater? Show your comparison using a comparison symbol (&gt;, &lt;, or =)!</p>", gBiskuitEN),
+
+    essay("M6-ES1", "<p>In one week, there were 12,226 female visitors at an exhibition. There were 1,525 more male visitors than female visitors. How many visitors came to the exhibition in that week?</p>"),
+    essay("M6-ES2", "<p>Mr. Rudi has just counted his farm animals. He notes that the ratio of chickens to ducks on his farm is 7 : 4. If Mr. Rudi has 88 animals altogether, how many chickens does he have?</p>"),
+    essay("M6-ES3", "<p>Rina wants to buy a bag. The bag has the same price in two shops, Rp200,000.00.</p><ul><li><b>Shop A</b> gives a 20% discount.</li><li><b>Shop B</b> gives a 30% discount.</li></ul><p>In which shop should Rina buy the bag so that it is cheaper? How much must Rina pay for the bag in that shop?</p>"),
+    essay("M6-ES4", "<p>Mr. Budi has 8 chicken coops. Each coop has 25 chickens. On the first day, Mr. Budi sells 60 chickens. How many chickens does Mr. Budi have now?</p>"),
+    essay("M6-ES5", "<p>The ratio of Father's age to Uncle's age is 7 : 5. Uncle is now 35 years old.</p><p>a. How old is Father now?<br>b. What is the difference between Father's age and Uncle's age?</p>")
+  ];
+
   window.BANK_SOAL = {
     mapel: [
       { id: "bind5", tingkat: ["5"], nama: "Bahasa Indonesia Kelas 5", singkat: "B. Indonesia", ikon: "book", durasi: 90, soal: soalBI5 },
@@ -385,7 +503,11 @@ window.KODE_TIPE = (m, t) => {
         // kelas bahasa: paket & token sama, hanya teks soal berbahasa Inggris
         inggris: { kelas: ["5 Cordoba"], ubah: { nama: "Mathematics Kelas 5", soal: soalMTK5EN } } },
       { id: "bind6", tingkat: ["6"], nama: "Bahasa Indonesia Kelas 6", singkat: "B. Indonesia", ikon: "book", durasi: 90, soal: soalBI6 },
-      { id: "mtk6",  tingkat: ["6"], nama: "Matematika Kelas 6",       singkat: "Matematika",   ikon: "calc", durasi: 90, soal: soalMTK("M6") }
+      { id: "mtk6",  tingkat: ["6"], nama: "Matematika Kelas 6",       singkat: "Matematika",   ikon: "calc", durasi: 90, soal: soalMTK6,
+        urutan: ["pg", "pgk", "bs", "isian", "essay"],
+        skor: { pg: { jawaban: 1, alasanMaks: 0 }, bs: { jawaban: 1, alasanMaks: 0 } },
+        // kelas bahasa: paket & token sama, hanya teks soal berbahasa Inggris
+        inggris: { kelas: ["6 Almeria"], ubah: { nama: "Mathematics Kelas 6", soal: soalMTK6EN } } }
     ]
   };
 })();
